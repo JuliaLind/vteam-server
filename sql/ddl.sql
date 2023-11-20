@@ -11,7 +11,15 @@ DROP TABLE IF EXISTS `employee`;
 DROP TABLE IF EXISTS `payment`;
 DROP TABLE IF EXISTS `user`;
 DROP TABLE IF EXISTS `card`;
+DROP TABLE IF EXISTS `api`;
 
+CREATE TABLE `api` (
+    `api_key` CHAR(32) NOT NULL,
+    `active` BOOLEAN,
+    `status_updated` DATETIME,
+
+    PRIMARY KEY (`api_key`)
+);
 
 CREATE TABLE `card` (
     `id` INT NOT NULL AUTO_INCREMENT,
