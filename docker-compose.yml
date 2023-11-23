@@ -1,0 +1,10 @@
+version: "3"
+services:
+    server:
+        build:
+            context: . # Path needs to be changed when directory structure changes
+            dockerfile: Dockerfile # Not necessary as long as dockerfile is named Dockerfile
+        container_name: "vteam-server"
+        volumes: # Add potential volumes
+        ports: # Add ports in- and outside of container
+        restart: "always"
