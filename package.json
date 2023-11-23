@@ -1,5 +1,5 @@
 {
-    "name": "dummy-server",
+    "name": "vteam-server",
     "version": "1.0.0",
     "description": "",
     "main": "app.js",
@@ -10,7 +10,7 @@
         "format": "prettier --write ./"
     },
     "keywords": [],
-    "author": "",
+    "author": "Julia Lind & Martin Fooladi",
     "license": "ISC",
     "dependencies": {
         "bcryptjs": "^2.4.3",
