@@ -7,7 +7,8 @@
     "scripts": {
         "start": "nodemon server.js",
         "lint": "eslint --fix --ignore-path .eslintignore --ext .js .",
-        "format": "prettier --write ./"
+        "format": "prettier --write ./",
+        "test": "nyc --reporter=html --reporter=text --reporter=clover mocha --config mocha.json --exit"
     },
     "keywords": [],
     "author": "Julia Lind & Martin Fooladi",
@@ -26,6 +27,7 @@
         "eslint": "^8.53.0",
         "eslint-config-prettier": "^9.0.0",
         "mocha": "^10.2.0",
+        "nyc": "^15.1.0",
         "prettier": "^3.1.0",
         "sinon": "^17.0.1"
     }
