@@ -4,13 +4,6 @@ import express from "express";
 const router = express.Router();
 
 /**
- * Note to self:
- * Wrappa hämtningarna i en try catch där catch pekar
- * mot felhanterings-middleware med hjälp av next
- * Tänk på payload/token
- */
-
-/**
  * @description Route for getting all cities
  *
  * @param {express.Request} req Request object
@@ -19,7 +12,7 @@ const router = express.Router();
  *
  * @returns {void}
  */
-router.get("/", (req, res, next) => {
+router.get("/", async (req, res, next) => {
     // code here for getting all cities through citiesModel
 });
 
@@ -32,7 +25,7 @@ router.get("/", (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/:id", (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
     // code here for getting one city through citiesModel
 });
 
