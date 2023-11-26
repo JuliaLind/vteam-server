@@ -1,5 +1,0 @@
-DROP DATABASE IF EXISTS `bikes`;
-CREATE DATABASE `bikes`;
-USE `bikes`;
-
-source 'ddl.sql';
