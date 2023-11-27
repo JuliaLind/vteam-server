@@ -29,7 +29,7 @@ CREATE TABLE `card` (
 
 CREATE TABLE `user`(
     `id` INT NOT NULL AUTO_INCREMENT,
-    `email` VARCHAR(30) NOT NULL,
+    `email` VARCHAR(100) NOT NULL,
     `card_nr` VARCHAR(100) NOT NULL,
     `card_type` INT NOT NULL,
     `balance` INT NOT NULL DEFAULT 0,
@@ -43,7 +43,7 @@ CREATE TABLE `user`(
 CREATE TABLE `payment`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `user_id` INT NOT NULL,
-    `date` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `ref` CHAR(8) NOT NULL,
     `amount` INT NOT NULL,
 
@@ -74,6 +74,7 @@ CREATE TABLE `price`(
 CREATE TABLE `city`(
     `id` VARCHAR(10),
     `name` VARCHAR(40),
+    `speed_limit` INT,
     `geometry` VARCHAR(10000),
 
     PRIMARY KEY (`id`)
@@ -89,7 +90,7 @@ CREATE TABLE `status`(
 CREATE TABLE `bike`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `city_id` VARCHAR(10),
-    `status_id` INT,
+    `status_id` INT DEFAULT 1,
     `charge_perc` DECIMAL(5,2),
     `coords` VARCHAR(100),
 

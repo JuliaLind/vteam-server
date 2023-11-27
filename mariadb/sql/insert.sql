@@ -1,4 +1,17 @@
 
+LOAD DATA LOCAL INFILE './csv/city.csv'
+INTO TABLE `city`
+CHARSET utf8
+FIELDS
+    TERMINATED BY ','
+    ENCLOSED BY "'"
+LINES
+    TERMINATED BY '\r\n'
+IGNORE 1 LINES
+;
+
+SHOW WARNINGS;
+
 LOAD DATA LOCAL INFILE './csv/employee.csv'
 INTO TABLE `employee`
 CHARSET utf8
@@ -14,8 +27,8 @@ SET `id`=@id, `username`=@username, `hash`=@hash, `role`=@role
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './csv/payment.csv'
-INTO TABLE `payment`
+LOAD DATA LOCAL INFILE './csv/card.csv'
+INTO TABLE `card`
 CHARSET utf8
 FIELDS
     TERMINATED BY ','
@@ -25,6 +38,7 @@ LINES
 IGNORE 1 LINES
 ;
 
+SHOW WARNINGS;
 
 LOAD DATA LOCAL INFILE './csv/user.csv'
 INTO TABLE `user`
@@ -40,34 +54,6 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-
-LOAD DATA LOCAL INFILE './csv/price.csv'
-INTO TABLE `price`
-CHARSET utf8
-FIELDS
-    TERMINATED BY ','
-    ENCLOSED BY '"'
-LINES
-    TERMINATED BY '\n'
-IGNORE 1 LINES
-;
-
-SHOW WARNINGS;
-
-LOAD DATA LOCAL INFILE './csv/city.csv'
-INTO TABLE `city`
-CHARSET utf8
-FIELDS
-    TERMINATED BY ','
-    ENCLOSED BY '"'
-LINES
-    TERMINATED BY '\n'
-IGNORE 1 LINES
-;
-
-SHOW WARNINGS;
-
-
 LOAD DATA LOCAL INFILE './csv/status.csv'
 INTO TABLE `status`
 CHARSET utf8
@@ -81,9 +67,36 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-
 LOAD DATA LOCAL INFILE './csv/bike.csv'
 INTO TABLE `bike`
+CHARSET utf8
+FIELDS
+    TERMINATED BY ','
+    ENCLOSED BY '"'
+LINES
+    TERMINATED BY '\r\n'
+IGNORE 1 LINES
+(id, city_id, coords)
+;
+
+SHOW WARNINGS;
+
+LOAD DATA LOCAL INFILE './csv/payment.csv'
+INTO TABLE `payment`
+CHARSET utf8
+FIELDS
+    TERMINATED BY ','
+    ENCLOSED BY '"'
+LINES
+    TERMINATED BY '\n'
+IGNORE 1 LINES
+;
+
+SHOW WARNINGS;
+
+
+LOAD DATA LOCAL INFILE './csv/price.csv'
+INTO TABLE `price`
 CHARSET utf8
 FIELDS
     TERMINATED BY ','
@@ -114,10 +127,11 @@ INTO TABLE `zone_loc`
 CHARSET utf8
 FIELDS
     TERMINATED BY ','
-    ENCLOSED BY '"'
+    ENCLOSED BY "'"
 LINES
-    TERMINATED BY '\n'
+    TERMINATED BY '\r\n'
 IGNORE 1 LINES
+(zone_id, city_id, date_from, `geometry`)
 ;
 
 SHOW WARNINGS;
