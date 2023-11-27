@@ -15,8 +15,8 @@ DROP TABLE IF EXISTS `api`;
 
 CREATE TABLE `api` (
     `api_key` CHAR(32) NOT NULL,
-    `active` BOOLEAN,
-    `status_updated` DATETIME,
+    `active` BOOLEAN DEFAULT TRUE,
+    `status_updated` DATETIME DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (`api_key`)
 );
