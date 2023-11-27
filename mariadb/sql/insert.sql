@@ -1,4 +1,16 @@
 
+LOAD DATA LOCAL INFILE './csv/keys.csv'
+INTO TABLE `api`
+CHARSET utf8
+FIELDS
+    TERMINATED BY ','
+    ENCLOSED BY '"'
+LINES
+    TERMINATED BY '\n'
+IGNORE 1 LINES
+(api_key)
+;
+
 LOAD DATA LOCAL INFILE './csv/city.csv'
 INTO TABLE `city`
 CHARSET utf8
