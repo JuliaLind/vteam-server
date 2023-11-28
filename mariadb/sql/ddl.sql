@@ -144,7 +144,7 @@ CREATE TABLE `trip`(
     `end_pos` VARCHAR(100),
     `start_cost` INT,
     `var_cost` INT,
-    `end_cost` INT,
+    `park_cost` INT,
 
     PRIMARY KEY (`id`),
     FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
