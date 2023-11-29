@@ -32,7 +32,7 @@ CREATE TABLE `user`(
     `email` VARCHAR(100) NOT NULL,
     `card_nr` VARCHAR(100) NOT NULL,
     `card_type` INT NOT NULL,
-    `balance` INT NOT NULL DEFAULT 0,
+    `balance` DECIMAL(7,2) NOT NULL DEFAULT 0,
     `active` BOOLEAN NOT NULL DEFAULT TRUE,
 
     PRIMARY KEY (`id`),
@@ -45,7 +45,7 @@ CREATE TABLE `payment`(
     `user_id` INT NOT NULL,
     `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `ref` CHAR(8) NOT NULL,
-    `amount` INT NOT NULL,
+    `amount` DECIMAL(7,2) NOT NULL,
 
     PRIMARY KEY (`id`),
     FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
@@ -66,7 +66,7 @@ CREATE TABLE `employee`(
 
 CREATE TABLE `price`(
     `id` VARCHAR(20) NOT NULL,
-    `amount` INT NOT NULL,
+    `amount` DECIMAL(5,2) NOT NULL,
 
     PRIMARY KEY (`id`)
 );
@@ -142,9 +142,9 @@ CREATE TABLE `trip`(
     `end_time` DATETIME,
     `start_pos` VARCHAR(100),
     `end_pos` VARCHAR(100),
-    `start_cost` INT,
-    `var_cost` INT,
-    `end_cost` INT,
+    `start_cost` DECIMAL(5,2),
+    `var_cost` DECIMAL(5,2),
+    `park_cost` DECIMAL(5,2),
 
     PRIMARY KEY (`id`),
     FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
