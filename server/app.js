@@ -23,6 +23,15 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 
 // app.use(errorHandler);
 
+
+/**
+ * Shows all available routes
+ */
+app.get("/", (req, res) => {
+    res.json({
+        data: "Hej från team2 server"
+    });
+});
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });

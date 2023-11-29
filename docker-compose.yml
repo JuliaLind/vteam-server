@@ -38,6 +38,27 @@ services:
     restart: "always"
     command: "--init-file /docker-entrypoint-initdb.d/setup-test.sql"
 
+  server:
+    build:
+      context: .
+      dockerfile: ./server/Dockerfile
+    container_name: "server"
+    environment:
+      DB_HOST: ${DB_SERVICE_NAME}
+      DB_PORT: "3306"
+      DB_USER: "root"
+      DB_PASSWORD: ${DB_ROOT_PASSWORD}
+      DB_DATABASE: ${DB_NAME}
+    volumes:
+      - ./server:/server/
+    ports:
+      - "1337:1337"
+    depends_on:
+      - mariadb-bikes
+      - mariadb-test
+    restart: "always"
+
+
 
 
   # server:
