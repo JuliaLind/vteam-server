@@ -3,7 +3,7 @@ CREATE DATABASE `test`;
 USE `test`;
 
 source ./docker-entrypoint-initdb.d/sql/ddl.sql;
-source ./docker-entrypoint-initdb.d/sql/insert.sql;
+-- source ./docker-entrypoint-initdb.d/sql/insert.sql;
 
 
 -- source ./sql/view.sql;
