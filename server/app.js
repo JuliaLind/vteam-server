@@ -6,8 +6,11 @@ import cors from "cors";
 import morgan from "morgan";
 
 
-// added temporarily for testing
+// added temporarily for testing connection to db
+// will remove later
 import { db } from "./src/db/db.js"
+
+
 // import errorHandler from "./middleware/errors.js";
 // import apiRouter from "./routes/v1/index.js";
 
@@ -30,7 +33,8 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
 
 
 /**
- * Shows all available routes
+ * Just to check that database connection
+ * is working.. will remove later
  */
 app.get("/", async (req, res) => {
     let users = await db.getUsers();
