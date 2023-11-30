@@ -18,9 +18,7 @@ BEGIN
 END
 ;;
 
---
--- Note! Not tested yet!
---
+
 CREATE PROCEDURE invoice()
 BEGIN
     DECLARE cursor_id INT;
