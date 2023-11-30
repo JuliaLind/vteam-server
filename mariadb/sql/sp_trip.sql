@@ -8,9 +8,10 @@ CREATE PROCEDURE user_trips(
 )
 BEGIN
     SELECT
-        *
+        *,
+        (start_cost + var_cost + park_cost) AS total_cost
     FROM
-        `trips`
+        `trip`
     WHERE
         `user_id` = u_id
     ;

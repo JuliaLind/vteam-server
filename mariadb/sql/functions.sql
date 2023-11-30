@@ -5,7 +5,7 @@ DELIMITER ;;
 CREATE FUNCTION extract_ref(
     c_nr VARCHAR(100)
 )
-RETURNS INT
+RETURNS CHAR(7)
 DETERMINISTIC
 BEGIN
     SET @ref := CONCAT("***", RIGHT(c_nr, 4));
