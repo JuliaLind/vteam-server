@@ -11,19 +11,37 @@ DROP TABLE IF EXISTS `employee`;
 DROP TABLE IF EXISTS `payment`;
 DROP TABLE IF EXISTS `user`;
 DROP TABLE IF EXISTS `card`;
-DROP TABLE IF EXISTS `api`;
+DROP TABLE IF EXISTS `third_party`;
+DROP TABLE IF EXISTS `api_key`;
 
-CREATE TABLE `api` (
-    `api_key` CHAR(32) NOT NULL,
+CREATE TABLE `api_key` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `key` CHAR(32) NOT NULL,
     `active` BOOLEAN DEFAULT TRUE,
     `status_updated` DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-    PRIMARY KEY (`api_key`)
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `key` (`key`)
+);
+
+--
+-- For the system admin to keep track
+-- of third paties with own API keys
+--
+CREATE TABLE `third_party` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `api_key_id` INT NOT NULL,
+    `email` VARCHAR(200),
+
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `email` (`email`),
+    FOREIGN KEY (`api_key_id`) REFERENCES `api_key` (`id`)
 );
 
 CREATE TABLE `card` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(20),
+
     PRIMARY KEY (`id`)
 );
 
@@ -90,9 +108,10 @@ CREATE TABLE `status`(
 CREATE TABLE `bike`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `city_id` VARCHAR(10),
-    `status_id` INT DEFAULT 1,
-    `charge_perc` DECIMAL(5,2),
+    `status_id` INT NOT NULL DEFAULT 1,
+    `charge_perc` DECIMAL(3,2) NOT NULL DEFAULT 1.00,
     `coords` VARCHAR(100),
+    `active` BOOLEAN NOT NULL DEFAULT TRUE,
 
     PRIMARY KEY (`id`),
     FOREIGN KEY (`city_id`) REFERENCES `city` (`id`),
@@ -140,7 +159,7 @@ CREATE TABLE `trip`(
     `bike_id` INT NOT NULL,
     `start_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `end_time` DATETIME,
-    `start_pos` VARCHAR(100),
+    `start_pos` VARCHAR(100) NOT NULL,
     `end_pos` VARCHAR(100),
     `start_cost` DECIMAL(5,2),
     `var_cost` DECIMAL(5,2),

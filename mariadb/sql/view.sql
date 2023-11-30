@@ -7,7 +7,7 @@ SELECT
     card_nr,
     card.name AS card_type,
     balance,
-    `status`
+    `active`
 FROM `user`
 LEFT JOIN
     `card`

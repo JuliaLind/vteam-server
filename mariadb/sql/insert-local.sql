@@ -1,5 +1,5 @@
 
-LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/keys.csv'
+LOAD DATA LOCAL INFILE './csv/keys.csv'
 INTO TABLE `api_key`
 CHARSET utf8
 FIELDS
@@ -8,10 +8,10 @@ FIELDS
 LINES
     TERMINATED BY '\n'
 IGNORE 1 LINES
-(`key`)
+(api_key)
 ;
 
-LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/city.csv'
+LOAD DATA LOCAL INFILE './csv/city.csv'
 INTO TABLE `city`
 CHARSET utf8
 FIELDS
@@ -24,7 +24,7 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/employee.csv'
+LOAD DATA LOCAL INFILE './csv/employee.csv'
 INTO TABLE `employee`
 CHARSET utf8
 FIELDS
@@ -39,7 +39,7 @@ SET `id`=@id, `username`=@username, `hash`=@hash, `role`=@role
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/card.csv'
+LOAD DATA LOCAL INFILE './csv/card.csv'
 INTO TABLE `card`
 CHARSET utf8
 FIELDS
@@ -52,7 +52,7 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/user.csv'
+LOAD DATA LOCAL INFILE './csv/user.csv'
 INTO TABLE `user`
 CHARSET utf8
 FIELDS
@@ -66,7 +66,7 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/status.csv'
+LOAD DATA LOCAL INFILE './csv/status.csv'
 INTO TABLE `status`
 CHARSET utf8
 FIELDS
@@ -79,7 +79,7 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/bike.csv'
+LOAD DATA LOCAL INFILE './csv/bike.csv'
 INTO TABLE `bike`
 CHARSET utf8
 FIELDS
@@ -93,7 +93,7 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/payment.csv'
+LOAD DATA LOCAL INFILE './csv/payment.csv'
 INTO TABLE `payment`
 CHARSET utf8
 FIELDS
@@ -107,7 +107,7 @@ IGNORE 1 LINES
 SHOW WARNINGS;
 
 
-LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/price.csv'
+LOAD DATA LOCAL INFILE './csv/price.csv'
 INTO TABLE `price`
 CHARSET utf8
 FIELDS
@@ -121,7 +121,7 @@ IGNORE 1 LINES
 SHOW WARNINGS;
 
 
-LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/zone.csv'
+LOAD DATA LOCAL INFILE './csv/zone.csv'
 INTO TABLE `zone`
 CHARSET utf8
 FIELDS
@@ -134,7 +134,7 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/zone_loc.csv'
+LOAD DATA LOCAL INFILE './csv/zone_loc.csv'
 INTO TABLE `zone_loc`
 CHARSET utf8
 FIELDS
@@ -148,7 +148,7 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/speed_limit.csv'
+LOAD DATA LOCAL INFILE './csv/speed_limit.csv'
 INTO TABLE `speed_limit`
 CHARSET utf8
 FIELDS
@@ -161,7 +161,7 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/payment.csv'
+LOAD DATA LOCAL INFILE './csv/payment.csv'
 INTO TABLE `payment`
 CHARSET utf8
 FIELDS
@@ -174,14 +174,14 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/trip.csv'
+LOAD DATA LOCAL INFILE './csv/trip.csv'
 INTO TABLE `trip`
 CHARSET utf8
 FIELDS
-    TERMINATED BY ','
+    TERMINATED BY ';'
     ENCLOSED BY '"'
 LINES
-    TERMINATED BY '\n'
+    TERMINATED BY '\r\n'
 IGNORE 1 LINES
 ;
 
