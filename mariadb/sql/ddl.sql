@@ -50,7 +50,7 @@ CREATE TABLE `user`(
     `email` VARCHAR(100) NOT NULL,
     `card_nr` VARCHAR(100) NOT NULL,
     `card_type` INT NOT NULL,
-    `balance` DECIMAL(7,2) NOT NULL DEFAULT 0,
+    `balance` DECIMAL(7,2) NOT NULL DEFAULT 0.00,
     `active` BOOLEAN NOT NULL DEFAULT TRUE,
 
     PRIMARY KEY (`id`),

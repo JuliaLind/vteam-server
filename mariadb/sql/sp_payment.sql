@@ -1,7 +1,22 @@
-DROP PROCEDURE IF EXISTS user_payment;
+DROP PROCEDURE IF EXISTS user_payments;
+DROP PROCEDURE IF EXISTS prepay;
 DROP PROCEDURE IF EXISTS invoice;
 
 DELIMITER ;;
+
+CREATE PROCEDURE user_payments(
+    u_id INT
+)
+BEGIN
+    SELECT
+        *
+    FROM
+        `payment`
+    WHERE
+        `user_id` = u_id
+    ;
+END
+;;
 
 --
 -- Note! Not tested yet!
@@ -60,7 +75,7 @@ BEGIN
 END
 ;;
 
-CREATE PROCEDURE user_payment(
+CREATE PROCEDURE prepay(
     u_id INT,
     p_amount INT
 )
@@ -78,4 +93,5 @@ BEGIN
     ;
 END
 ;;
+
 DELIMITER ;
