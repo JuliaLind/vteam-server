@@ -3,10 +3,10 @@ LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/keys.csv'
 INTO TABLE `api_key`
 CHARSET utf8
 FIELDS
-    TERMINATED BY ','
+    TERMINATED BY '\r\n'
     ENCLOSED BY '"'
 LINES
-    TERMINATED BY '\n'
+    TERMINATED BY '\r\n'
 IGNORE 1 LINES
 (`key`)
 ;
@@ -161,18 +161,6 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/payment.csv'
-INTO TABLE `payment`
-CHARSET utf8
-FIELDS
-    TERMINATED BY ','
-    ENCLOSED BY '"'
-LINES
-    TERMINATED BY '\n'
-IGNORE 1 LINES
-;
-
-SHOW WARNINGS;
 
 LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/trip.csv'
 INTO TABLE `trip`

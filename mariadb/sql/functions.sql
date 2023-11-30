@@ -8,7 +8,7 @@ CREATE FUNCTION extract_ref(
 RETURNS INT
 DETERMINISTIC
 BEGIN
-    SET @ref := CONCAT("***", RIGHT(c_nr, 4)),
+    SET @ref := CONCAT("***", RIGHT(c_nr, 4));
     RETURN @ref;
 END
 ;;

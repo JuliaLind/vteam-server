@@ -3,12 +3,12 @@ LOAD DATA LOCAL INFILE './csv/keys.csv'
 INTO TABLE `api_key`
 CHARSET utf8
 FIELDS
-    TERMINATED BY ','
+    TERMINATED BY '\r\n'
     ENCLOSED BY '"'
 LINES
-    TERMINATED BY '\n'
+    TERMINATED BY '\r\n'
 IGNORE 1 LINES
-(api_key)
+(`key`)
 ;
 
 LOAD DATA LOCAL INFILE './csv/city.csv'
@@ -161,18 +161,6 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './csv/payment.csv'
-INTO TABLE `payment`
-CHARSET utf8
-FIELDS
-    TERMINATED BY ','
-    ENCLOSED BY '"'
-LINES
-    TERMINATED BY '\n'
-IGNORE 1 LINES
-;
-
-SHOW WARNINGS;
 
 LOAD DATA LOCAL INFILE './csv/trip.csv'
 INTO TABLE `trip`
