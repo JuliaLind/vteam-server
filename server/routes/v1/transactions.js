@@ -4,7 +4,7 @@ import express from "express";
 const router = express.Router();
 
 /**
- * @description Route for trips for one user
+ * @description Route for transactions for one user
  *
  * @param {express.Request} req Request object
  * @param {express.Response} res Response object
@@ -13,13 +13,13 @@ const router = express.Router();
  * @returns {void}
  */
 router.get("/", (req, res, next) => {
-    // code here for getting trips for one user
+    // code here for getting transactions for one user
     // Båda admin och användare använder den här routen
     // user_id finns antingen i token eller body (admin)
 });
 
 /**
- * @description Route for trips for one user using pagination
+ * @description Route for transactions for one user using pagination
  *
  * @param {express.Request} req Request object
  * @param {express.Response} res Response object
@@ -28,7 +28,7 @@ router.get("/", (req, res, next) => {
  * @returns {void}
  */
 router.get("/limit/:limit/offset/:offset", (req, res, next) => {
-    // code here for getting trips for one user using pagination
+    // code here for getting transactions for one user using pagination
     // Båda admin och användare använder den här routen
     // user_id finns antingen i token eller body (admin)
 });

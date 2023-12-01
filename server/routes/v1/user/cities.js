@@ -1,10 +1,10 @@
 import express from "express";
-// import adminAuthModel from "../../models/admin-auth.js";
+// import some model from some file
 
 const router = express.Router();
 
 /**
- * @description Admin register route
+ * @description Route for getting available bikes of a city
  *
  * @param {express.Request} req Request object
  * @param {express.Response} res Response object
@@ -12,8 +12,8 @@ const router = express.Router();
  *
  * @returns {void}
  */
-router.post("/register", async (req, res, next) => {
-    // code here for registering an admin user through authModel
+router.get("/:id/bikes", async (req, res, next) => {
+    // code here for getting available bikes of a city
 });
 
 export default router;

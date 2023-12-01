@@ -1,5 +1,5 @@
 import express from "express";
-// import bikesModel from "../../models/bikes.js";
+// import some model from some file
 
 const router = express.Router();
 
@@ -30,7 +30,7 @@ router.get("/:id", async (req, res, next) => {
 });
 
 /**
- * @description Route for getting bike instructions
+ * @description Route for getting all statuses a bike can have
  *
  * @param {express.Request} req Request object
  * @param {express.Response} res Response object
@@ -38,8 +38,8 @@ router.get("/:id", async (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/instructions", async (req, res, next) => {
-    // code here for getting bike instructions through bikesModel
+router.get("/status", async (req, res, next) => {
+    // code here for getting all statuses a bike can have
 });
 
 /**
@@ -79,6 +79,45 @@ router.post("/:id/rent", async (req, res, next) => {
  */
 router.post("/:id/return", async (req, res, next) => {
     // code here for returning a bike through bikesModel
+});
+
+/**
+ * @description Route for getting city zones for a bike
+ *
+ * @param {express.Request} req Request object
+ * @param {express.Response} res Response object
+ * @param {express.NextFunction} next Next function
+ *
+ * @returns {void}
+ */
+router.get("/:id/zones", async (req, res, next) => {
+    // code here for getting city zones for a bike
+});
+
+/**
+ * @description Route for getting bike instructions
+ *
+ * @param {express.Request} req Request object
+ * @param {express.Response} res Response object
+ * @param {express.NextFunction} next Next function
+ *
+ * @returns {void}
+ */
+router.get("/instructions", async (req, res, next) => {
+    // code here for getting bike instructions through bikesModel
+});
+
+/**
+ * @description Route for starting simulation
+ *
+ * @param {express.Request} req Request object
+ * @param {express.Response} res Response object
+ * @param {express.NextFunction} next Next function
+ *
+ * @returns {void}
+ */
+router.get("/simulate", async (req, res, next) => {
+    // code here for starting simulation
 });
 
 export default router;
