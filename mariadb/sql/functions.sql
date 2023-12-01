@@ -15,7 +15,7 @@ END
 ;;
 
 CREATE FUNCTION within_zone(
-    json_point VARCHAR(100)
+    coord VARCHAR(100)
 )
 RETURNS INT
 READS SQL DATA
@@ -28,7 +28,7 @@ BEGIN
     AND
         ST_Within(
             ST_GeomFromGeoJSON(
-                CONCAT('{"type":"Point","coordinates":', json_point, '}')
+                CONCAT('{"type":"Point","coordinates":', coord, '}')
             ),
             ST_GeomFromGeoJSON(geometry)
         ) = 1
