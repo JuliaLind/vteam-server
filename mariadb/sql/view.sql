@@ -1,15 +1,15 @@
-DROP VIEW IF EXISTS v_user;
+DROP VIEW IF EXISTS v_zone_loc;
 
-CREATE VIEW v_user AS
+CREATE VIEW v_zone_loc AS
 SELECT
-    user.id,
-    email,
-    card_nr,
-    card.name AS card_type,
-    balance,
-    `active`
-FROM `user`
+    id,
+    zone_id,
+    city_id,
+    date_from,
+    date_to,
+    `geometry`
+FROM `zone_loc` AS zl
 LEFT JOIN
-    `card`
-    ON user.card_type = card.id
+    `zone_loc_removed` AS zlr
+    ON zl.id = zlr.zone_loc_id
 ;
