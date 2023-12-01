@@ -4,7 +4,7 @@ import express from "express";
 const router = express.Router();
 
 /**
- * @description Route for getting all cities
+ * @description Route for deactivating a bike
  *
  * @param {express.Request} req Request object
  * @param {express.Response} res Response object
@@ -12,12 +12,12 @@ const router = express.Router();
  *
  * @returns {void}
  */
-router.get("/", async (req, res, next) => {
-    // code here for getting all cities through citiesModel
+router.get("/:id/deactivate", (req, res, next) => {
+    // code here for deactivating bike
 });
 
 /**
- * @description Route for getting one city
+ * @description Route for changing a bike's status
  *
  * @param {express.Request} req Request object
  * @param {express.Response} res Response object
@@ -25,12 +25,12 @@ router.get("/", async (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/:id", async (req, res, next) => {
-    // code here for getting one city through citiesModel
+router.get("/:id/status/:id", (req, res, next) => {
+    // code here for changing a bike's status
 });
 
 /**
- * @description Route for getting all bikes of a city
+ * @description Route for changing a bike's position
  *
  * @param {express.Request} req Request object
  * @param {express.Response} res Response object
@@ -38,12 +38,12 @@ router.get("/:id", async (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/:id/bikes", async (req, res, next) => {
-    // code here for getting all bikes of a city
+router.get("/:id/move", (req, res, next) => {
+    // code here for changing a bike's position
 });
 
 /**
- * @description Route for getting all zones of a city
+ * @description Route for changing a bike's city
  *
  * @param {express.Request} req Request object
  * @param {express.Response} res Response object
@@ -51,8 +51,8 @@ router.get("/:id/bikes", async (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/:id/zones", async (req, res, next) => {
-    // code here for getting all zones of a city
+router.get("/:id/change/city", (req, res, next) => {
+    // code here for changing a bike's city
 });
 
 export default router;

@@ -1,13 +1,10 @@
 import express from "express";
 // import some model from some file
-// TODO: räcker det med auth-modell som har metoder för att
-// verifiera både en admin och en användare?
-// i så fall import authModel from "../../models/auth.js"
 
 const router = express.Router();
 
 /**
- * @description Admin login route
+ * @description Route for getting user card info
  *
  * @param {express.Request} req Request object
  * @param {express.Response} res Response object
@@ -15,12 +12,12 @@ const router = express.Router();
  *
  * @returns {void}
  */
-router.post("/admin", async (req, res) => {
-    // code here for logging in an admin user through authModel
+router.get("/", async (req, res, next) => {
+    // code here for getting user card info
 });
 
 /**
- * @description User login route
+ * @description Route for updating user card info
  *
  * @param {express.Request} req Request object
  * @param {express.Response} res Response object
@@ -28,8 +25,8 @@ router.post("/admin", async (req, res) => {
  *
  * @returns {void}
  */
-router.post("/user", async (req, res) => {
-    // code here for logging in a user through authModel
+router.put("/", async (req, res, next) => {
+    // code here for updating user card info
 });
 
 export default router;

@@ -4,7 +4,7 @@ import express from "express";
 const router = express.Router();
 
 /**
- * @description Route for getting all zones
+ * @description Route for handling payments to user bike account
  *
  * @param {express.Request} req Request object
  * @param {express.Response} res Response object
@@ -12,8 +12,8 @@ const router = express.Router();
  *
  * @returns {void}
  */
-router.get("/", async (req, res, next) => {
-    // code here for getting all zones through zonesModel
+router.post("/", async (req, res, next) => {
+    // code here for handling payments to user bike account
 });
 
 export default router;

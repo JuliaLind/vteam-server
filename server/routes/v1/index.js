@@ -1,22 +1,24 @@
 import express from "express";
-// import authModel from "../../models/admin-auth.js"
+// import some model from some file
 
-import adminRouter from './admin.js';
-import bikesRouter from './bikes.js';
+import adminRouter from "./admin/index.js";
+import userRouter from "./user/index.js";
+import bikesRouter from "./bikes.js";
+import cardRouter from "./card.js";
 import citiesRouter from "./cities.js";
 import loginRouter from "./login.js";
-import tripsRouter from "./trips.js";
-import usersRouter from "./users.js";
+import registerRouter from "./register.js";
 import zonesRouter from "./zones.js";
 
 const router = express.Router();
 
-router.use("/admin", /** + authModel.checkToken ? */ adminRouter);
-router.use("/bikes", bikesRouter)
+router.use("/admin", /** + authModel.checkToken + role */ adminRouter);
+router.use("/user", /** + authModel.checkToken */ userRouter);
+router.use("/bikes", bikesRouter);
+router.use("/card", cardRouter);
 router.use("/cities", citiesRouter);
-router.use("/login", loginRouter);
-router.use("/trips", tripsRouter);
-router.use("/users", usersRouter);
-router.use("/zones", zonesRouter);
+router.use("login", loginRouter);
+router.use("/register", registerRouter);
+router.use("zones", zonesRouter);
 
 export default router;
