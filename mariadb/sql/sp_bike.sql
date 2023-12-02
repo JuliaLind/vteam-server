@@ -2,6 +2,7 @@ DROP PROCEDURE IF EXISTS bike_statuses;
 DROP PROCEDURE IF EXISTS deactivate;
 DROP PROCEDURE IF EXISTS activate;
 DROP PROCEDURE IF EXISTS all_bikes;
+DROP PROCEDURE IF EXISTS available_bikes;
 DROP PROCEDURE IF EXISTS single_bike;
 DROP PROCEDURE IF EXISTS update_bike;
 DROP PROCEDURE IF EXISTS update_bike_city;
@@ -113,6 +114,20 @@ BEGIN
     SELECT
         *
     FROM v_bike;
+END
+;;
+
+CREATE PROCEDURE available_bikes(
+    c_id VARCHAR(10)
+)
+BEGIN
+    SELECT
+        *
+    FROM v_bike
+    WHERE status_id = 1
+    AND `active` = TRUE
+    AND city_id = c_id
+    ;
 END
 ;;
 

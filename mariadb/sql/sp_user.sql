@@ -3,8 +3,36 @@ DROP PROCEDURE IF EXISTS all_users;
 DROP PROCEDURE IF EXISTS all_users_pag;
 DROP PROCEDURE IF EXISTS upd_user_status;
 DROP PROCEDURE IF EXISTS upd_user_email;
+DROP PROCEDURE IF EXISTS new_user;
+DROP PROCEDURE IF EXISTS login_user;
+
 
 DELIMITER ;;
+
+CREATE PROCEDURE new_user(
+    u_email VARCHAR(100),
+    c_nr VARCHAR(100),
+    c_type INT
+)
+BEGIN
+    INSERT INTO `user` (email, card_nr, card_type)
+    VALUES(u_email, c_nr, c_type);
+
+    SELECT id, email
+    FROM `user`
+    WHERE email = u_email;
+END
+;;
+
+CREATE PROCEDURE login_user(
+    u_email VARCHAR(100)
+)
+BEGIN
+    SELECT id, email
+    FROM `user`
+    WHERE email = u_email;
+END
+;;
 
 CREATE PROCEDURE upd_user_status(
     u_id INT,
