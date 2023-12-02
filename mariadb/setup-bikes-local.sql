@@ -4,6 +4,7 @@ USE `bikes`;
 
 source ./sql/ddl.sql;
 source ./sql/insert-local.sql;
+source ./sql/triggers.sql;
 source ./sql/view.sql;
 source ./sql/functions.sql;
 source ./sql/sp_payment.sql;

@@ -1,6 +1,8 @@
 DROP PROCEDURE IF EXISTS bike_statuses;
 DROP PROCEDURE IF EXISTS deactivate;
 DROP PROCEDURE IF EXISTS activate;
+DROP PROCEDURE IF EXISTS all_bikes;
+DROP PROCEDURE IF EXISTS update_bike;
 
 DELIMITER ;;
 
@@ -61,6 +63,34 @@ BEGIN
         *
     FROM
         `status`
+    ;
+END
+;;
+
+CREATE PROCEDURE all_bikes()
+BEGIN
+    SELECT
+        *
+    FROM
+        `bike`
+    ;
+END
+;;
+
+CREATE PROCEDURE update_bike(
+    b_id INT,
+    b_status INT,
+    b_charge DECIMAL(3,2),
+    b_coords VARCHAR(100)
+)
+BEGIN
+    UPDATE
+        `bike`
+    SET
+        status_id = b_status,
+        charge_perc = b_charge,
+        coords = b_coords
+    WHERE id = b_id
     ;
 END
 ;;
