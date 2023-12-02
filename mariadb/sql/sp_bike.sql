@@ -3,6 +3,7 @@ DROP PROCEDURE IF EXISTS deactivate;
 DROP PROCEDURE IF EXISTS activate;
 DROP PROCEDURE IF EXISTS all_bikes;
 DROP PROCEDURE IF EXISTS update_bike;
+DROP PROCEDURE IF EXISTS update_bike_city;
 
 DELIMITER ;;
 
@@ -14,6 +15,21 @@ BEGIN
         `bike`
     SET
         `active` = TRUE
+    WHERE
+        id = b_id
+    ;
+END
+;;
+
+CREATE PROCEDURE update_bike_city(
+    b_id INT,
+    c_id VARCHAR(10)
+)
+BEGIN
+    UPDATE
+        `bike`
+    SET
+        `city_id` = c_id
     WHERE
         id = b_id
     ;

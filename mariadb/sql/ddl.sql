@@ -62,7 +62,7 @@ CREATE TABLE `payment`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `user_id` INT NOT NULL,
     `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `ref` CHAR(7) NOT NULL,
+    `ref` CHAR(12) NOT NULL,
     `amount` DECIMAL(7,2) NOT NULL,
 
     PRIMARY KEY (`id`),

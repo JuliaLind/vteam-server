@@ -1,4 +1,5 @@
 DROP PROCEDURE IF EXISTS user_trips;
+DROP PROCEDURE IF EXISTS user_trips_pag;
 DROP PROCEDURE IF EXISTS start_trip;
 DROP PROCEDURE IF EXISTS end_trip;
 
@@ -168,12 +169,29 @@ CREATE PROCEDURE user_trips(
 )
 BEGIN
     SELECT
-        *,
-        (start_cost + var_cost + park_cost) AS total_cost
+        *
+    FROM
+        `v_trip`
+    WHERE
+        `user_id` = u_id
+    ;
+END
+;;
+
+CREATE PROCEDURE user_trips_pag(
+    u_id INT,
+    a_offset INT,
+    a_limit INT
+)
+BEGIN
+    SELECT
+        *
     FROM
         `trip`
     WHERE
         `user_id` = u_id
+    LIMIT a_limit
+    OFFSET a_offset
     ;
 END
 ;;
