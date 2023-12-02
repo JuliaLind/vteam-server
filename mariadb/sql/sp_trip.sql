@@ -12,6 +12,22 @@ BEGIN
     DECLARE bikeid INT;
     DECLARE userid INT;
 
+    --
+    -- Cannot rent a bike that is not available
+    -- or deactivated
+    --
+    IF (SELECT id
+    FROM `bike`
+    WHERE
+        id = b_id
+    AND `status_id` = 1
+    AND `active` = TRUE) IS NULL THEN
+    SET @message := CONCAT('Cannot rent bike ', b_id);
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = @message;
+    END IF
+    ;
+
     -- Your SELECT query that retrieves two values
     SELECT bike_id, user_id
     INTO bikeid, userid
@@ -114,7 +130,10 @@ BEGIN
 
         -- calculate variable cost as the duration of the trip
         -- in minutes time the variable cost per minute
-        SET @varcost := TIMESTAMPDIFF(MINUTE, starttime, @endtime) * (SELECT amount FROM price WHERE id = "VAR");
+        -- I am using SECOND / 60 instead of MINUTE
+        -- because MINUTE does not seem to return value if
+        -- duration is less than a minute
+        SET @varcost := TIMESTAMPDIFF(SECOND, starttime, @endtime) / 60 * (SELECT amount FROM price WHERE id = "VAR");
         -- get the startcost based on cost type
         SET @startcost := (SELECT amount FROM price WHERE id = @starttype);
         -- get the parking cost based on cost type
