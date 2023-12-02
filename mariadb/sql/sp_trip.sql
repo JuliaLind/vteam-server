@@ -40,6 +40,9 @@ BEGIN
         end_pos IS NULL;
 
     IF bikeid IS NULL THEN
+        UPDATE `bike`
+        SET status_id = 2
+        WHERE id = b_id;
         SET @start_pos := (SELECT coords FROM `bike` WHERE id = b_id);
 
         INSERT INTO `trip`(user_id, bike_id, start_pos)
@@ -151,6 +154,12 @@ BEGIN
             park_cost = @parkcost
         WHERE id = t_id
         ;
+    END IF;
+    IF (SELECT status_id
+    FROM bike WHERE id = bikeid) = 2 THEN
+        UPDATE bike
+        SET status_id = 1
+        WHERE id = bikeid;
     END IF;
 
     -- return all data for the trip + calculated total cost

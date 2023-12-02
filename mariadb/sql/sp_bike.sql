@@ -2,8 +2,11 @@ DROP PROCEDURE IF EXISTS bike_statuses;
 DROP PROCEDURE IF EXISTS deactivate;
 DROP PROCEDURE IF EXISTS activate;
 DROP PROCEDURE IF EXISTS all_bikes;
+DROP PROCEDURE IF EXISTS single_bike;
 DROP PROCEDURE IF EXISTS update_bike;
 DROP PROCEDURE IF EXISTS update_bike_city;
+DROP PROCEDURE IF EXISTS bikes_in_city;
+DROP PROCEDURE IF EXISTS upd_bike_status;
 
 DELIMITER ;;
 
@@ -18,8 +21,30 @@ BEGIN
     WHERE
         id = b_id
     ;
+
+    SELECT * FROM v_bike
+    WHERE id = b_id;
 END
 ;;
+
+CREATE PROCEDURE upd_bike_status(
+    b_id INT,
+    s_id INT
+)
+BEGIN
+    UPDATE
+        `bike`
+    SET
+        status_id = s_id
+    WHERE
+        id = b_id
+    ;
+
+    SELECT * FROM v_bike
+    WHERE id = b_id;
+END
+;;
+
 
 CREATE PROCEDURE update_bike_city(
     b_id INT,
@@ -33,6 +58,9 @@ BEGIN
     WHERE
         id = b_id
     ;
+
+    SELECT * FROM v_bike
+    WHERE id = b_id;
 END
 ;;
 
@@ -59,16 +87,13 @@ BEGIN
         id = b_id
     ;
 
-    SELECT *
-    FROM
-        `bike`
-    WHERE
-        id = b_id;
-
     -- If the bike is rented, end the ongoing trip
     IF tripid IS NOT NULL THEN
         CALL end_trip(tripid, userid);
     END IF;
+
+    SELECT * FROM v_bike
+    WHERE id = b_id;
 
 END
 ;;
@@ -87,8 +112,30 @@ CREATE PROCEDURE all_bikes()
 BEGIN
     SELECT
         *
-    FROM
-        `bike`
+    FROM v_bike;
+END
+;;
+
+CREATE PROCEDURE single_bike(
+    b_id INT
+)
+BEGIN
+    SELECT
+        *
+    FROM v_bike
+    WHERE id = b_id
+    ;
+END
+;;
+
+CREATE PROCEDURE bikes_in_city(
+    c_id VARCHAR(10)
+)
+BEGIN
+    SELECT
+        *
+    FROM v_bike
+    WHERE city_id = c_id
     ;
 END
 ;;
