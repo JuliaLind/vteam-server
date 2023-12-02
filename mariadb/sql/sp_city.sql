@@ -13,4 +13,12 @@ BEGIN
 END
 ;;
 
+-- CREATE PROCEDURE zones_for_bike(
+--     b_id
+-- )
+-- BEGIN
+--     -- FORTSÄTT HÄRIFRÅN
+-- END
+-- ;;
+
 DELIMITER ;

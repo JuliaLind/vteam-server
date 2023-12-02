@@ -98,6 +98,14 @@ BEGIN
     WHERE
         id = u_id
     ;
+
+    SELECT * FROM payment
+    WHERE user_id = u_id
+    AND amount = p_amount
+    AND ref = @ref
+    ORDER BY
+        id DESC
+    LIMIT 1;
 END
 ;;
 
