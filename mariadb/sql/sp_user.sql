@@ -4,7 +4,7 @@ DROP PROCEDURE IF EXISTS all_users_pag;
 DROP PROCEDURE IF EXISTS upd_user_status;
 DROP PROCEDURE IF EXISTS upd_user_email;
 DROP PROCEDURE IF EXISTS new_user;
-DROP PROCEDURE IF EXISTS login_user;
+DROP PROCEDURE IF EXISTS user_login;
 
 
 DELIMITER ;;
@@ -24,7 +24,7 @@ BEGIN
 END
 ;;
 
-CREATE PROCEDURE login_user(
+CREATE PROCEDURE user_login(
     u_email VARCHAR(100)
 )
 BEGIN

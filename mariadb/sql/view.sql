@@ -14,7 +14,6 @@ SELECT
     date_to,
     `geometry`,
     speed
-    -- extract_speed(zl.zone_id, city_id) AS speed_limit
 FROM `zone_loc` AS zl
 LEFT JOIN
     `zone_loc_removed` AS zlr
