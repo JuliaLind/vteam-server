@@ -8,7 +8,7 @@ import morgan from "morgan";
 
 // added temporarily for testing connection to db
 // will remove later
-import { db } from "./src/db/db.js"
+import { db } from "./src/models/db.js"
 
 
 // import errorHandler from "./middleware/errors.js";
