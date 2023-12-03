@@ -29,8 +29,7 @@ export const db = {
 
             let res = await conn.query(sql);
             return res;
-        } catch (err) {
-            // do something
+            // no catching error here
         } finally {
             if (conn) conn.end();
         }
@@ -43,8 +42,7 @@ export const db = {
             conn = await pool.getConnection();
             let res = await conn.query(sql, args);
             return res;
-        } catch (err) {
-            // do something
+            // no catching error here
         } finally {
             if (conn) conn.end();
         }
