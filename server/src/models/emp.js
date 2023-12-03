@@ -40,9 +40,6 @@ const emp = {
                 });
             }
 
-            // om inget token är med kommer det att kastas
-            // ett fel här eftersom decoded inte kommer ha attributet role som alla token
-            // som tillhör anställda ska ha
             if (!acceptableRoles.includes(decoded.role)) {
                 // if unauthorized request it is safer
                 // to make it look like the page does not
