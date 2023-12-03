@@ -7,3 +7,5 @@ server/.nyc_output/
 coverage
 server/coverage
 server/.nyc_output
+/server/.nyc_output/
+/server/coverage/
