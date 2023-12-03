@@ -83,7 +83,26 @@ describe('emp model', async () => {
         const next = sinon.spy(); // Spy on the next function
     
         // Call the route handler with the fake objects
-        empModel.checkToken(req, res, next);
+        empModel.checkToken(req, res, next, ["admin"]);
+    
+        // Assertions using Sinon and Chai
+
+        expect(req.body.emp).to.deep.equal(payload);
+        expect(next.called).to.be.true;
+    });
+
+    it('checkToken with valid admin token', async () => {
+        const req = {
+            headers: {
+                "x-access-token": jwtToken
+            },
+            body: {}
+        };
+        const res = {};
+        const next = sinon.spy(); // Spy on the next function
+    
+        // Call the route handler with the fake objects
+        empModel.checkAdminAcc(req, res, next);
     
         // Assertions using Sinon and Chai
 
@@ -105,7 +124,7 @@ describe('emp model', async () => {
         const next = sinon.spy(); // Spy on the next function
     
         // Call the route handler with the fake objects
-        empModel.checkToken(req, res, next);
+        empModel.checkToken(req, res, next, ["admin"]);
     
         // Assertions using Sinon and Chai
 
@@ -131,7 +150,7 @@ describe('emp model', async () => {
             json: sinon.stub(),
         };
         const next = sinon.spy();
-        empModel.checkToken(req, res, next);
+        empModel.checkToken(req, res, next, ["admin"]);
     
 
         expect(res.status.calledOnceWith(500)).to.be.true;
@@ -160,6 +179,39 @@ describe('emp model', async () => {
         const next = sinon.spy();
 
         empModel.checkToken(req, res, next, ["superadmin"]);
+        expect(res.status.calledOnceWith(404)).to.be.true;
+        expect(res.json.calledOnceWithExactly({
+          errors: {
+            status: 404,
+            source: "someurl",
+            title: "Not found",
+            detail: "Page not found"
+          },
+        })).to.be.true;
+
+        expect(next.called).to.be.false;
+    });
+
+    it('checkAdminAcc wrong role', async () => {
+        const payload = {
+            id: 1,
+            role: "service"
+        };
+
+        const wrongRoleToken = jwt.sign(payload, jwtSecret, { expiresIn: '24h' });
+        const req = {
+            headers: {
+                "x-access-token": wrongRoleToken
+            },
+            originalUrl: "someurl"
+        };
+        const res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.stub(),
+        };
+        const next = sinon.spy();
+
+        empModel.checkAdminAcc(req, res, next);
         expect(res.status.calledOnceWith(404)).to.be.true;
         expect(res.json.calledOnceWithExactly({
           errors: {

@@ -12,7 +12,17 @@ const emp = {
         const result = await db.queryWithArgs(`CALL emp_login(?);`, [username]);
         return result[0][0];
     },
-    checkToken: function(req, res, next, acceptableRoles=["admin"]) {
+    checkAdminAcc: function(req, res, next) {
+        this.checkToken(req, res, next, ["admin"]);
+    },
+    /**
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     * @param {Array} acceptableRoles array with acceptable roles, for example ["admin"] or ["admin", "superadmin"]
+     */
+    checkToken: function(req, res, next, acceptableRoles) {
         let token = req.headers["x-access-token"];
 
         jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
