@@ -105,7 +105,7 @@ describe('bike model', () => {
             await bikeModel.updateBike(5, 1, 1.1, [18.999,59.999]);
 
             // this row will not be executed if the above function throws an error as expected
-            throw new Error('Expected SqlError (foreign key constraint violation)');
+            throw new Error('Expected a custom out of range error of charge perc');
         } catch (error) {
             expect(error.sqlState).to.equal('45000');
             expect(error.message).to.include('The charge percentage should be a value between 0.00 - 1.00');
@@ -126,7 +126,7 @@ describe('bike model', () => {
             await bikeModel.updateBike(5, 5, -0.1, [18.999,59.999]);
         
             // this row will not be executed if the above function throws an error as expected
-            throw new Error('Expected SqlError (foreign key constraint violation)');
+            throw new Error('Expected a custom out of range error of charge perc');
         } catch (error) {
             expect(error.sqlState).to.equal('45000');
             expect(error.message).to.include('The charge percentage should be a value between 0.00 - 1.00');

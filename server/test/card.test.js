@@ -101,4 +101,32 @@ describe('card model', () => {
 
         expect(cardDetails).to.be.an('undefined');
     });
+    it('Update card details for a user', async () => {
+        let cardDetails = await cardModel.updUserDetails(6, "1234 5678 9123 4567", 2);
+
+        expect(cardDetails).to.deep.equal({
+            card_nr: "1234 5678 9123 4567",
+            card_type: 2,
+            card_type_descr: "Mastercard"
+        });
+    });
+    it('Will not update card details if invalid card type', async () => {
+        let cardDetails;
+        try {
+            // try invalid charge range too high
+            cardDetails = await cardModel.updUserDetails(6, "1234 5678 9123 4567", 9);
+            // this row will not be executed if the above function throws an error as expected
+            throw new Error('Expected SqlError (foreign key constraint violation)');
+        } catch (error) {
+            expect(error.sqlState).to.equal('23000');
+            expect(error.message).to.include('foreign key constraint');
+        }
+
+        cardDetails = await cardModel.userDetails(6);
+        expect(cardDetails).to.deep.equal({
+            card_nr: "4844 9104 5482 3920",
+            card_type: 3,
+            card_type_descr: "American Express"
+        });
+    });
 });
