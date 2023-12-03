@@ -26,6 +26,44 @@ const bike = {
     },
 
     /**
+     * Returns all bikes, including
+     * inactive and unavailable ones.
+     * @returns {Array}
+     */
+    getAll: async function() {
+        const result = await db.queryNoArgs(`CALL all_bikes();`);
+        return result[0].map((bikeObj) => {
+            return this.adjTypes(bikeObj);
+        });
+    },
+
+    /**
+     * Returns only available bikes,
+     * to be used for user routes
+     * @param {String} cityId
+     * @returns {Array}
+     */
+        getAvail: async function(cityId) {
+            const result = await db.queryWithArgs(`CALL available_bikes(?);`, [cityId]);
+            return result[0].map((bikeObj) => {
+                return this.adjTypes(bikeObj);
+        });
+    },
+
+    /**
+     * Returns only available bikes,
+     * to be used for user routes
+     * @param {String} cityId
+     * @returns {Array}
+     */
+    getAllInCity: async function(cityId) {
+            const result = await db.queryWithArgs(`CALL bikes_in_city(?);`, [cityId]);
+            return result[0].map((bikeObj) => {
+                return this.adjTypes(bikeObj);
+        });
+    },
+
+    /**
      * 
      * @param {Int} bikeId 
      * @returns {Object}
@@ -65,7 +103,7 @@ const bike = {
         return this.adjTypes(result[0][0]);
     },
 
-        /**
+    /**
      * 
      * @param {Int} bikeId 
      * @param {String} cityId
@@ -74,6 +112,22 @@ const bike = {
     updCity: async function(bikeId, cityId) {
         const result = await db.queryWithArgs(`CALL update_bike_city(?, ?);`, [bikeId, cityId]);
         return this.adjTypes(result[0][0]);
+    },
+
+    /**
+     * 
+     * @param {Int} bikeId 
+     * @param {Int} bikeStatus 
+     * @param {Float} chargePerc 
+     * @param {Array} bikeCoords 
+     */
+    updateBike: async function(
+        bikeId,
+        bikeStatus,
+        chargePerc,
+        bikeCoords
+    ) {
+        await db.queryWithArgs(`CALL update_bike(?, ?, ?, ?);`, [bikeId, bikeStatus, chargePerc, JSON.stringify(bikeCoords)]);
     }
 
 
