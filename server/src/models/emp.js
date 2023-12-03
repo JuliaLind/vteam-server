@@ -8,46 +8,50 @@ import { db } from "./db.js"
 // och checkToken funktionen kommer också skilja sig,
 // dels ingen check för roll och dets lyfta ut idt och lägga till på req.body
 const emp = {
-    checkToken: function (req, res, next, acceptableRoles=["admin"]) {
+    getOneFromDb: async function(username) {
+        const result = await db.queryWithArgs(`CALL emp_login(?);`, [username]);
+        return result[0];
+    },
+    checkToken: function(req, res, next, acceptableRoles=["admin"]) {
         let token = req.headers["x-access-token"];
 
-            jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
-                if (err) {
-                    return res.status(500).json({
-                        errors: {
-                            status: 500,
-                            source: "/login",
-                            title: "Failed authentication",
-                            detail: err.message
-                        }
-                    });
-                }
+        jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
+            if (err) {
+                return res.status(500).json({
+                    errors: {
+                        status: 500,
+                        source: "/login",
+                        title: "Failed authentication",
+                        detail: err.message
+                    }
+                });
+            }
 
-                // om inget token är med kommer det att kastas
-                // ett fel här eftersom decoded inte kommer ha attributet role som alla token
-                // som tillhör anställda ska ha
-                if (!acceptableRoles.includes[decoded.role]) {
-                    // if unauthorized request it is safer
-                    // to make it look like the page does not
-                    // exist
-                    return res.status(404).json({
-                        errors: {
-                            status: 404,
-                            source: req.originalUrl,
-                            title: "Not found",
-                            detail: "Page not found"
-                        }
-                    });
-                }
+            // om inget token är med kommer det att kastas
+            // ett fel här eftersom decoded inte kommer ha attributet role som alla token
+            // som tillhör anställda ska ha
+            if (!acceptableRoles.includes(decoded.role)) {
+                // if unauthorized request it is safer
+                // to make it look like the page does not
+                // exist
+                return res.status(404).json({
+                    errors: {
+                        status: 404,
+                        source: req.originalUrl,
+                        title: "Not found",
+                        detail: "Page not found"
+                    }
+                });
+            }
 
-                req.emp = {
-                    id: decoded.id,
-                    role: decoded.role
-                };
+            req.emp = {
+                id: decoded.id,
+                role: decoded.role
+            };
 
-                console.log(req.emp);
-                return next();
-            });
+            console.log(req.emp);
+            return next();
+        });
     },
 
     /**
@@ -63,8 +67,7 @@ const emp = {
         const username = req.body.username;
         const password = req.body.password;
 
-        const result = await db.queryWithArgs(`CALL emp_login(?);`, [username]);
-        const emp = result[0];
+        const emp = await this.getOneFromDB(username);
 
         // om användarnamn saknas kommer
         // databasen lyfta ett error
