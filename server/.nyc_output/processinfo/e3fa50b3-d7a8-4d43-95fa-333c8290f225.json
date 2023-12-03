@@ -1,1 +1,0 @@
-{"parent":null,"pid":79,"argv":["/usr/local/bin/node","/server/node_modules/.bin/mocha","--config","mocha.json","--exit"],"execArgv":[],"cwd":"/server","time":1701574697053,"ppid":68,"coverageFilename":"/server/.nyc_output/e3fa50b3-d7a8-4d43-95fa-333c8290f225.json","externalId":"","uuid":"e3fa50b3-d7a8-4d43-95fa-333c8290f225","files":[]}

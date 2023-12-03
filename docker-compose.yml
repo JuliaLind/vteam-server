@@ -51,6 +51,8 @@ services:
       DB_DATABASE: ${DB_NAME}
     volumes:
       - ./server:/server/
+      - ./.env:/server/.env
+      - ./.env.test:/server/.env.test
     ports:
       - "1337:1337"
     depends_on:
