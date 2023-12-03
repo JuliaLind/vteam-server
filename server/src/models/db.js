@@ -47,20 +47,4 @@ export const db = {
             if (conn) conn.end();
         }
     },
-
-
-    // getUsers: async function() {
-    //     let conn;
-
-    //     try {
-    //         conn = await pool.getConnection();
-    //         let sql = `CALL all_users();`;
-    //         let res = await conn.query(sql);
-    //         return res[0];
-    //     } catch (err) {
-    //         // do something
-    //     } finally {
-    //         if (conn) conn.end();
-    //     }
-    // }
 }

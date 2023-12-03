@@ -63,6 +63,17 @@ const bike = {
     updStatus: async function(bikeId, statusId) {
         const result = await db.queryWithArgs(`CALL upd_bike_status(?, ?);`, [bikeId, statusId]);
         return this.adjTypes(result[0][0]);
+    },
+
+        /**
+     * 
+     * @param {Int} bikeId 
+     * @param {String} cityId
+     * @returns {Object}
+     */
+    updCity: async function(bikeId, cityId) {
+        const result = await db.queryWithArgs(`CALL update_bike_city(?, ?);`, [bikeId, cityId]);
+        return this.adjTypes(result[0][0]);
     }
 
 

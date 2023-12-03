@@ -187,6 +187,46 @@ describe('bike model', () => {
         }
     });
 
+    
+    it("updates a bike's city to a valid city", async () => {
+        let bike = await bikeModel.updCity(5, "GBG")
+
+        expect(bike).to.deep.equal({
+            id: 5,
+            city_id: "GBG",
+            status_id: 1,
+            status_descr: "available",
+            charge_perc: 0.70,
+            coords: [11.95454,57.7244],
+            active: false,
+        });
+
+        bike = await bikeModel.updCity(5,"STHLM")
+        expect(bike).to.deep.equal({
+            id: 5,
+            city_id: "STHLM",
+            status_id: 1,
+            status_descr: "available",
+            charge_perc: 0.70,
+            coords: [11.95454,57.7244],
+            active: false,
+        });
+    });
+
+    
+    it("should not be able to update to non-existsent city", async () => {
+        try {
+            // MALM is not in the system
+            await bikeModel.updCity(5, "MALM");
+        
+            // this row will not be executed if the above function throws an error as expected
+            throw new Error('Expected SqlError (foreign key constraint violation)');
+            } catch (error) {
+                expect(error.sqlState).to.equal('23000');
+                expect(error.message).to.include('foreign key constraint');
+        }
+    });
+
     it('returns all possible bike statuses', async () => {
         const statuses = await bikeModel.statuses()
 
