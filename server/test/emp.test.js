@@ -121,5 +121,33 @@ describe('emp model', async () => {
         expect(next.called).to.be.false;
     });
 
+    it('checkToken with missing token', async () => {
+        const req = {
+            headers: {},
+            body: {}
+        };
+        const res = {
+            status: sinon.stub().returnsThis(), // Stub status method
+            json: sinon.stub(), // Stub json method
+          };
+        const next = sinon.spy(); // Spy on the next function
+    
+        // Call the route handler with the fake objects
+        empModel.checkToken(req, res, next);
+    
+        // Assertions using Sinon and Chai
+
+        expect(res.status.calledOnceWith(500)).to.be.true;
+        expect(res.json.calledOnceWithExactly({
+          errors: {
+            status: 500,
+            source: "authorization",
+            title: "Failed authentication",
+            detail: "jwt must be provided"
+          },
+        })).to.be.true;
+        expect(next.called).to.be.false;
+    });
+
 
 });
