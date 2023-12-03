@@ -28,6 +28,6 @@ const card = {
         return result[0][0];
     },
     
-}
+};
 
 export default card;

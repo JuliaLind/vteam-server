@@ -30,7 +30,8 @@ CREATE PROCEDURE user_login(
 BEGIN
     SELECT id, email
     FROM `user`
-    WHERE email = u_email;
+    WHERE email = u_email
+    AND `active` = TRUE;
 END
 ;;
 
