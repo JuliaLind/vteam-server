@@ -2,24 +2,18 @@
 
 //Require the dev-dependencies
 import chai from 'chai';
-// import chaiHttp from 'chai-http';
+import sinon from 'sinon';
 chai.should();
-// chai.use(chaiHttp);
-// import chaiJson from 'chai-json'
-// chai.use(chaiJson);
 const expect = chai.expect;
 import { db } from "../src/models/db.js";
 import empModel from "../src/models/emp.js";
 
-// const jwt = require('jsonwebtoken');
-// const jwtSecret = process.env.JWT_SECRET;
-// const payload = {
-//     email: "test@test.se"
-// };
-// const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: '24h' });
+import jwt from 'jsonwebtoken';
+const jwtSecret = process.env.JWT_SECRET;
+
 import bcrypt from 'bcryptjs';
 
-// const sinon = require('sinon');
+
 
 
 describe('emp model', async () => {
@@ -29,6 +23,20 @@ describe('emp model', async () => {
     const password2 = "test2";
     const hash = bcrypt.hashSync(password, 10);
     const hash2 = bcrypt.hashSync(password2, 10);
+    const payload = {
+        id: 1,
+        role: "admin"
+    };
+
+    // ok token
+    const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: '24h' });
+    // expired token
+    const expiredPayload = {
+        ...payload,
+        iat: Math.floor(Date.now() / 1000) - 3600,
+        exp: Math.floor(Date.now() / 1000) - 1800
+    };
+    const expiredToken = jwt.sign(expiredPayload, jwtSecret);
     before(async () => {
         let sql = `DELETE FROM employee;`;
         const conn = await db.pool.getConnection();
@@ -63,4 +71,55 @@ describe('emp model', async () => {
 
         expect(emp).to.be.an('undefined');
     });
+
+    it('checkToken with valid token', async () => {
+        const req = {
+            headers: {
+                "x-access-token": jwtToken
+            },
+            body: {}
+        };
+        const res = {};
+        const next = sinon.spy(); // Spy on the next function
+    
+        // Call the route handler with the fake objects
+        empModel.checkToken(req, res, next);
+    
+        // Assertions using Sinon and Chai
+
+        expect(req.body.emp).to.deep.equal(payload);
+        expect(next.called).to.be.true;
+    });
+
+    it('checkToken with expired token', async () => {
+        const req = {
+            headers: {
+                "x-access-token": expiredToken
+            },
+            body: {}
+        };
+        const res = {
+            status: sinon.stub().returnsThis(), // Stub status method
+            json: sinon.stub(), // Stub json method
+          };
+        const next = sinon.spy(); // Spy on the next function
+    
+        // Call the route handler with the fake objects
+        empModel.checkToken(req, res, next);
+    
+        // Assertions using Sinon and Chai
+
+        expect(res.status.calledOnceWith(500)).to.be.true;
+        expect(res.json.calledOnceWithExactly({
+          errors: {
+            status: 500,
+            source: "authorization",
+            title: "Failed authentication",
+            detail: "jwt expired"
+          },
+        })).to.be.true;
+        expect(next.called).to.be.false;
+    });
+
+
 });

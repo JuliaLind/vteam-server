@@ -21,7 +21,7 @@ const emp = {
                 return res.status(500).json({
                     errors: {
                         status: 500,
-                        source: "/login",
+                        source: "authorization",
                         title: "Failed authentication",
                         detail: err.message
                     }
@@ -45,12 +45,12 @@ const emp = {
                 });
             }
 
-            req.emp = {
+            // kallar den för emp för att skilja från user attributet som kan vara med i vissa förfrågningar
+            req.body.emp = {
                 id: decoded.id,
                 role: decoded.role
             };
 
-            console.log(req.emp);
             return next();
         });
     },

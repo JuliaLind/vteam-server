@@ -51,6 +51,7 @@ services:
       DB_PASSWORD: ${DB_ROOT_PASSWORD}
       DB_DATABASE: ${DB_NAME}
       TEST_DATABASE: ${TEST_DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
     volumes:
       - ./server:/server/
     ports:
