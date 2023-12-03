@@ -22,21 +22,28 @@ import bcrypt from 'bcryptjs';
 // const sinon = require('sinon');
 
 
-describe('admin-related', async () => {
+describe('emp model', async () => {
     const username = "testadmin";
+    const username2 = "testadmi2n";
     const password = "test";
+    const password2 = "test2";
     const hash = bcrypt.hashSync(password, 10);
+    const hash2 = bcrypt.hashSync(password2, 10);
     before(async () => {
         let sql = `DELETE FROM employee;`;
         const conn = await db.pool.getConnection();
         await conn.query(sql);
 
-        sql = `INSERT INTO employee VALUES(?, ?, ?, ?, ?);`;
-        let args = [1, username, hash, "admin", true];
+        sql = `INSERT INTO employee VALUES(?, ?, ?, ?, ?),
+            (?, ?, ?, ?, ?);`;
+        let args = [
+            1, username, hash, "admin", true,
+            2, username2, hash2, "admin", false
+        ];
         await conn.query(sql, args);
         if (conn) conn.end();
     });
-    it('should return an employee', async () => {
+    it('extracting active employee with existing username, should return employee object', async () => {
         const emp = await empModel.getOneFromDb(username)
 
         expect(emp).to.deep.equal({
@@ -45,5 +52,15 @@ describe('admin-related', async () => {
             hash: hash,
             role: "admin"
         });
+    });
+    it('extracting deactiveated employee with existing username', async () => {
+        const emp = await empModel.getOneFromDb(username2)
+
+        expect(emp).to.be.an('undefined');
+    });
+    it('extracting employee with nonexisting username', async () => {
+        const emp = await empModel.getOneFromDb("doesnotexist")
+
+        expect(emp).to.be.an('undefined');
     });
 });
