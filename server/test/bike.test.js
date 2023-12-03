@@ -1,7 +1,6 @@
 /* global it describe */
 
 import chai from 'chai';
-import sinon from 'sinon';
 chai.should();
 const expect = chai.expect;
 import { db } from "../src/models/db.js";
@@ -57,9 +56,6 @@ describe('bike model', () => {
         ];
         await conn.query(sql, args);
         if (conn) conn.end();
-    });
-    afterEach(() => {
-        sinon.restore();
     });
     it('Update a bike to valid values', async () => {
         await bikeModel.updateBike(
