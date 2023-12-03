@@ -1,6 +1,5 @@
 /* global it describe */
 
-//Require the dev-dependencies
 import chai from 'chai';
 import sinon from 'sinon';
 chai.should();
@@ -16,7 +15,7 @@ import bcrypt from 'bcryptjs';
 
 
 
-describe('emp model', async () => {
+describe('emp model', () => {
     const username = "testadmin";
     const username2 = "testadmi2n";
     const password = "test";
@@ -61,7 +60,7 @@ describe('emp model', async () => {
             role: "admin"
         });
     });
-    it('extracting deactiveated employee with existing username', async () => {
+    it('extracting deactivated employee with existing username', async () => {
         const emp = await empModel.getOneFromDb(username2)
 
         expect(emp).to.be.an('undefined');
@@ -72,7 +71,7 @@ describe('emp model', async () => {
         expect(emp).to.be.an('undefined');
     });
 
-    it('checkToken with valid token', async () => {
+    it('checkToken with valid token', () => {
         const req = {
             headers: {
                 "x-access-token": jwtToken
@@ -91,7 +90,7 @@ describe('emp model', async () => {
         expect(next.called).to.be.true;
     });
 
-    it('checkToken with valid admin token', async () => {
+    it('checkToken with valid admin token', () => {
         const req = {
             headers: {
                 "x-access-token": jwtToken
@@ -110,17 +109,16 @@ describe('emp model', async () => {
         expect(next.called).to.be.true;
     });
 
-    it('checkToken with expired token', async () => {
+    it('checkToken with expired token', () => {
         const req = {
             headers: {
                 "x-access-token": expiredToken
             },
             body: {}
         };
-        const res = {
-            status: sinon.stub().returnsThis(), // Stub status method
-            json: sinon.stub(), // Stub json method
-          };
+        const res = {};
+        res.status = sinon.stub().returnsThis();
+        res.json = sinon.stub();
         const next = sinon.spy(); // Spy on the next function
     
         // Call the route handler with the fake objects
@@ -140,15 +138,16 @@ describe('emp model', async () => {
         expect(next.called).to.be.false;
     });
 
-    it('checkToken with missing token', async () => {
+    it('checkToken with missing token', () => {
         const req = {
             headers: {},
             body: {}
         };
-        const res = {
-            status: sinon.stub().returnsThis(),
-            json: sinon.stub(),
-        };
+
+        const res = {};
+        res.status = sinon.stub().returnsThis();
+        res.json = sinon.stub();
+
         const next = sinon.spy();
         empModel.checkToken(req, res, next, ["admin"]);
     
@@ -165,17 +164,16 @@ describe('emp model', async () => {
         expect(next.called).to.be.false;
     });
 
-    it('checkToken with valid token but wrong role', async () => {
+    it('checkToken with valid token but wrong role', () => {
         const req = {
             headers: {
                 "x-access-token": jwtToken
             },
             originalUrl: "someurl"
         };
-        const res = {
-            status: sinon.stub().returnsThis(),
-            json: sinon.stub(),
-        };
+        const res = {};
+        res.status = sinon.stub().returnsThis();
+        res.json = sinon.stub();
         const next = sinon.spy();
 
         empModel.checkToken(req, res, next, ["superadmin"]);
@@ -192,7 +190,7 @@ describe('emp model', async () => {
         expect(next.called).to.be.false;
     });
 
-    it('checkAdminAcc wrong role', async () => {
+    it('checkAdminAcc wrong role', () => {
         const payload = {
             id: 1,
             role: "service"
@@ -205,10 +203,9 @@ describe('emp model', async () => {
             },
             originalUrl: "someurl"
         };
-        const res = {
-            status: sinon.stub().returnsThis(),
-            json: sinon.stub(),
-        };
+        const res = {};
+        res.status = sinon.stub().returnsThis();
+        res.json = sinon.stub();
         const next = sinon.spy();
 
         empModel.checkAdminAcc(req, res, next);
