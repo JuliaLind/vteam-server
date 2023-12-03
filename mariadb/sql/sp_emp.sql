@@ -8,7 +8,10 @@ CREATE PROCEDURE emp_login(
 )
 BEGIN
     SELECT
-        *
+        id,
+        username,
+        `hash`,
+        `role`
     FROM
         `employee`
     WHERE

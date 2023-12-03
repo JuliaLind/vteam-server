@@ -166,10 +166,10 @@ LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/trip.csv'
 INTO TABLE `trip`
 CHARSET utf8
 FIELDS
-    TERMINATED BY ','
+    TERMINATED BY ';'
     ENCLOSED BY '"'
 LINES
-    TERMINATED BY '\n'
+    TERMINATED BY '\r\n'
 IGNORE 1 LINES
 ;
 

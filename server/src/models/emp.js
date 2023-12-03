@@ -10,7 +10,8 @@ import { db } from "./db.js"
 const emp = {
     getOneFromDb: async function(username) {
         const result = await db.queryWithArgs(`CALL emp_login(?);`, [username]);
-        return result[0];
+        const emp = result[0][0];
+        return result[0][0];
     },
     checkToken: function(req, res, next, acceptableRoles=["admin"]) {
         let token = req.headers["x-access-token"];

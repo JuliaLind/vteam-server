@@ -1,5 +1,5 @@
-DROP DATABASE IF EXISTS `test`;
-CREATE DATABASE `test`;
+-- DROP DATABASE IF EXISTS `test`;
+-- CREATE DATABASE `test`;
 USE `test`;
 
 source ./docker-entrypoint-initdb.d/sql/ddl.sql;
