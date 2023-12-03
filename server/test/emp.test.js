@@ -127,15 +127,12 @@ describe('emp model', async () => {
             body: {}
         };
         const res = {
-            status: sinon.stub().returnsThis(), // Stub status method
-            json: sinon.stub(), // Stub json method
-          };
-        const next = sinon.spy(); // Spy on the next function
-    
-        // Call the route handler with the fake objects
+            status: sinon.stub().returnsThis(),
+            json: sinon.stub(),
+        };
+        const next = sinon.spy();
         empModel.checkToken(req, res, next);
     
-        // Assertions using Sinon and Chai
 
         expect(res.status.calledOnceWith(500)).to.be.true;
         expect(res.json.calledOnceWithExactly({
@@ -149,5 +146,30 @@ describe('emp model', async () => {
         expect(next.called).to.be.false;
     });
 
+    it('checkToken with valid token but wrong role', async () => {
+        const req = {
+            headers: {
+                "x-access-token": jwtToken
+            },
+            originalUrl: "someurl"
+        };
+        const res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.stub(),
+        };
+        const next = sinon.spy();
 
+        empModel.checkToken(req, res, next, ["superadmin"]);
+        expect(res.status.calledOnceWith(404)).to.be.true;
+        expect(res.json.calledOnceWithExactly({
+          errors: {
+            status: 404,
+            source: "someurl",
+            title: "Not found",
+            detail: "Page not found"
+          },
+        })).to.be.true;
+
+        expect(next.called).to.be.false;
+    });
 });
