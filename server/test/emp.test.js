@@ -50,6 +50,9 @@ describe('emp model', () => {
         await conn.query(sql, args);
         if (conn) conn.end();
     });
+    afterEach(() => {
+        sinon.restore();
+    });
     it('extracting active employee with existing username, should return employee object', async () => {
         const emp = await empModel.getOneFromDb(username)
 
@@ -221,4 +224,15 @@ describe('emp model', () => {
 
         expect(next.called).to.be.false;
     });
+
+
+    // Add test for:
+
+    //1. comparePasswords
+    // - correct
+    // - incorrect
+    // 2. login
+    // - correct password
+    // - incorrect password
+    // - nonexisting user
 });

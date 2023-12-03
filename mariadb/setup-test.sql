@@ -3,7 +3,7 @@
 USE `test`;
 
 source ./docker-entrypoint-initdb.d/sql/ddl.sql;
--- source ./docker-entrypoint-initdb.d/sql/insert.sql;
+source ./docker-entrypoint-initdb.d/sql/insert-test.sql;
 -- source ./docker-entrypoint-initdb.d/sql/functions.sql;
 source ./docker-entrypoint-initdb.d/sql/view.sql;
 source ./docker-entrypoint-initdb.d/sql/triggers.sql;
