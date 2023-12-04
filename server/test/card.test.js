@@ -149,6 +149,3 @@ describe('card model', () => {
         });
     });
 });
-
-// add test for:
-// 1. missing vard details

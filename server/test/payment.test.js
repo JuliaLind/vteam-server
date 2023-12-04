@@ -75,4 +75,13 @@ describe('payment model', () => {
             invoiced_amount: 372.87 + 128.53
         });
     });
+    it('prepay', async () => {
+        const receipt = await paymentModel.prepay(5, 2000);
+
+        expect(receipt.user_id).to.equal(5);
+        expect(receipt.date.toISOString().substring(0, 10)).to.equal((new Date()).toISOString().substring(0, 10));
+        expect(receipt.ref).to.equal("***5300");
+        expect(receipt.amount).to.equal(2000);
+        expect(receipt.balance).to.equal(2000 - 372.87);
+    });
 });

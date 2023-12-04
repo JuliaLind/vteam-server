@@ -43,8 +43,17 @@ const payment = {
             ...transaction,
             amount: parseFloat(transaction.amount)
         };
+    },
+    prepay: async function(userId, payment) {
+        const result = await db.queryWithArgs(`CALL prepay(?, ?);`, [userId, payment]);
+
+        const receipt = result[0][0];
+
+        receipt.amount = parseFloat(receipt.amount);
+        receipt.balance = parseFloat(receipt.balance);
+
+        return receipt;
     }
-    
 };
 
 export default payment;

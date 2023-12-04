@@ -18,11 +18,11 @@ const apiKey = {
     /**
      * Returns true if the key is valid and active
      * @param {String} apiKey 
-     * @returns {Boolean}
+     * @returns {Promise<Boolean>}
      */
     checkOne: async function(apiKey) {
         if (this.keys.length === 0) {
-            const result = await this.getActiveFromDB();
+            await this.getActiveFromDB();
         }
         return this.keys.includes(apiKey);
     },
