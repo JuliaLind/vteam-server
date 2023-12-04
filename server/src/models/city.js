@@ -9,7 +9,7 @@ const city = {
     },
     /**
      * 
-     * @returns {Array} all cities
+     * @returns {Promise<Array>} all cities
      */
     all: async function() {
         const result = await db.queryNoArgs(`CALL all_cities();`);
@@ -20,7 +20,7 @@ const city = {
     },
     /**
      * 
-     * @returns {Array} all zones
+     * @returns {Promise<Array>} all zones
      */
     allZones: async function() {
         const result = await db.queryNoArgs(`CALL all_zones();`);
@@ -32,7 +32,7 @@ const city = {
     /**
      * 
      * @param {String} cityId 
-     * @returns {Object} single city
+     * @returns {Promise<Object>} single city
      */
     single: async function(cityId) {
         const result = await db.queryWithArgs(`CALL single_city(?);`, [cityId]);
@@ -43,7 +43,7 @@ const city = {
     /**
      * 
      * @param {String} cityId 
-     * @returns {Array} Zones in a city
+     * @returns {Promise<Array>} Zones in a city
      */
     zonesInCity: async function(cityId) {
         const result = await db.queryWithArgs(`CALL zones_in_city(?);`, [cityId]);
@@ -54,8 +54,8 @@ const city = {
     },
     /**
      * 
-     * @param {Int} bikeId 
-     * @returns {Array} forbidden zones
+     * @param {Number} bikeId 
+     * @returns {Promise<Array>} forbidden zones
      * in the same city as the bike is registered to
      */
     bikeZones: async function(bikeId) {

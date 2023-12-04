@@ -9,8 +9,8 @@ const card = {
     /**
      * Returns card_nr, card_type
      * and card_type_descr
-     * @param {Int} userId 
-     * @returns {Object}
+     * @param {Number} userId 
+     * @returns {Promise<Object>}
      */
     userDetails: async function(userId) {
         const result = await db.queryWithArgs(`CALL user_card(?);`, [userId]);
@@ -18,10 +18,10 @@ const card = {
     },
     /**
      * 
-     * @param {Int} userId 
+     * @param {Number} userId 
      * @param {String} cardnr 
-     * @param {Int} cardType 
-     * @returns {Object}
+     * @param {Number} cardType 
+     * @returns {Promise<Object>}
      */
     updUserDetails: async function(userId, cardnr, cardType) {
         const result = await db.queryWithArgs(`CALL upd_user_card(?, ?, ?);`, [userId, cardnr, cardType]);

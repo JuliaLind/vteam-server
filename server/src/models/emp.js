@@ -1,7 +1,10 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { db } from "./db.js"
+import express from "express";
 
+
+const jwtSecret = String(process.env.JWT_SECRET);
 
 // separata modeller för emp och user eftersom
 // inloggningen och registereringen fungerar annorlunda
@@ -17,15 +20,20 @@ const emp = {
     },
     /**
      * 
-     * @param {*} req 
-     * @param {*} res 
-     * @param {*} next 
+     * @param {express.Request} req 
+     * @param {express.Response} res 
+     * @param {express.NextFunction} next 
      * @param {Array} acceptableRoles array with acceptable roles, for example ["admin"] or ["admin", "superadmin"]
      */
     checkToken: function(req, res, next, acceptableRoles) {
-        let token = req.headers["x-access-token"];
+        let token = String(req.headers["x-access-token"]);
 
-        jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
+        /**
+         * @typedef {Object} JwtPayload
+         * @property {String} role
+         * @property {String} id
+         */
+        jwt.verify(token, jwtSecret, function (err, /** @type {JwtPayload} */decoded) {
             // if no token has been provided,
             // or if provided token is expired
             // this block will be executed
@@ -67,13 +75,13 @@ const emp = {
     /**
      * @description Function that handles admin login
      *
-     * @param {Request} req Request object
-     * @param {Response} res Response object
-     * @param {Function} next Next function
+     * @param {express.Request} req Request object
+     * @param {express.Response} res Response object
+     * @param {express.NextFunction} next Next function
      *
-     * @returns {Object} JSON object
+     * @returns {Promise<Object>} JSON object
      */
-    login: async function login(req, res) {
+    login: async function login(req, res, next) {
         const username = req.body.username;
         const password = req.body.password;
 
@@ -88,9 +96,9 @@ const emp = {
     /**
      * @description Function that compares passwords
      *
-     * @param {Request} req Request object
+     * @param {express.Response} res Response object
      * @param {String} password Password
-     * @param {Object} user User
+     * @param {Object} emp User
      *
      * @returns {Object} JSON object
      */
@@ -112,7 +120,7 @@ const emp = {
                     id: emp.id,
                     role: emp.role 
                 };
-                const jwtToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "24h" });
+                const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: "24h" });
 
                 return res.json({
                     data: {

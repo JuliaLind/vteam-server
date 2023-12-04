@@ -1,5 +1,8 @@
 import jwt from "jsonwebtoken";
-import { db } from "./db.js"
+import { db } from "./db.js";
+import express from "express";
+
+const jwtSecret = String(process.env.JWT_SECRET);
 
 const user = {
     extractEmail: async function(githubToken) {
@@ -16,14 +19,14 @@ const user = {
     /**
      * body should contain Github Token,
      * Card nr as string and card type as int
-     * @param {*} req 
-     * @param {*} res 
-     * @param {*} next 
+     * @param {express.Request} req
+     * @param {express.Response} res
+     * @param {express.NextFunction} next
      */
     register: async function(req, res, next) {
         const email = this.extractEmail(req.body.token)
         const payload = await this.newUser(email, req.body.cardnr, req.body.cardtype);
-        const jwtToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "24h" });
+        const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: "24h" });
         return res.json({
             data: {
                 type: "success",
@@ -35,15 +38,15 @@ const user = {
     },
     /**
      * body should contain Github Token
-     * @param {*} req 
-     * @param {*} res 
-     * @param {*} next 
+     * @param {express.Request} req
+     * @param {express.Response} res
+     * @param {express.NextFunction} next
      */
     login: async function(req, res, next) {
         const email = this.extractEmail(req.body.token)
         const payload = await db.queryWithArgs(`CALL user_login(?);`, [email]);
 ;
-        const jwtToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "24h" });
+        const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: "24h" });
         return res.json({
             data: {
                 type: "success",
@@ -55,8 +58,8 @@ const user = {
     },
     /**
      * 
-     * @param {String | Int} what id or email to search for, for wilcard search add % before, after or both
-     * @return {Array} if the search string is not a wildcard the array will only contain one object
+     * @param {String | Number} what id or email to search for, for wilcard search add % before, after or both
+     * @return {Promise<Array>} if the search string is not a wildcard the array will only contain one object
      */
     userSearch: async function(what) {
         const result = await db.queryWithArgs(`CALL user_search(?);`, [what]);
@@ -66,9 +69,9 @@ const user = {
     },
     /**
      * 
-     * @param {Int} userId 
+     * @param {Number} userId 
      * @param {Boolean} active 
-     * @returns {Object}
+     * @returns {Promise<Object>}
      */
     updStatus: async function(userId, active) {
         const result = await db.queryWithArgs(`CALL upd_user_status(?, ?);`, [userId, active]);
@@ -76,9 +79,9 @@ const user = {
     },
     /**
      * 
-     * @param {Int} userId
+     * @param {Number} userId
      * @param {String} email
-     * @returns {Object}
+     * @returns {Promise<Object>}
      */
     updEmail: async function(userId, email) {
         const result = await db.queryWithArgs(`CALL upd_user_email(?, ?);`, [userId, email]);
@@ -86,9 +89,9 @@ const user = {
     },
     /**
      * 
-     * @param {Int} offset
-     * @param {Int} limit
-     * @returns {Array}
+     * @param {Number} offset
+     * @param {Number} limit
+     * @returns {Promise<Array>}
      */
     allPag: async function(offset, limit) {
         const result = await db.queryWithArgs(`CALL upd_user_email(?, ?);`, [offset, limit]);
@@ -96,12 +99,18 @@ const user = {
             return this.adjTypes(user);
         });
     },
+    /**
+     * Behöver ses över.
+     */
     all: async function() {
         const result = await db.queryNoArgs(`CALL all_users_pag();`, [offset, limit]);
         return result[0].map((user) => {
             return this.adjTypes(user);
         });
     },
+    /**
+     * JSDoc-kommentar?
+     */
     adjTypes(userObj) {
         userObj.balance = parseFloat(userObj.balance);
         userObj.active = userObj.active === 1;
