@@ -17,8 +17,8 @@ const bike = {
 
     /**
      * 
-     * @param {Int} bikeId 
-     * @returns {Object}
+     * @param {Number} bikeId
+     * @returns {Promise<Object>}
      */
     getOne: async function(bikeId) {
         const result = await db.queryWithArgs(`CALL single_bike(?);`, [bikeId]);
@@ -28,7 +28,7 @@ const bike = {
     /**
      * Returns all bikes, including
      * inactive and unavailable ones.
-     * @returns {Array}
+     * @returns {Promise<Array>}
      */
     getAll: async function() {
         const result = await db.queryNoArgs(`CALL all_bikes();`);
@@ -41,7 +41,7 @@ const bike = {
      * Returns only available bikes,
      * to be used for user routes
      * @param {String} cityId
-     * @returns {Array}
+     * @returns {Promise<Array>}
      */
         getAvail: async function(cityId) {
             const result = await db.queryWithArgs(`CALL available_bikes(?);`, [cityId]);
@@ -54,7 +54,7 @@ const bike = {
      * Returns only available bikes,
      * to be used for user routes
      * @param {String} cityId
-     * @returns {Array}
+     * @returns {Promise<Array>}
      */
     getAllInCity: async function(cityId) {
             const result = await db.queryWithArgs(`CALL bikes_in_city(?);`, [cityId]);
@@ -65,8 +65,8 @@ const bike = {
 
     /**
      * 
-     * @param {Int} bikeId 
-     * @returns {Object}
+     * @param {Number} bikeId
+     * @returns {Promise<Object>}
      */
     activate: async function(bikeId) {
         const result = await db.queryWithArgs(`CALL activate(?);`, [bikeId]);
@@ -75,8 +75,8 @@ const bike = {
 
     /**
      * 
-     * @param {Int} bikeId 
-     * @returns {Object}
+     * @param {Number} bikeId
+     * @returns {Promise<Object>}
      */
     deactivate: async function(bikeId) {
         const result = await db.queryWithArgs(`CALL deactivate(?);`, [bikeId]);
@@ -85,7 +85,7 @@ const bike = {
 
     /**
      * 
-     * @returns {Array}
+     * @returns {Promise<Array>}
      */
     statuses: async function() {
         const result = await db.queryNoArgs(`CALL bike_statuses();`);
@@ -94,9 +94,9 @@ const bike = {
 
     /**
      * 
-     * @param {Int} bikeId 
-     * @param {Int} statusId
-     * @returns {Object}
+     * @param {Number} bikeId
+     * @param {Number} statusId
+     * @returns {Promise<Object>}
      */
     updStatus: async function(bikeId, statusId) {
         const result = await db.queryWithArgs(`CALL upd_bike_status(?, ?);`, [bikeId, statusId]);
@@ -105,9 +105,9 @@ const bike = {
 
     /**
      * 
-     * @param {Int} bikeId 
+     * @param {Number} bikeId
      * @param {String} cityId
-     * @returns {Object}
+     * @returns {Promise<Object>}
      */
     updCity: async function(bikeId, cityId) {
         const result = await db.queryWithArgs(`CALL update_bike_city(?, ?);`, [bikeId, cityId]);
@@ -116,10 +116,10 @@ const bike = {
 
     /**
      * 
-     * @param {Int} bikeId 
-     * @param {Int} bikeStatus 
-     * @param {Float} chargePerc 
-     * @param {Array} bikeCoords 
+     * @param {Number} bikeId
+     * @param {Number} bikeStatus
+     * @param {Number} chargePerc
+     * @param {Array} bikeCoords
      */
     updateBike: async function(
         bikeId,

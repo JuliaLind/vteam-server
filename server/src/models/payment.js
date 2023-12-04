@@ -23,10 +23,10 @@ const payment = {
     },
     /**
      * 
-     * @param {Int} userId 
-     * @param {Int} offset 
-     * @param {Int} limit 
-     * @returns {Array}
+     * @param {Number} userId 
+     * @param {Number} offset 
+     * @param {Number} limit 
+     * @returns {Promise<Array>}
      */
     user_payments_pag: async function(
         userId,
