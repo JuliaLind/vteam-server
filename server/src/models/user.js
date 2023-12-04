@@ -61,7 +61,7 @@ const user = {
      * @param {String | Number} what id or email to search for, for wilcard search add % before, after or both
      * @return {Promise<Array>} if the search string is not a wildcard the array will only contain one object
      */
-    userSearch: async function(what) {
+    search: async function(what) {
         const result = await db.queryWithArgs(`CALL user_search(?);`, [what]);
         return result[0].map((user) => {
             return this.adjTypes(user);
@@ -94,7 +94,7 @@ const user = {
      * @returns {Promise<Array>}
      */
     allPag: async function(offset, limit) {
-        const result = await db.queryWithArgs(`CALL upd_user_email(?, ?);`, [offset, limit]);
+        const result = await db.queryWithArgs(`CALL all_users_pag(?, ?);`, [offset, limit]);
         return result[0].map((user) => {
             return this.adjTypes(user);
         });
@@ -103,7 +103,7 @@ const user = {
      * Behöver ses över.
      */
     all: async function() {
-        const result = await db.queryNoArgs(`CALL all_users_pag();`, [offset, limit]);
+        const result = await db.queryNoArgs(`CALL all_users();`);
         return result[0].map((user) => {
             return this.adjTypes(user);
         });

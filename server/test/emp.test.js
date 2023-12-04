@@ -171,7 +171,7 @@ describe('emp model', () => {
           },
         })).to.be.true;
 
-        // expect(next.called).to.be.false;
+        expect(next.called).to.be.false;
     });
 
     it('checkToken with valid token but wrong role', () => {
