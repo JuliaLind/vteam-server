@@ -44,13 +44,16 @@ describe('user model', () => {
             email: "afolonind@statcounter.com",
             card: "4844 9104 5482 3920",
             card_type: 3,
-            balance: "-128.53",
+            balance: -128.53,
             active: true,
         }
     ];
     beforeEach(async () => {
-        let sql = `DELETE FROM user;`;
         const conn = await db.pool.getConnection();
+        let sql = `DELETE FROM payment;`;
+        await conn.query(sql)
+        sql = `DELETE FROM user;`;
+
         await conn.query(sql);
 
         sql = `INSERT INTO user VALUES(?, ?, ?, ?, ?, ?),

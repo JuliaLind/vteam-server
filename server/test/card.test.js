@@ -33,7 +33,7 @@ describe('card model', () => {
             email: "afolonind@statcounter.com",
             card: "4844 9104 5482 3920",
             card_type: 3,
-            balance: "-128.53",
+            balance: -128.53,
             active: true,
         }
     ];

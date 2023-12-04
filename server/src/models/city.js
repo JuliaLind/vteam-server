@@ -7,6 +7,10 @@ const city = {
             geometry: JSON.parse(zoneObj.geometry)
         };
     },
+    /**
+     * 
+     * @returns {Array} all cities
+     */
     all: async function() {
         const result = await db.queryNoArgs(`CALL all_cities();`);
 
@@ -14,6 +18,10 @@ const city = {
             return this.adjTypes(zone);
         });
     },
+    /**
+     * 
+     * @returns {Array} all zones
+     */
     allZones: async function() {
         const result = await db.queryNoArgs(`CALL all_zones();`);
 
@@ -24,7 +32,7 @@ const city = {
     /**
      * 
      * @param {String} cityId 
-     * @returns {Object}
+     * @returns {Object} single city
      */
     single: async function(cityId) {
         const result = await db.queryWithArgs(`CALL single_city(?);`, [cityId]);
@@ -35,7 +43,7 @@ const city = {
     /**
      * 
      * @param {String} cityId 
-     * @returns {Object}
+     * @returns {Array} Zones in a city
      */
     zonesInCity: async function(cityId) {
         const result = await db.queryWithArgs(`CALL zones_in_city(?);`, [cityId]);
@@ -47,7 +55,8 @@ const city = {
     /**
      * 
      * @param {Int} bikeId 
-     * @returns {Object}
+     * @returns {Array} forbidden zones
+     * in the same city as the bike is registered to
      */
     bikeZones: async function(bikeId) {
         const result = await db.queryWithArgs(`CALL bike_zones(?);`, [bikeId]);
