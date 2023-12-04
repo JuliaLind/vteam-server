@@ -29,30 +29,15 @@ BEGIN
     END IF
     ;
 
-    
-    SELECT bike_id, user_id
-    INTO bikeid, userid
-    FROM
-        `trip`
-    WHERE
-        bike_id = b_id
-    AND
-        end_pos IS NULL;
+    -- This is only executed if a bike is available
+    -- and active, thus no further checks are required
+    UPDATE `bike`
+    SET status_id = 2
+    WHERE id = b_id;
+    SET @start_pos := (SELECT coords FROM `bike` WHERE id = b_id);
 
-    IF bikeid IS NULL THEN
-        UPDATE `bike`
-        SET status_id = 2
-        WHERE id = b_id;
-        SET @start_pos := (SELECT coords FROM `bike` WHERE id = b_id);
-
-        INSERT INTO `trip`(user_id, bike_id, start_pos)
-        VALUES(u_id, b_id, @start_pos);
-
-    ELSEIF userid != u_id THEN
-        SET @message := CONCAT('Bike ', b_id, ' is already rented');
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = @message;
-    END IF;
+    INSERT INTO `trip`(user_id, bike_id, start_pos)
+    VALUES(u_id, b_id, @start_pos);
 
     SELECT
         `id`,
@@ -163,6 +148,7 @@ BEGIN
     END IF;
 
     -- return all data for the trip + calculated total cost
+    -- if multiple requests this procedure will not update values but return same ones
     SELECT *, (start_cost + var_cost + park_cost) AS total_cost
     FROM
         `trip`
