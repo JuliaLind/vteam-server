@@ -1,3 +1,4 @@
+DROP PROCEDURE IF EXISTS user_payments_pag;
 DROP PROCEDURE IF EXISTS user_payments;
 DROP PROCEDURE IF EXISTS prepay;
 DROP PROCEDURE IF EXISTS invoice;
@@ -14,6 +15,24 @@ BEGIN
         `payment`
     WHERE
         `user_id` = u_id
+    ;
+END
+;;
+
+CREATE PROCEDURE user_payments_pag(
+    u_id INT,
+    a_offset INT,
+    a_limit INT
+)
+BEGIN
+    SELECT
+        *
+    FROM
+        `payment`
+    WHERE
+        `user_id` = u_id
+    LIMIT a_limit
+    OFFSET a_offset
     ;
 END
 ;;
@@ -63,7 +82,7 @@ BEGIN
         INSERT INTO payment(user_id, ref, amount)
         VALUES(
             cursor_id,
-            extract_ref(cursor_card),
+            CONCAT("AUTO ", extract_ref(cursor_card)),
             @payment
         );
 
@@ -98,6 +117,20 @@ BEGIN
     WHERE
         id = u_id
     ;
+
+    SELECT *,
+    (SELECT balance FROM `user` WHERE id = u_id) AS balance
+    FROM payment
+    WHERE user_id = u_id
+    AND amount = p_amount
+    AND ref = @ref
+    ORDER BY
+        id DESC
+    LIMIT 1;
+
+    -- SELECT balance
+    -- FROM user
+    -- WHERE id = u_id;
 END
 ;;
 

@@ -1,8 +1,81 @@
 DROP PROCEDURE IF EXISTS user_search;
 DROP PROCEDURE IF EXISTS all_users;
 DROP PROCEDURE IF EXISTS all_users_pag;
+DROP PROCEDURE IF EXISTS upd_user_status;
+DROP PROCEDURE IF EXISTS upd_user_email;
+DROP PROCEDURE IF EXISTS new_user;
+DROP PROCEDURE IF EXISTS user_login;
+
 
 DELIMITER ;;
+
+CREATE PROCEDURE new_user(
+    u_email VARCHAR(100),
+    c_nr VARCHAR(100),
+    c_type INT
+)
+BEGIN
+    INSERT INTO `user` (email, card_nr, card_type)
+    VALUES(u_email, c_nr, c_type);
+
+    SELECT id, email
+    FROM `user`
+    WHERE email = u_email;
+END
+;;
+
+CREATE PROCEDURE user_login(
+    u_email VARCHAR(100)
+)
+BEGIN
+    SELECT id, email
+    FROM `user`
+    WHERE email = u_email
+    AND `active` = TRUE;
+END
+;;
+
+CREATE PROCEDURE upd_user_status(
+    u_id INT,
+    u_active BOOLEAN
+)
+BEGIN
+    UPDATE `user`
+    SET `active` = u_active
+    WHERE id = u_id;
+
+    SELECT
+        `id`,
+        `email`,
+        `balance`,
+        `active`
+    FROM
+        `user`
+    WHERE `id` = u_id
+    ;
+END
+;;
+
+CREATE PROCEDURE upd_user_email(
+    u_id INT,
+    u_email VARCHAR(100)
+)
+BEGIN
+    UPDATE `user`
+    SET `email` = u_email
+    WHERE id = u_id;
+
+    SELECT
+        `id`,
+        `email`,
+        `balance`,
+        `active`
+    FROM
+        `user`
+    WHERE `id` = u_id
+    ;
+END
+;;
 
 CREATE PROCEDURE user_search(
     a_what VARCHAR(100)

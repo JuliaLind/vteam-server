@@ -45,10 +45,13 @@ services:
     container_name: "server"
     environment:
       DB_HOST: ${DB_SERVICE_NAME}
+      DB_TEST_HOST: ${TEST_SERVICE_NAME}
       DB_PORT: "3306"
       DB_USER: "root"
       DB_PASSWORD: ${DB_ROOT_PASSWORD}
       DB_DATABASE: ${DB_NAME}
+      TEST_DATABASE: ${TEST_DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
     volumes:
       - ./server:/server/
     ports:

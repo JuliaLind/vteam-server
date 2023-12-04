@@ -1,14 +1,20 @@
 import dotenv from "dotenv";
-dotenv.config();
-
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 
+const filename = NODE_ENV === 'test' ? ".env.test" : ".env";
+// dotenv.config();
+dotenv.config({ path: '.env' });
+
+// // Load the configuration based on the environment
+// if (process.env.NODE_ENV === 'test') {
+//     dotenv.config({ path: '.env.test' });
+// }
 
 // added temporarily for testing connection to db
 // will remove later
-import { db } from "./src/db/db.js"
+import { db } from "./src/models/db.js"
 
 
 // import errorHandler from "./middleware/errors.js";
