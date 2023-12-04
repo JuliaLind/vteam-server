@@ -129,6 +129,25 @@ describe('card model', () => {
             card_type_descr: "American Express"
         });
     });
+    it('Will not update card details if card number is missing', async () => {
+        let cardDetails;
+        try {
+            // try no cardnr
+            cardDetails = await cardModel.updUserDetails(6, undefined, 9);
+            // this row will not be executed if the above function throws an error as expected
+            throw new Error("Expected SqlError (Column 'card_nr' cannot be null)");
+        } catch (error) {
+            expect(error.sqlState).to.equal('23000');
+            expect(error.message).to.include("Column 'card_nr' cannot be null");
+        }
+
+        cardDetails = await cardModel.userDetails(6);
+        expect(cardDetails).to.deep.equal({
+            card_nr: "4844 9104 5482 3920",
+            card_type: 3,
+            card_type_descr: "American Express"
+        });
+    });
 });
 
 // add test for:

@@ -345,5 +345,4 @@ describe('user model', () => {
     //1. get token from github
     // 2. register
     // 3. login
-    // 5. Update user email
 });

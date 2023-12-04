@@ -100,7 +100,8 @@ const user = {
         });
     },
     /**
-     * Behöver ses över.
+     * 
+     * @returns {Promise<Array>}
      */
     all: async function() {
         const result = await db.queryNoArgs(`CALL all_users();`);
@@ -109,7 +110,13 @@ const user = {
         });
     },
     /**
-     * JSDoc-kommentar?
+     * Database returns all attributes
+     * as either integers or strings.
+     * This function ensures that decimal
+     * numbers are represented as floating point
+     * and active is a boolean
+     * @param {Object} userObj 
+     * @returns {Object}
      */
     adjTypes(userObj) {
         userObj.balance = parseFloat(userObj.balance);
