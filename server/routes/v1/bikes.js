@@ -56,32 +56,6 @@ router.put("/:id", async (req, res, next) => {
 });
 
 /**
- * @description Route for renting a bike
- *
- * @param {express.Request} req Request object
- * @param {express.Response} res Response object
- * @param {express.NextFunction} next Next function
- *
- * @returns {void}
- */
-router.post("/:id/rent", async (req, res, next) => {
-    // code here for renting a bike through bikesModel
-});
-
-/**
- * @description Route for returning a bike
- *
- * @param {express.Request} req Request object
- * @param {express.Response} res Response object
- * @param {express.NextFunction} next Next function
- *
- * @returns {void}
- */
-router.post("/:id/return", async (req, res, next) => {
-    // code here for returning a bike through bikesModel
-});
-
-/**
  * @description Route for getting city zones for a bike
  *
  * @param {express.Request} req Request object
