@@ -3,7 +3,7 @@ CREATE DATABASE `test`;
 USE `test`;
 
 source ./sql/ddl.sql;
-source ./sql/insert-test.sql;
+source ./sql/insert-test-local.sql;
 -- source ./sql/functions.sql;
 source ./sql/view.sql;
 source ./sql/triggers.sql;
@@ -15,3 +15,4 @@ source ./sql/sp_trip.sql;
 source ./sql/sp_bike.sql;
 source ./sql/sp_city.sql;
 source ./sql/sp_card.sql;
+source ./sql/sp_key.sql;

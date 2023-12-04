@@ -15,5 +15,7 @@
 -- source ./sql/sp_bike.sql;
 -- source ./sql/sp_city.sql;
 -- source ./sql/sp_card.sql;
+-- source ./sql/sp_key.sql;
+
 
 
