@@ -3,19 +3,9 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 
-const filename = NODE_ENV === 'test' ? ".env.test" : ".env";
-// dotenv.config();
-dotenv.config({ path: '.env' });
 
-// // Load the configuration based on the environment
-// if (process.env.NODE_ENV === 'test') {
-//     dotenv.config({ path: '.env.test' });
-// }
-
-// added temporarily for testing connection to db
-// will remove later
-import { db } from "./src/models/db.js"
-
+dotenv.config();
+// dotenv.config({ path: '.env' });
 
 // import errorHandler from "./middleware/errors.js";
 // import apiRouter from "./routes/v1/index.js";
@@ -43,11 +33,8 @@ app.use(express.urlencoded({ extended: true })); // for parsing application/x-ww
  * is working.. will remove later
  */
 app.get("/", async (req, res) => {
-    let users = await db.getUsers();
     res.json({
         data: "Hej från team2 server",
-        users: users,
-        // check: [process.env]
     });
 });
 app.listen(port, () => {

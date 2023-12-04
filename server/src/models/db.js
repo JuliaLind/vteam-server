@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import mariadb from 'mariadb';
 
 let host = process.env.DB_HOST;
@@ -10,13 +13,14 @@ if (process.env.NODE_ENV === "test") {
 
 const pool = mariadb.createPool({
     host: host,
-    user: 'root',
+    user: process.env.DB_USER,
     database: database,
     password: process.env.DB_PASSWORD,
     // connectionLimit: 10,
-    // multipleStatements: true,
+     multipleStatements: true,
     // namedPlaceholders: true
 });
+
 
 export const db = {
     pool: pool,
@@ -31,7 +35,9 @@ export const db = {
             return res;
             // no catching error here
         } finally {
-            if (conn) conn.end();
+            if (conn) {
+                conn.end();
+            }
         }
     },
 
@@ -44,7 +50,9 @@ export const db = {
             return res;
             // no catching error here
         } finally {
-            if (conn) conn.end();
+            if (conn) {
+                conn.end();
+            }
         }
     },
 }

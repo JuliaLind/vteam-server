@@ -39,15 +39,13 @@ describe('payment model', () => {
     ];
     beforeEach(async () => {
         const conn = await db.pool.getConnection()
-        let sql = `DELETE FROM payment;`;
-        await conn.query(sql)
-        sql = `DELETE FROM user;`;
-;
-        await conn.query(sql);
-
-        sql = `INSERT INTO user VALUES(?, ?, ?, ?, ?, ?),
+        let sql = `
+        DELETE FROM payment;
+        DELETE FROM user;
+        INSERT INTO user VALUES(?, ?, ?, ?, ?, ?),
             (?, ?, ?, ?, ?, ?),
-            (?, ?, ?, ?, ?, ?);`
+            (?, ?, ?, ?, ?, ?);`;
+
         let args = [
             users[0].id, users[0].email, users[0].card, users[0].card_type, users[0].balance, users[0].active,
             users[1].id, users[1].email, users[1].card, users[1].card_type, users[1].balance, users[1].active,
@@ -55,8 +53,20 @@ describe('payment model', () => {
 
         ];
         await conn.query(sql, args);
-        if (conn) conn.end();
+        if (conn) {
+            conn.end();
+        }
     });
+    after(async () => {
+        const conn = await db.pool.getConnection()
+        let sql = `
+        DELETE FROM payment;`;
+
+        await conn.query(sql);
+        if (conn) {
+            conn.end();
+        }
+    })
     it('Invoice', async () => {
         const data = await paymentModel.invoice();
 
