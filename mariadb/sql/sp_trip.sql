@@ -29,7 +29,7 @@ BEGIN
     END IF
     ;
 
-    -- Your SELECT query that retrieves two values
+    
     SELECT bike_id, user_id
     INTO bikeid, userid
     FROM
