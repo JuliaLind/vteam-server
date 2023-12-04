@@ -1,0 +1,5 @@
+server/.env
+mariadb/setup-bikes-local.sql
+mariadb/setup-test-local.sql
+mariadb/sql/insert-local.sql
+mariadb/sql/insert-test-local.sql
