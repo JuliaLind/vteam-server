@@ -25,7 +25,7 @@ router.get("/:id/deactivate", (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/:id/status/:id", (req, res, next) => {
+router.get("/:bikeId/status/:statusId", (req, res, next) => {
     // code here for changing a bike's status
 });
 
