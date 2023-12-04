@@ -35,9 +35,9 @@
     },
     "nyc": {
         "reporter": [
-          "html",
-          "text",
-          "clover"
+            "html",
+            "text",
+            "clover"
         ],
         "all": true
     }
