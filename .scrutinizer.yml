@@ -10,8 +10,7 @@ build:
           TEST_DB_NAME: test
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
         docker: true
-        docker_compose: true
-        docker_compose_version: "3"
+  
 
 
       dependencies:
