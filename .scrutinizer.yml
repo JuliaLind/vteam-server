@@ -11,6 +11,9 @@ build:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
       dependencies:
+        before:
+          - sudo apt-get update
+          - sudo apt-get install -y docker-compose
         override:
           - docker-compose up -d
 
