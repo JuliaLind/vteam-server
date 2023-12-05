@@ -1,9 +1,23 @@
 DROP PROCEDURE IF EXISTS user_payments_pag;
 DROP PROCEDURE IF EXISTS user_payments;
+DROP PROCEDURE IF EXISTS all_payments_pag;
+DROP PROCEDURE IF EXISTS all_payments;
 DROP PROCEDURE IF EXISTS prepay;
 DROP PROCEDURE IF EXISTS invoice;
 
 DELIMITER ;;
+
+CREATE PROCEDURE all_payments()
+BEGIN
+    SELECT
+        *
+    FROM
+        `payment`
+    ORDER BY
+        `date` DESC
+    ;
+END
+;;
 
 CREATE PROCEDURE user_payments(
     u_id INT
@@ -15,6 +29,8 @@ BEGIN
         `payment`
     WHERE
         `user_id` = u_id
+    ORDER BY
+        `date` DESC
     ;
 END
 ;;
@@ -31,6 +47,25 @@ BEGIN
         `payment`
     WHERE
         `user_id` = u_id
+    ORDER BY
+        `date` DESC
+    LIMIT a_limit
+    OFFSET a_offset
+    ;
+END
+;;
+
+CREATE PROCEDURE all_payments_pag(
+    a_offset INT,
+    a_limit INT
+)
+BEGIN
+    SELECT
+        *
+    FROM
+        `payment`
+    ORDER BY
+        `date` DESC
     LIMIT a_limit
     OFFSET a_offset
     ;

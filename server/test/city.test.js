@@ -5,12 +5,46 @@ chai.should();
 const expect = chai.expect;
 import { db } from "../src/models/db.js";
 import cityModel from "../src/models/city.js";
+import { zones } from './dummy-data/zones.js'
 
 
 
 
 
 describe('city model', () => {
+    beforeEach(async () => {
+        const conn = await db.pool.getConnection()
+        let sql = `
+        DELETE FROM zone_loc_removed;
+        DELETE FROM zone_loc;
+        INSERT INTO zone_loc VALUES(?, ?, ?, ?, ?),
+            (?, ?, ?, ?, ?),
+            (?, ?, ?, ?, ?),
+            (?, ?, ?, ?, ?),
+            (?, ?, ?, ?, ?),
+            (?, ?, ?, ?, ?),
+            (?, ?, ?, ?, ?);`;
+
+        let args = [];
+        for (const zone of zones) {
+            args = args.concat([zone.id, zone.zone_id, zone.city_id, zone.date_from, JSON.stringify(zone.geometry)]);
+        }
+        await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
+    });
+    after(async () => {
+        const conn = await db.pool.getConnection()
+        let sql = `
+        DELETE FROM zone_loc_removed;
+        DELETE FROM zone_loc;`;
+
+        await conn.query(sql);
+        if (conn) {
+            conn.end();
+        }
+    });
     it('Get all cities', async () => {
         const cities = await cityModel.all();
         expect(cities).to.deep.include({
@@ -69,3 +103,5 @@ describe('city model', () => {
 
 // add tests for
 // 1. zones in city
+// 2. zones for bike
+// 3. all zones

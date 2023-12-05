@@ -1,6 +1,10 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { db } from "./db.js"
+
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 
 
@@ -26,7 +30,7 @@ const emp = {
      * @param {Array} acceptableRoles array with acceptable roles, for example ["admin"] or ["admin", "superadmin"]
      */
     checkToken: function(req, res, next, acceptableRoles) {
-        let token = String(req.headers["x-access-token"]);
+        let token = req.headers["x-access-token"];
 
         /**
          * @typedef {Object} JwtPayload
@@ -61,7 +65,6 @@ const emp = {
                     }
                 });
             }
-
             // kallar den för emp för att skilja från user attributet som kan vara med i vissa förfrågningar
             req.body.emp = {
                 id: decoded.id,
@@ -77,11 +80,10 @@ const emp = {
      *
      * @param {express.Request} req Request object
      * @param {express.Response} res Response object
-     * @param {express.NextFunction} next Next function
      *
      * @returns {Promise<Object>} JSON object
      */
-    login: async function login(req, res, next) {
+    login: async function login(req, res) {
         const username = req.body.username;
         const password = req.body.password;
 

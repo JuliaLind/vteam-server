@@ -1,12 +1,12 @@
--- DROP DATABASE IF EXISTS `bikes`;
--- CREATE DATABASE `bikes`;
--- USE `bikes`;
+-- DROP DATABASE IF EXISTS `test`;
+-- CREATE DATABASE `test`;
+-- USE `test`;
 
 -- source ./sql/ddl.sql;
--- source ./sql/insert-local.sql;
--- source ./sql/triggers.sql;
--- source ./sql/functions.sql;
+-- source ./sql/insert-test-local.sql;
+-- -- source ./sql/functions.sql;
 -- source ./sql/view.sql;
+-- source ./sql/triggers.sql;
 -- source ./sql/functions2.sql;
 -- source ./sql/sp_payment.sql;
 -- source ./sql/sp_user.sql;
@@ -16,6 +16,3 @@
 -- source ./sql/sp_city.sql;
 -- source ./sql/sp_card.sql;
 -- source ./sql/sp_key.sql;
-
-
-

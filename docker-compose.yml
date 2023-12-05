@@ -53,7 +53,16 @@ services:
       TEST_DATABASE: ${TEST_DB_NAME}
       JWT_SECRET: ${JWT_SECRET}
     volumes:
-      - ./server:/server/
+      - ./server/package.json:/server/package.json
+      - ./server/package-lock.json:/server/package-lock.json
+      - ./server/mocha.json:/server/mocha.json
+      - ./server/app.js:/server/app.js
+      - ./server/routes/:/server/routes/
+      - ./server/test/:/server/test/
+      - ./server/src/:/server/src/
+      - ./server/.eslintignore:/server/.eslintignore
+      - ./server/.eslintrc.json:/server/.eslintrc.json
+      - ./server/.prettierignore:/server/.prettierignore
     ports:
       - "1337:1337"
     depends_on:
