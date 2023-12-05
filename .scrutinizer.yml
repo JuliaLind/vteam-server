@@ -19,6 +19,8 @@ build:
           - mysql -h $DB_SERVICE_NAME -u root -p$DB_ROOT_PASSWORD $DB_NAME < ./mariadb/setup-bikes.sql
           - mysql -h $TEST_SERVICE_NAME -u root -p$DB_ROOT_PASSWORD $TEST_DB_NAME < ./mariadb/setup-test.sql
 
-      override:
-        - cd ./server/ && npm install
-        - cd ./server/ && npm run test
+      tests:
+        override:
+          - cd ./server/ && npm install
+          - cd ./server/ && npm run test
+
