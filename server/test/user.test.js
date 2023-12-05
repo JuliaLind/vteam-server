@@ -6,7 +6,7 @@ chai.should();
 const expect = chai.expect;
 import { db } from "../src/models/db.js";
 import userModel from "../src/models/user.js";
-import { users } from './dummy-data/users.js'
+import { users } from './dummy-data/users.js';
 
 import jwt from 'jsonwebtoken';
 const jwtSecret = process.env.JWT_SECRET;
