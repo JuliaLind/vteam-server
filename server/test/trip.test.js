@@ -75,26 +75,21 @@ describe('trip model', () => {
 
     });
 
-    // it('cannot start a trip because bike inactive', async () => {
+    it('cannot start a trip because bike inactive', async () => {
 
-    //     let trip;
-    //     try {
-    //         // try invalid card type
-    //         trip = await tripModel.start(4, 5);
-    //         // this row will not be executed if the above function throws an error as expected
-    //         throw new Error('Expected SqlError (Cannot rent bike 5)');
-    //     } catch (error) {
-    //         expect(error.sqlState).to.equal('45000');
-    //         expect(error.message).to.include('Cannot rent bike 5');
-    //     }
+        let trip;
+        try {
+            // bike 5 has active = false
+            trip = await tripModel.start(4, 5);
+            throw new Error('Expected SqlError (Cannot rent bike 5)');
+        } catch (error) {
+            expect(error.sqlState).to.equal('45000');
+            expect(error.message).to.include('Cannot rent bike 5');
+        }
 
-    //     const user = await userModel.search(4);
-    //     expect(user.balance).to.equal(261.93);
-
-    //     // remove id because it will be a new one every time
-    //     // because of auto increment
-        
-    // })
+        const trips = await tripModel.userTrips(4);
+        expect(trips.length).to.equal(0);
+    })
 
     // Add test for:
 
