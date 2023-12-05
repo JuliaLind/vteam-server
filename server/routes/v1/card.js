@@ -1,5 +1,5 @@
 import express from "express";
-// import some model from some file
+import cardModel from "../../src/models/card.js";
 
 const router = express.Router();
 
@@ -13,7 +13,13 @@ const router = express.Router();
  * @returns {void}
  */
 router.get("/types", async (req, res, next) => {
-    // code here for getting all charge card types
+    try {
+        const cardTypes = await cardModel.getTypes();
+
+        res.status(200).json(cardTypes);
+    } catch (error) {
+        next(error);
+    }
 });
 
 export default router;

@@ -1,4 +1,5 @@
 import express from "express";
+import clientManager from "../../../src/utils/clientManager";
 
 const router = express.Router();
 
@@ -11,8 +12,27 @@ const router = express.Router();
  *
  * @returns {void}
  */
-router.post("/rent/bikeId", async (req, res, next) => {
-    // code here for renting a bike through bikesModel
+router.post("/rent/:bikeId", async (req, res, next) => {
+    try {
+        const bikeId = req.params.bikeId;
+        const userId = req.body.userId;
+
+        // const result = await bikeModel createTrip etc..
+        // Hämta parseIntad tripId ur resultatet
+
+        const data = {
+            bike_id: bikeId,
+            instruction: "unlock_bike"
+        };
+
+        clientManager.broadcastToBikes(data)
+
+        res.status(200).json({
+            // trip_id: tripId
+        });
+    } catch (error) {
+        next(error);
+    }
 });
 
 /**
@@ -25,7 +45,25 @@ router.post("/rent/bikeId", async (req, res, next) => {
  * @returns {void}
  */
 router.post("/return/:tripId", async (req, res, next) => {
-    // code here for returning a bike through bikesModel
+    try {
+        const tripId = parseInt(req.params.tripId);
+        const bikeId = req.body.bike_id;
+
+        // const result = await bikeModel endTrip etc..
+
+        const data = {
+            bike_id: bikeId,
+            instruction: "lock_bike"
+        };
+
+        clientManager.broadcastToBikes(data);
+
+        res.status(200).json({
+            trip_id: tripId
+        });
+    } catch (error) {
+        next(error);
+    }
 });
 
 export default router;
