@@ -11,8 +11,7 @@ build:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
       dependencies:
-        before:
-          - apt-get update
+        override:
           - apt-get install -y mariadb-client
           - mysql -h $DB_SERVICE_NAME -u root -p$DB_ROOT_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
           - mysql -h $TEST_SERVICE_NAME -u root -p$DB_ROOT_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $TEST_DB_NAME;"
@@ -23,4 +22,3 @@ build:
         override:
           - cd ./server/ && npm install
           - cd ./server/ && npm run test
-
