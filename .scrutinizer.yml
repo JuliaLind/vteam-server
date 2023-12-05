@@ -1,0 +1,19 @@
+build:
+  nodes:
+    primary:
+      environment:
+        DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+        DB_SERVICE_NAME: mariadb-bikes 
+        TEST_SERVICE_NAME: mariadb-test 
+        DB_NAME: bikes
+        TEST_DB_NAME: test
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+      dependencies:
+        override:
+          - docker-compose up -d
+
+      tests:
+        override:
+          - docker-compose exec server npm run test
+
