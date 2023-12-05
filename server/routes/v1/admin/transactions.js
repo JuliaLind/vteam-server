@@ -47,4 +47,26 @@ router.get("/limit/:limit/offset/:offset", async (req, res, next) => {
     }
 });
 
+/**
+ * @description Route for getting all transactions in system
+ *
+ * @param {express.Request} req Request object
+ * @param {express.Response} res Response object
+ * @param {express.NextFunction} next Next function
+ *
+ * @returns {void}
+ */
+router.get("/all", async (req, res, next) => {
+    try {
+        const userId = req.body.user_id;
+
+        // TODO: uncomment below and change method
+        // const transactions = await paymentModel.user_payments(userId);
+
+        // res.status(200).json(transactions);
+    } catch (error) {
+        next(error);
+    }
+});
+
 export default router;
