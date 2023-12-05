@@ -12,8 +12,7 @@ build:
         docker: true
         docker_compose: true
         docker_compose_version: "3"
-        docker:
-          remote_engine: true
+
 
       dependencies:
         override:
