@@ -1,5 +1,6 @@
 import express from "express";
-// import some model from some file
+import cityModel from "../../src/models/city.js";
+import bikeModel from "../../src/models/bike.js";
 
 const router = express.Router();
 
@@ -13,7 +14,13 @@ const router = express.Router();
  * @returns {void}
  */
 router.get("/", async (req, res, next) => {
-    // code here for getting all cities through citiesModel
+    try {
+        const cities = await cityModel.all();
+
+        res.status(200).json(cities);
+    } catch (error) {
+        next(error);
+    }
 });
 
 /**
@@ -26,7 +33,15 @@ router.get("/", async (req, res, next) => {
  * @returns {void}
  */
 router.get("/:id", async (req, res, next) => {
-    // code here for getting one city through citiesModel
+    try {
+        const cityId = req.params.id;
+
+        const city = await cityModel.single(cityId);
+
+        res.status(200).json(city);
+    } catch (error) {
+        next(error);
+    }
 });
 
 /**
@@ -39,7 +54,15 @@ router.get("/:id", async (req, res, next) => {
  * @returns {void}
  */
 router.get("/:id/bikes", async (req, res, next) => {
-    // code here for getting all bikes of a city
+    try {
+        const cityId = req.params.id;
+
+        const cityBikes = await bikeModel.getAllInCity(cityId);
+
+        res.status(200).json(cityBikes);
+    } catch (error) {
+        next(error);
+    }
 });
 
 /**
@@ -52,7 +75,15 @@ router.get("/:id/bikes", async (req, res, next) => {
  * @returns {void}
  */
 router.get("/:id/zones", async (req, res, next) => {
-    // code here for getting all zones of a city
+    try {
+        const cityId = req.params.id;
+
+        const cityZones = await cityModel.zonesInCity(cityId);
+
+        res.status(200).json(cityZones);
+    } catch (error) {
+        next(error);
+    }
 });
 
 export default router;
