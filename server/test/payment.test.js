@@ -8,9 +8,6 @@ import paymentModel from "../src/models/payment.js";
 import userModel from "../src/models/user.js";
 
 
-
-
-
 describe('payment model', () => {
     const users = [
         {

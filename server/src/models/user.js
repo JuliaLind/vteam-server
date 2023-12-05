@@ -5,6 +5,40 @@ import express from "express";
 const jwtSecret = String(process.env.JWT_SECRET);
 
 const user = {
+    /**
+     * Extracts id from token and adds to body as userId
+     * @param {express.Request} req 
+     * @param {express.Response} res 
+     * @param {express.NextFunction} next
+     */
+    checkToken: function(req, res, next) {
+        let token = req.headers["x-access-token"];
+
+        /**
+         * @typedef {Object} JwtPayload
+         * @property {String} role
+         * @property {String} id
+         */
+        jwt.verify(token, jwtSecret, function (err, /** @type {JwtPayload} */decoded) {
+            // if no token has been provided,
+            // or if provided token is expired
+            // this block will be executed
+            if (err) {
+                return res.status(500).json({
+                    errors: {
+                        status: 500,
+                        source: "authorization",
+                        title: "Failed authentication",
+                        detail: err.message
+                    }
+                });
+            }
+
+            req.body.userId = decoded.id;
+
+            return next();
+        });
+    },
     extractEmail: async function(githubToken) {
         // add logic here for extracting user email from Github
         // await ....
