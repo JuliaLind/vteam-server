@@ -60,7 +60,19 @@ describe('trip model', () => {
         expect(trip.user_id).to.equal(4);
         expect(trip.bike_id).to.equal(6);
         expect(trip.start_pos).to.deep.equal([11.9721,57.70229]);
-        expect(Math.abs(new Date - trip.start_time)/1000).to.be.lessThan(3);
+        expect(Math.abs(new Date - trip.start_time)/1000).to.be.lessThan(1);
+        const trips = await tripModel.userTrips(4);
+        expect(trips.length).to.equal(1);
+        expect(Math.abs(new Date - trips[0].start_time)/1000).to.be.lessThan(1);
+        expect(trips[0].user_id).to.equal(4);
+        expect(trips[0].bike_id).to.equal(6);
+        expect(trips[0].end_time).to.be.null;
+        expect(trips[0].end_pos).to.be.null;
+        expect(trips[0].start_pos).to.deep.equal([11.9721,57.70229]);
+        expect(trips[0].start_cost).to.be.null;
+        expect(trips[0].var_cost).to.be.null;
+        expect(trips[0].park_cost).to.be.null;
+
     });
 
     // it('cannot start a trip because bike inactive', async () => {

@@ -24,13 +24,17 @@ const trip = {
         updated.start_cost ? updated.start_cost = parseFloat(updated.start_cost) : undefined;
         updated.var_cost ? updated.var_cost = parseFloat(updated.var_cost) : undefined;
         updated.park_cost ? updated.park_cost = parseFloat(updated.park_cost) : undefined;
+        updated.total_cost ? updated.total_cost = parseFloat(updated.total_cost) : undefined;
+        console.log(updated);
         return updated;
     },
     userTrips: async function(userId) {
-        const result = await db.queryWithArgs(`CALL start_trip(?, ?);`, [userId, bikeId]);
-        const trip = adjTypes(result[0]);
+        const result = await db.queryWithArgs(`CALL user_trips(?);`, [userId]);
+        const trips = result[0].map((trip) => {
+            return this.adjTypes(trip);
+        });
 
-        return trip;
+        return trips;
     }
 
 };
