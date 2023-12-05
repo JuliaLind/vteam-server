@@ -140,3 +140,6 @@ describe('payment model', () => {
         expect(user[0].balance).to.equal(-372.87);
     });
 });
+// add tests for:
+// 1. transactions paginated
+// 2. transactions (flera)

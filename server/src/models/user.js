@@ -17,6 +17,21 @@ const user = {
 
     },
     /**
+     * 
+     * @param {String} email 
+     * @returns {Promise<Object>}
+     */
+    getFromDB: async function(email) {
+
+        const result = await db.queryWithArgs(`CALL user_login(?);`, [email]);
+        const user = result[0][0];
+        if (user === undefined) {
+            throw new Error("The user does not exist");
+        }
+        return user;
+
+    },
+    /**
      * body should contain Github Token,
      * Card nr as string and card type as int
      * @param {express.Request} req
@@ -59,7 +74,7 @@ const user = {
     /**
      * 
      * @param {String | Number} what id or email to search for, for wilcard search add % before, after or both
-     * @return {Promise<Array>} if the search string is not a wildcard the array will only contain one object
+     * @return {Promise<Array>} if the search string is not a wildcard the array will only contain one object. Use this method so get data for single user, make sure to pick out the first elem from array
      */
     search: async function(what) {
         const result = await db.queryWithArgs(`CALL user_search(?);`, [what]);

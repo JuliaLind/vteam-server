@@ -307,7 +307,7 @@ describe('user model', () => {
     });
 
     it('update user email', async () => {
-        let updated = await userModel.updEmail(5, "new@email.com");
+        const updated = await userModel.updEmail(5, "new@email.com");
         expect(updated).to.deep.equal({
             id: 5,
             email: "new@email.com",
@@ -315,7 +315,31 @@ describe('user model', () => {
             active: false,
         });
     });
+    it('gets a user from DB (used in login), email ok)', async () => {
+        const user = await userModel.getFromDB("afolonind@statcounter.com");
+        expect(user).to.deep.equal({
+            id: 6,
+            email: "afolonind@statcounter.com",
+        });
+    });
 
+    it('gets a user from DB (used in login), email ok but inactive)', async () => {
+        try {
+            const user = await userModel.getFromDB("bcroft7@qq.com");
+            throw new Error("Expected Error (The user does not exist)");
+        } catch (error) {
+            expect(error.message).to.include("The user does not exist");
+        }
+    });
+
+    it('gets a user from DB (used in login), email not ok)', async () => {
+        try {
+            const user = await userModel.getFromDB("julia@bth.se");
+            throw new Error("Expected Error (The user does not exist)");
+        } catch (error) {
+            expect(error.message).to.include("The user does not exist");
+        }
+    });
 
     it('update user email, email missing', async () => {
 

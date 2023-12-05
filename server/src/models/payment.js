@@ -17,8 +17,8 @@ const payment = {
         userId
     ) {
         const result = await db.queryWithArgs(`CALL user_payments(?);`, [userId]);
-        let data = result[0];
-        return data.map((transaction) => {
+
+        return result[0].map((transaction) => {
             return this.adjustTypes(transaction);
         });
     },
