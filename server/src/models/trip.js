@@ -11,6 +11,19 @@ const trip = {
     start: async function(userId, bikeId) {
         const result = await db.queryWithArgs(`CALL start_trip(?, ?);`, [userId, bikeId]);
         const trip = result[0][0];
+
+        trip.start_pos = JSON.parse(trip.start_pos);
+        return trip;
+    },
+    /**
+     * 
+     * @param {Number} userId 
+     * @param {Number} tripId 
+     * @returns {Promise<Object>}
+     */
+    end: async function(userId, tripId) {
+        const result = await db.queryWithArgs(`CALL end_trip(?, ?);`, [userId, tripId]);
+        const trip = result[0][0];
         trip.start_pos = JSON.parse(trip.start_pos);
         return trip;
     },
@@ -25,7 +38,7 @@ const trip = {
         updated.var_cost ? updated.var_cost = parseFloat(updated.var_cost) : undefined;
         updated.park_cost ? updated.park_cost = parseFloat(updated.park_cost) : undefined;
         updated.total_cost ? updated.total_cost = parseFloat(updated.total_cost) : undefined;
-        console.log(updated);
+
         return updated;
     },
     userTrips: async function(userId) {

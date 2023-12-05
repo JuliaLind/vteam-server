@@ -5,7 +5,7 @@ chai.should();
 const expect = chai.expect;
 import { db } from "../src/models/db.js";
 import bikeModel from "../src/models/bike.js";
-import { bikes } from './dummy-bikes.js'
+import { bikes } from './dummy-data/bikes.js'
 
 
 
@@ -20,12 +20,12 @@ describe('bike model', () => {
         sql = `INSERT INTO bike VALUES(?, ?, ?, ?, ?, ?),
             (?, ?, ?, ?, ?, ?),
             (?, ?, ?, ?, ?, ?);`
-        let args = [
-            bikes[0].id, bikes[0].city_id, bikes[0].status_id, bikes[0].charge_perc, bikes[0].coords, bikes[0].active,
-            bikes[1].id, bikes[1].city_id, bikes[1].status_id, bikes[1].charge_perc, bikes[1].coords, bikes[1].active,
-            bikes[2].id, bikes[2].city_id, bikes[2].status_id, bikes[2].charge_perc, bikes[2].coords, bikes[2].active
 
-        ];
+        let args = [];
+        for (const bike of bikes) {
+            args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active,])
+        }
+
         await conn.query(sql, args);
         if (conn) conn.end();
     });
@@ -54,8 +54,6 @@ describe('bike model', () => {
         try {
             // try invalid status
             await bikeModel.updateBike(5, 5, 0.6, [18.999,59.999]);
-        
-            // this row will not be executed if the above function throws an error as expected
             throw new Error('Expected SqlError (foreign key constraint violation)');
         } catch (error) {
             expect(error.sqlState).to.equal('23000');
@@ -73,10 +71,9 @@ describe('bike model', () => {
             active: false,
         });
         try {
-            // try invalid charge rangem too high
+            // try invalid charge range too high
             await bikeModel.updateBike(5, 1, 1.1, [18.999,59.999]);
 
-            // this row will not be executed if the above function throws an error as expected
             throw new Error('Expected a custom out of range error of charge perc');
         } catch (error) {
             expect(error.sqlState).to.equal('45000');
@@ -96,8 +93,7 @@ describe('bike model', () => {
         try {
             // try invalid charge range too high
             await bikeModel.updateBike(5, 5, -0.1, [18.999,59.999]);
-        
-            // this row will not be executed if the above function throws an error as expected
+
             throw new Error('Expected a custom out of range error of charge perc');
         } catch (error) {
             expect(error.sqlState).to.equal('45000');
@@ -314,8 +310,7 @@ describe('bike model', () => {
         try {
             // there are only statuses 1-4
             await bikeModel.updStatus(5, 5);
-        
-            // this row will not be executed if the above function throws an error as expected
+
             throw new Error('Expected SqlError (foreign key constraint violation)');
             } catch (error) {
                 expect(error.sqlState).to.equal('23000');
@@ -354,8 +349,7 @@ describe('bike model', () => {
         try {
             // MALM is not in the system
             await bikeModel.updCity(5, "MALM");
-        
-            // this row will not be executed if the above function throws an error as expected
+
             throw new Error('Expected SqlError (foreign key constraint violation)');
             } catch (error) {
                 expect(error.sqlState).to.equal('23000');
@@ -387,6 +381,6 @@ describe('bike model', () => {
     });
 
     // add test for
-    // 1. deactivate when active trip)
+    // 1. deactivate when active trip, check that trip has ended
 
 });

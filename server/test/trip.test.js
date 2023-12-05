@@ -7,8 +7,8 @@ const expect = chai.expect;
 import { db } from "../src/models/db.js";
 import userModel from "../src/models/user.js";
 import tripModel from "../src/models/trip.js";
-import { bikes } from './dummy-bikes.js';
-import { users } from './dummy-users.js';
+import { bikes } from './dummy-data/bikes.js';
+import { users } from './dummy-data/users.js';
 
 
 
@@ -29,17 +29,15 @@ describe('trip model', () => {
             (?, ?, ?, ?, ?, ?),
             (?, ?, ?, ?, ?, ?);`;
 
-        let args = [
-            users[0].id, users[0].email, users[0].card, users[0].card_type, users[0].balance, users[0].active,
-            users[1].id, users[1].email, users[1].card, users[1].card_type, users[1].balance, users[1].active,
-            users[2].id, users[2].email, users[2].card, users[2].card_type, users[2].balance, users[2].active,
-            users[3].id, users[3].email, users[3].card, users[3].card_type, users[3].balance, users[3].active,
-            bikes[0].id, bikes[0].city_id, bikes[0].status_id, bikes[0].charge_perc, bikes[0].coords, bikes[0].active,
-            bikes[1].id, bikes[1].city_id, bikes[1].status_id, bikes[1].charge_perc, bikes[1].coords, bikes[1].active,
-            bikes[2].id, bikes[2].city_id, bikes[2].status_id, bikes[2].charge_perc, bikes[2].coords, bikes[2].active
+        let args = [];
 
+        for (const user of users) {
+            args = args.concat([user.id, user.email, user.card, user.card_type, user.balance, user.active]);
+        }
+        for (const bike of bikes) {
+            args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active]);
+        }
 
-        ];
         await conn.query(sql, args);
         if (conn) {
             conn.end();
@@ -56,16 +54,35 @@ describe('trip model', () => {
     })
     it('starts a trip, ok', async () => {
         const trip = await tripModel.start(4, 6);
-        expect(Object.values(trip).length).to.equal(5);
-        expect(trip.user_id).to.equal(4);
-        expect(trip.bike_id).to.equal(6);
-        expect(trip.start_pos).to.deep.equal([11.9721,57.70229]);
         expect(Math.abs(new Date - trip.start_time)/1000).to.be.lessThan(1);
+
+        delete trip.start_time;
+        expect(trip).to.deep.equal({
+            id: trip.id,
+            user_id: 4,
+            bike_id: 6,
+            start_pos: [11.9721,57.70229],
+        })
+
+
         const trips = await tripModel.userTrips(4);
         expect(trips.length).to.equal(1);
         expect(Math.abs(new Date - trips[0].start_time)/1000).to.be.lessThan(1);
-        expect(trips[0].user_id).to.equal(4);
-        expect(trips[0].bike_id).to.equal(6);
+        delete trips[0].start_time;
+        expect(trips[0]).to.deep.equal({
+            id: trip.id,
+            user_id: 4,
+            bike_id: 6,
+            start_pos: [11.9721,57.70229],
+            end_time: null,
+            end_pos: null,
+            start_cost: null,
+            var_cost: null,
+            park_cost: null,
+            total_cost: null
+        });
+
+
         expect(trips[0].end_time).to.be.null;
         expect(trips[0].end_pos).to.be.null;
         expect(trips[0].start_pos).to.deep.equal([11.9721,57.70229]);
@@ -89,17 +106,82 @@ describe('trip model', () => {
 
         const trips = await tripModel.userTrips(4);
         expect(trips.length).to.equal(0);
-    })
+    });
+
+    it('cannot start a trip again because bike has status "rented", same error even if user same', async () => {
+
+        await tripModel.start(4, 6);
+        let secondTrip;
+        try {
+            // bike 5 has status rented
+            secondTrip = await tripModel.start(4, 6);
+            throw new Error('Expected SqlError (Cannot rent bike 6)');
+        } catch (error) {
+            expect(error.sqlState).to.equal('45000');
+            expect(error.message).to.include('Cannot rent bike 6');
+        }
+        expect(secondTrip).to.be.an.undefined;
+        const trips = await tripModel.userTrips(4);
+        expect(trips.length).to.equal(1);
+        expect(Math.abs(new Date - trips[0].start_time)/1000).to.be.lessThan(1);
+        delete trips[0].start_time;
+
+        // check that no changes were done to the trip initiated by first user
+        expect(trips[0]).to.deep.equal({
+            id: trips[0].id,
+            user_id: 4,
+            bike_id: 6,
+            start_pos: [11.9721,57.70229],
+            end_time: null,
+            end_pos: null,
+            start_cost: null,
+            var_cost: null,
+            park_cost: null,
+            total_cost: null
+        });
+
+    });
+
+    it('end a trip, not ok - different user', async () => {
+
+        let myTrip = await tripModel.start(5, 6);
+        let secondTrip
+        try {
+            // bike 5 has status rented
+            secondTrip = await tripModel.start(4, 6);
+            throw new Error('Expected SqlError (No trip with id ', myTrip.id, ' found for user 5)');
+        } catch (error) {
+            expect(error.sqlState).to.equal('45000');
+            expect(error.message).to.include('Cannot rent bike 6');
+        }
+        expect(secondTrip).to.be.an.undefined;
+        // check that the trip has not been ended
+        let trips = await tripModel.userTrips(5);
+
+        expect(Math.abs(new Date - trips[0].start_time)/1000).to.be.lessThan(1);
+        delete trips[0].start_time;
+        expect(trips.length).to.equal(1);
+        expect(trips[0]).to.deep.equal({
+            id: trips[0].id,
+            user_id: 5,
+            bike_id: 6,
+            start_pos: [11.9721,57.70229],
+            end_time: null,
+            end_pos: null,
+            start_cost: null,
+            var_cost: null,
+            park_cost: null,
+            total_cost: null
+        });
+    });
 
     // Add test for:
 
-    // 1. start a trip, bike taken
-    // 3. repeated request to start trip
+
     // 4. end a trip ok (check trip, check balance, different costs)
     // 4.2 test with different start zone and end zone combos
     // bad+bad, good+good, bad+good, good+bad
-    // 5. end a trip, wrong user
-    // end a trip, repeated request
+    // 5. end a trip, repeated request
     // 6. rent with different statuses, only 'available' should work
     // get all trips for a user
     // get all trips for a user paginated

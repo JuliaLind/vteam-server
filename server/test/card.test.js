@@ -5,38 +5,12 @@ chai.should();
 const expect = chai.expect;
 import { db } from "../src/models/db.js";
 import cardModel from "../src/models/card.js";
-
+import { users } from './dummy-data/users.js';
 
 
 
 
 describe('card model', () => {
-    const users = [
-        {
-            id: 4,
-            email: "jdoniso4@alibaba.com",
-            card: "5362 1630 1011 0910",
-            card_type: 2,
-            balance: 261.93,
-            active: true,
-        },
-        {
-            id: 5,
-            email: "bcroft7@qq.com",
-            card: "4508 1325 6002 5300",
-            card_type: 1,
-            balance: -372.87,
-            active: false,
-        },
-        {
-            id: 6,
-            email: "afolonind@statcounter.com",
-            card: "4844 9104 5482 3920",
-            card_type: 3,
-            balance: -128.53,
-            active: true,
-        }
-    ];
     beforeEach(async () => {
         let sql = `DELETE FROM user;`;
         const conn = await db.pool.getConnection();
@@ -45,12 +19,12 @@ describe('card model', () => {
         sql = `INSERT INTO user VALUES(?, ?, ?, ?, ?, ?),
             (?, ?, ?, ?, ?, ?),
             (?, ?, ?, ?, ?, ?);`
-        let args = [
-            users[0].id, users[0].email, users[0].card, users[0].card_type, users[0].balance, users[0].active,
-            users[1].id, users[1].email, users[1].card, users[1].card_type, users[1].balance, users[1].active,
-            users[2].id, users[2].email, users[2].card, users[2].card_type, users[2].balance, users[2].active,
+        let args = [];
 
-        ];
+        for (const user of users) {
+            args = args.concat([user.id, user.email, user.card, user.card_type, user.balance, user.active]);
+        }
+
         await conn.query(sql, args);
         if (conn) conn.end();
     });
@@ -134,7 +108,6 @@ describe('card model', () => {
         try {
             // try no cardnr
             cardDetails = await cardModel.updUserDetails(6, undefined, 9);
-            // this row will not be executed if the above function throws an error as expected
             throw new Error("Expected SqlError (Column 'card_nr' cannot be null)");
         } catch (error) {
             expect(error.sqlState).to.equal('23000');

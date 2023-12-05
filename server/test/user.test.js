@@ -6,7 +6,7 @@ chai.should();
 const expect = chai.expect;
 import { db } from "../src/models/db.js";
 import userModel from "../src/models/user.js";
-import { users } from './dummy-users.js'
+import { users } from './dummy-data/users.js'
 
 import jwt from 'jsonwebtoken';
 const jwtSecret = process.env.JWT_SECRET;
@@ -32,14 +32,11 @@ describe('user model', () => {
             (?, ?, ?, ?, ?, ?),
             (?, ?, ?, ?, ?, ?);`;
 
-        let args = [
-            users[0].id, users[0].email, users[0].card, users[0].card_type, users[0].balance, users[0].active,
-            users[1].id, users[1].email, users[1].card, users[1].card_type, users[1].balance, users[1].active,
-            users[2].id, users[2].email, users[2].card, users[2].card_type, users[2].balance, users[2].active,
-            users[3].id, users[3].email, users[3].card, users[3].card_type, users[3].balance, users[3].active,
+        let args = [];
 
-
-        ];
+        for (const user of users) {
+            args = args.concat([user.id, user.email, user.card, user.card_type, user.balance, user.active]);
+        }
         await conn.query(sql, args);
         if (conn) {
             conn.end();
@@ -75,7 +72,6 @@ describe('user model', () => {
                 "1234 5678 9123 4567",
                 3
             )
-            // this row will not be executed if the above function throws an error as expected
             throw new Error('Expected SqlError (email column cannot be null)');
         } catch (error) {
             expect(error.sqlState).to.equal('23000');
@@ -119,15 +115,20 @@ describe('user model', () => {
                 undefined,
                 3
             )
-            // this row will not be executed if the above function throws an error as expected
             throw new Error('Expected SqlError (card_nr column cannot be null)');
         } catch (error) {
             expect(error.sqlState).to.equal('23000');
             expect(error.message).to.include("Column 'card_nr' cannot be null");
         }
+        try {
+            // make sure the user has not been registered
+            await userModel.search("the@newuser.com");
 
-        const users = await userModel.search("the@newuser.com");
-        expect(users).to.deep.equal([]);
+            throw new Error('Expected SqlError (No users matched the search-criteria)');
+        } catch (error) {
+            expect(error.sqlState).to.equal('45000');
+            expect(error.message).to.include("No users matched the search-criteria");
+        }
     });
     it('get all users', async () => {
         const users = await userModel.all()
@@ -156,6 +157,74 @@ describe('user model', () => {
                 balance: -1200.31,
                 active: false,
             }
+        ]);
+    });
+    it('user serach exact id ok', async () => {
+        const users = await userModel.search(6);
+        expect(users[0]).to.deep.equal({
+            id: 6,
+            email: "afolonind@statcounter.com",
+            balance: -128.53,
+            active: true,
+        });
+    });
+    it('user search exact id not ok', async () => {
+        try {
+            await userModel.search(8);
+            throw new Error("Expected SqlError (No users matched the search-criteria)");
+        } catch (error) {
+            expect(error.sqlState).to.equal('45000');
+            expect(error.message).to.include("No users matched the search-criteria");
+        }
+    });
+    it('user serach exact email ok', async () => {
+        const users = await userModel.search("jdoniso4@alibaba.com");
+        expect(users[0]).to.deep.equal({
+            id: 4,
+            email: "jdoniso4@alibaba.com",
+            balance: 261.93,
+            active: true,
+        });
+    });
+    it('user search partial email one ok', async () => {
+        let users = await userModel.search("%so4@alibaba.com");
+        expect(users[0]).to.deep.equal({
+            id: 4,
+            email: "jdoniso4@alibaba.com",
+            balance: 261.93,
+            active: true,
+        });
+        users = await userModel.search("bcroft7@qq.c%");
+        expect(users[0]).to.deep.equal({
+            id: 5,
+            email: "bcroft7@qq.com",
+            balance: -372.87,
+            active: false,
+        });
+        users = await userModel.search("%nind@statcounter.%");
+        expect(users[0]).to.deep.equal({
+            id: 6,
+            email: "afolonind@statcounter.com",
+            balance: -128.53,
+            active: true,
+        });
+    });
+    it('user search partial email many ok', async () => {
+        let users = await userModel.search("%ni%");
+
+        expect(users).to.deep.equal([
+            {
+                id: 4,
+                email: "jdoniso4@alibaba.com",
+                balance: 261.93,
+                active: true,
+            },
+            {
+                id: 6,
+                email: "afolonind@statcounter.com",
+                balance: -128.53,
+                active: true,
+            },
         ]);
     });
     it('get all users pag offset 1, limit 2', async () => {
@@ -291,12 +360,14 @@ describe('user model', () => {
     });
 
     it('gets a user from DB (used in login), email ok but inactive)', async () => {
+        let user;
         try {
-            const user = await userModel.getFromDB("bcroft7@qq.com");
+            user = await userModel.getFromDB("bcroft7@qq.com");
             throw new Error("Expected Error (The user does not exist)");
         } catch (error) {
             expect(error.message).to.include("The user does not exist");
         }
+        expect(user).to.be.an.undefined;
     });
 
     it('gets a user from DB (used in login), email not ok)', async () => {
@@ -336,4 +407,7 @@ describe('user model', () => {
     //1. get token from github
     // 2. register
     // 3. login
+    // 4. user serch one ok
+    // 5. user seach one not ok
+    // 6. 
 });

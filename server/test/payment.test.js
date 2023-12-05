@@ -6,35 +6,10 @@ const expect = chai.expect;
 import { db } from "../src/models/db.js";
 import paymentModel from "../src/models/payment.js";
 import userModel from "../src/models/user.js";
+import { users } from './dummy-data/users.js'
 
 
 describe('payment model', () => {
-    const users = [
-        {
-            id: 5,
-            email: "bcroft7@qq.com",
-            card: "4508 1325 6002 5300",
-            card_type: 1,
-            balance: -372.87,
-            active: false,
-        },
-        {
-            id: 6,
-            email: "afolonind@statcounter.com",
-            card: "4844 9104 5482 3920",
-            card_type: 3,
-            balance: -128.53,
-            active: true,
-        },
-        {
-            id: 7,
-            email: "jdoniso4@alibaba.com",
-            card: "5362 1630 1011 0910",
-            card_type: 2,
-            balance: 261.93,
-            active: true,
-        }
-    ];
     beforeEach(async () => {
         const conn = await db.pool.getConnection()
         let sql = `
@@ -42,14 +17,15 @@ describe('payment model', () => {
         DELETE FROM user;
         INSERT INTO user VALUES(?, ?, ?, ?, ?, ?),
             (?, ?, ?, ?, ?, ?),
+            (?, ?, ?, ?, ?, ?),
             (?, ?, ?, ?, ?, ?);`;
 
-        let args = [
-            users[0].id, users[0].email, users[0].card, users[0].card_type, users[0].balance, users[0].active,
-            users[1].id, users[1].email, users[1].card, users[1].card_type, users[1].balance, users[1].active,
-            users[2].id, users[2].email, users[2].card, users[2].card_type, users[2].balance, users[2].active,
+        let args = [];
 
-        ];
+        for (const user of users) {
+            args = args.concat([user.id, user.email, user.card, user.card_type, user.balance, user.active]);
+        }
+
         await conn.query(sql, args);
         if (conn) {
             conn.end();
@@ -69,13 +45,16 @@ describe('payment model', () => {
         const data = await paymentModel.invoice();
 
         expect(data).to.deep.equal({
-            invoiced_users: 2,
-            invoiced_amount: 372.87 + 128.53
+            invoiced_users: 3,
+            invoiced_amount: 372.87 + 128.53 + 1200.31
         });
 
         const users = await userModel.all();
         for (const user of users) {
             switch (user.id) {
+                case 4:
+                    expect(user.balance).to.equal(261.93);
+                    break;
                 case 5:
                     expect(user.balance).to.equal(0);
                     break;
@@ -83,15 +62,23 @@ describe('payment model', () => {
                     expect(user.balance).to.equal(0);
                     break;
                 case 7:
-                    expect(user.balance).to.equal(261.93);
+                    expect(user.balance).to.equal(0);
                     break;
                 default:
-                  console.log('Check the tests');
+                  console.error('Check the tests');
             }
         }
 
+        const payments4 = await paymentModel.userPayments(4);
+        expect(payments4).to.deep.equal([]);
+
         const payments7 = await paymentModel.userPayments(7);
-        expect(payments7).to.deep.equal([]);
+
+
+        expect(payments7[0].user_id).to.equal(7);
+        expect(payments7[0].date.toISOString().substring(0, 10)).to.equal((new Date()).toISOString().substring(0, 10));
+        expect(payments7[0].ref).to.equal("AUTO ***3920");
+        expect(payments7[0].amount).to.equal(1200.31);
 
         const payments5 = await paymentModel.userPayments(5);
 
