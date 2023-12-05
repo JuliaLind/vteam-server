@@ -13,7 +13,14 @@ const router = express.Router();
  * @returns {void}
  */
 router.post("/", async (req, res, next) => {
-    // code here for handling payments to user bike account
+    try {
+        const amount = req.body.amount;
+        const userId = req.body.userId;
+
+        // TODO: Importera modell och anropa modellens payment-metod.
+    } catch (error) {
+        
+    }
 });
 
 export default router;

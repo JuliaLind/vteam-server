@@ -1,5 +1,5 @@
 import express from "express";
-// import some model from some file
+import cardModel from "../../../src/models/card.js";
 
 const router = express.Router();
 
@@ -13,7 +13,14 @@ const router = express.Router();
  * @returns {void}
  */
 router.get("/", async (req, res, next) => {
-    // code here for getting user card info
+    try {
+        const userId = req.body.userId;
+        const userData = await cardModel.userDetails(userId);
+
+        res.status(200).json(userData);
+    } catch (error) {
+        next(error);
+    }
 });
 
 /**
@@ -26,7 +33,17 @@ router.get("/", async (req, res, next) => {
  * @returns {void}
  */
 router.put("/", async (req, res, next) => {
-    // code here for updating user card info
+    try {
+        const userId = req.body.userId;
+        const cardNr = req.body.card_nr;
+        const cardType = req.body.card_type;
+
+        const userData = await cardModel.updUserDetails(userId, cardNr, cardType);
+
+        res.status(200).json(userData);
+    } catch (error) {
+        next(error);
+    }
 });
 
 export default router;

@@ -1,8 +1,5 @@
 import express from "express";
-// import some model from some file
-// TODO: räcker det med auth-modell som har metoder för att
-// verifiera både en admin och en användare?
-// i så fall import authModel from "../../models/auth.js"
+import empModel from "../../src/models/emp.js";
 
 const router = express.Router();
 
@@ -15,8 +12,8 @@ const router = express.Router();
  *
  * @returns {void}
  */
-router.post("/admin", async (req, res) => {
-    // code here for logging in an admin user through authModel
+router.post("/admin", async (req, res, next) => {
+    await empModel.login(req, res, next);
 });
 
 /**

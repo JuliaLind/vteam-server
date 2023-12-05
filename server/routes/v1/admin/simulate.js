@@ -1,10 +1,10 @@
 import express from "express";
-import cardModel from "../../src/models/card.js";
+import clientManager from "../../../src/utils/clientManager";
 
 const router = express.Router();
 
 /**
- * @description Route for getting all charge card types
+ * @description Route for starting simulation
  *
  * @param {express.Request} req Request object
  * @param {express.Response} res Response object
@@ -12,11 +12,15 @@ const router = express.Router();
  *
  * @returns {void}
  */
-router.get("/types", async (req, res, next) => {
+router.get("/", async (req, res, next) => {
     try {
-        const cardTypes = await cardModel.getTypes();
+        const data = {
+            instruction_all: "run_simulation"
+        };
 
-        res.status(200).json(cardTypes);
+        clientManager.broadcastToBikes(data);
+
+        res.status(204).send();
     } catch (error) {
         next(error);
     }

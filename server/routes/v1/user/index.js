@@ -3,8 +3,8 @@ import express from "express";
 import cardRouter from "./card.js";
 import citiesRouter from "./cities.js";
 import paymentRouter from "./payment.js";
-import transactionsRouter from "../transactions.js";
-import tripsRouter from "../trips.js";
+import transactionsRouter from "./transactions.js";
+import tripsRouter from "./trips.js";
 
 const router = express.Router();
 

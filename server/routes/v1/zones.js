@@ -1,5 +1,5 @@
 import express from "express";
-// import some model from some file
+import cityModel from "../../src/models/city.js";
 
 const router = express.Router();
 
@@ -13,7 +13,13 @@ const router = express.Router();
  * @returns {void}
  */
 router.get("/", async (req, res, next) => {
-    // code here for getting all zones through zonesModel
+    try {
+        const zones = await cityModel.allZones();
+
+        res.status(200).json(zones);
+    } catch (error) {
+        next(error);
+    }
 });
 
 export default router;

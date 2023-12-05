@@ -1,7 +1,11 @@
 import express from "express";
-// import some model from some file
+import clientManager from "../../src/utils/clientManager";
+import bikeModel from "../../src/models/bike.js";
+import cityModel from "../../src/models/city.js";
 
 const router = express.Router();
+// TODO: Glöm inte att lägga till en feed-route som klienterna kan koppla upp sig mot
+// Antagligen i en egen fil.
 
 /**
  * @description Route for getting all bikes
@@ -13,7 +17,13 @@ const router = express.Router();
  * @returns {void}
  */
 router.get("/", async (req, res, next) => {
-    // code here for getting all bikes through bikesModel
+    try {
+        const bikes = await bikeModel.getAll();
+
+        res.status(200).json(bikes);
+    } catch (error) {
+        next(error);
+    }
 });
 
 /**
@@ -26,7 +36,14 @@ router.get("/", async (req, res, next) => {
  * @returns {void}
  */
 router.get("/:id", async (req, res, next) => {
-    // code here for getting one bike through bikesModel
+    try {
+        const bikeId = parseInt(req.params.id);
+        const bike = await bikeModel.getOne(bikeId);
+
+        res.status(200).json(bike);
+    } catch (error) {
+        next(error);
+    }
 });
 
 /**
@@ -39,7 +56,13 @@ router.get("/:id", async (req, res, next) => {
  * @returns {void}
  */
 router.get("/status", async (req, res, next) => {
-    // code here for getting all statuses a bike can have
+    try {
+        const statuses = await bikeModel.statuses();
+
+        res.status(200).json(statuses);
+    } catch (error) {
+        next(error);
+    }
 });
 
 /**
@@ -52,33 +75,25 @@ router.get("/status", async (req, res, next) => {
  * @returns {void}
  */
 router.put("/:id", async (req, res, next) => {
-    // code here for updating bike through bikesModel
-});
+    try {
+        const bikeId = parseInt(req.params.id);
+        const bikeData = req.body;
 
-/**
- * @description Route for renting a bike
- *
- * @param {express.Request} req Request object
- * @param {express.Response} res Response object
- * @param {express.NextFunction} next Next function
- *
- * @returns {void}
- */
-router.post("/:id/rent", async (req, res, next) => {
-    // code here for renting a bike through bikesModel
-});
+        await bikeModel.updateBike(
+            bikeId,
+            bikeData.status_id,
+            bikeData.charge_perc,
+            bikeData.coords
+        );
 
-/**
- * @description Route for returning a bike
- *
- * @param {express.Request} req Request object
- * @param {express.Response} res Response object
- * @param {express.NextFunction} next Next function
- *
- * @returns {void}
- */
-router.post("/:id/return", async (req, res, next) => {
-    // code here for returning a bike through bikesModel
+        // TODO: Fixa stream till klienter
+        clientManager.broadcastToClients(bikeData);
+
+        // TODO: Skicka annat än status 200?
+        res.status(204).send();
+    } catch (error) {
+        next(error);
+    }
 });
 
 /**
@@ -91,7 +106,15 @@ router.post("/:id/return", async (req, res, next) => {
  * @returns {void}
  */
 router.get("/:id/zones", async (req, res, next) => {
-    // code here for getting city zones for a bike
+    try {
+        const bikeId = parseInt(req.params.id);
+
+        const bikeZones = await cityModel.bikeZones(bikeId);
+
+        res.status(200).json(bikeZones);
+    } catch (error) {
+        next(error);
+    }
 });
 
 /**
@@ -104,20 +127,19 @@ router.get("/:id/zones", async (req, res, next) => {
  * @returns {void}
  */
 router.get("/instructions", async (req, res, next) => {
-    // code here for getting bike instructions through bikesModel
-});
+    try {
+        res.setHeader("Content-Type", "text/event-stream");
+        res.setHeader("Cache-Control", "no-cache");
+        res.setHeader("Connection", "keep-alive");
 
-/**
- * @description Route for starting simulation
- *
- * @param {express.Request} req Request object
- * @param {express.Response} res Response object
- * @param {express.NextFunction} next Next function
- *
- * @returns {void}
- */
-router.get("/simulate", async (req, res, next) => {
-    // code here for starting simulation
+        clientManager.addBike(res);
+
+        req.on("close", () => {
+            clientManager.removeBike(res);
+        });
+    } catch (error) {
+        next(error);
+    }
 });
 
 export default router;

@@ -43,10 +43,10 @@ const bike = {
      * @param {String} cityId
      * @returns {Promise<Array>}
      */
-        getAvail: async function(cityId) {
-            const result = await db.queryWithArgs(`CALL available_bikes(?);`, [cityId]);
-            return result[0].map((bikeObj) => {
-                return this.adjTypes(bikeObj);
+    getAvail: async function(cityId) {
+        const result = await db.queryWithArgs(`CALL available_bikes(?);`, [cityId]);
+        return result[0].map((bikeObj) => {
+            return this.adjTypes(bikeObj);
         });
     },
 

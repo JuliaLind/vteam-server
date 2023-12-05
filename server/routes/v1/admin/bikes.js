@@ -1,7 +1,28 @@
 import express from "express";
-// import some model from some file
+import bikeModel from "../../../src/models/bike.js";
 
 const router = express.Router();
+
+/**
+ * @description Route for activating a bike
+ *
+ * @param {express.Request} req Request object
+ * @param {express.Response} res Response object
+ * @param {express.NextFunction} next Next function
+ *
+ * @returns {void}
+ */
+router.get("/:id/activate", async (req, res, next) => {
+    try {
+        const bikeId = parseInt(req.params.id);
+
+        const bikeData = await bikeModel.activate(bikeId);
+
+        res.status(200).json(bikeData);
+    } catch (error) {
+        next(error);
+    }
+});
 
 /**
  * @description Route for deactivating a bike
@@ -12,8 +33,16 @@ const router = express.Router();
  *
  * @returns {void}
  */
-router.get("/:id/deactivate", (req, res, next) => {
-    // code here for deactivating bike
+router.get("/:id/deactivate", async (req, res, next) => {
+    try {
+        const bikeId = parseInt(req.params.id);
+
+        const bikeData = await bikeModel.activate(bikeId);
+
+        res.status(200).json(bikeData);
+    } catch (error) {
+        next(error);
+    }
 });
 
 /**
@@ -25,22 +54,31 @@ router.get("/:id/deactivate", (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/:bikeId/status/:statusId", (req, res, next) => {
-    // code here for changing a bike's status
+router.get("/:bikeId/status/:statusId", async (req, res, next) => {
+    try {
+        const bikeId = parseInt(req.params.bikeId);
+        const statusId = parseInt(req.params.statusId);
+
+        const bikeData = await bikeModel.updStatus(bikeId, statusId);
+
+        res.status(200).json(bikeData);
+    } catch (error) {
+        next(error);
+    }
 });
 
-/**
- * @description Route for changing a bike's position
- *
- * @param {express.Request} req Request object
- * @param {express.Response} res Response object
- * @param {express.NextFunction} next Next function
- *
- * @returns {void}
- */
-router.get("/:id/move", (req, res, next) => {
-    // code here for changing a bike's position
-});
+// /**
+//  * @description Route for changing a bike's position
+//  *
+//  * @param {express.Request} req Request object
+//  * @param {express.Response} res Response object
+//  * @param {express.NextFunction} next Next function
+//  *
+//  * @returns {void}
+//  */
+// router.get("/:id/move", async (req, res, next) => {
+//     // code here for changing a bike's position
+// });
 
 /**
  * @description Route for changing a bike's city
@@ -51,8 +89,17 @@ router.get("/:id/move", (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/:id/change/city", (req, res, next) => {
-    // code here for changing a bike's city
+router.get("/:id/change/city", async (req, res, next) => {
+    try {
+        const bikeId = parseInt(req.params.id);
+        const cityId = req.body.city_id;
+
+        const bikeData = await bikeModel.updCity(bikeId, cityId);
+
+        res.status(200).json(bikeData);
+    } catch (error) {
+        next(error);
+    }
 });
 
 export default router;
