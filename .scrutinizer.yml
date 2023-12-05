@@ -2,22 +2,22 @@ build:
   nodes:
     primary:
       environment:
-        variables:
-          DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
-          DB_SERVICE_NAME: mariadb-bikes 
-          TEST_SERVICE_NAME: mariadb-test 
-          DB_NAME: bikes
-          TEST_DB_NAME: test
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        DB_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+        DB_SERVICE_NAME: mariadb-bikes 
+        TEST_SERVICE_NAME: mariadb-test 
+        DB_NAME: bikes
+        TEST_DB_NAME: test
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
       dependencies:
         before:
-          - sudo curl -fsSL https://get.docker.com/ | sh
-          - sudo service docker start
-        override:
-          - docker-compose up -d
+          - apt-get update
+          - apt-get install -y mariadb-client
+          - mysql -h $DB_SERVICE_NAME -u root -p$DB_ROOT_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DB_NAME;"
+          - mysql -h $TEST_SERVICE_NAME -u root -p$DB_ROOT_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $TEST_DB_NAME;"
+          - mysql -h $DB_SERVICE_NAME -u root -p$DB_ROOT_PASSWORD $DB_NAME < ./mariadb/setup-bikes.sql
+          - mysql -h $TEST_SERVICE_NAME -u root -p$DB_ROOT_PASSWORD $TEST_DB_NAME < ./mariadb/setup-test.sql
 
-      tests:
-        override:
-          - docker-compose exec server npm run test
-
+      override:
+        - cd ./server/ && npm install
+        - cd ./server/ && npm run test
