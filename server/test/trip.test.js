@@ -93,10 +93,14 @@ describe('trip model', () => {
 
     // Add test for:
 
-    //1. start a trip ok
-    // 2. start a trip, bike taken
+    // 1. start a trip, bike taken
     // 3. repeated request to start trip
-    // 4. end a trip ok (check trip, check balance)
+    // 4. end a trip ok (check trip, check balance, different costs)
+    // 4.2 test with different start zone and end zone combos
+    // bad+bad, good+good, bad+good, good+bad
     // 5. end a trip, wrong user
     // end a trip, repeated request
+    // 6. rent with different statuses, only 'available' should work
+    // get all trips for a user
+    // get all trips for a user paginated
 });
