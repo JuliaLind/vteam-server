@@ -13,11 +13,12 @@ const payment = {
 
         return data;
     },
-    user_payments: async function(
+    userPayments: async function(
         userId
     ) {
         const result = await db.queryWithArgs(`CALL user_payments(?);`, [userId]);
-        return result[0].map((transaction) => {
+        let data = result[0];
+        return data.map((transaction) => {
             return this.adjustTypes(transaction);
         });
     },
@@ -28,7 +29,7 @@ const payment = {
      * @param {Number} limit 
      * @returns {Promise<Array>}
      */
-    user_payments_pag: async function(
+    userPaymentsPag: async function(
         userId,
         offset,
         limit
@@ -38,7 +39,7 @@ const payment = {
             return this.adjustTypes(transaction);
         });
     },
-    adjustTypes: async function(transaction) {
+    adjustTypes: function(transaction) {
         return {
             ...transaction,
             amount: parseFloat(transaction.amount)
