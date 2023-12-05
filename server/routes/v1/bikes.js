@@ -1,6 +1,7 @@
 import express from "express";
 import clientManager from "../../src/utils/clientManager";
 import bikeModel from "../../src/models/bike.js";
+import cityModel from "../../src/models/city.js";
 
 const router = express.Router();
 // TODO: Glöm inte att lägga till en feed-route som klienterna kan koppla upp sig mot
@@ -105,7 +106,15 @@ router.put("/:id", async (req, res, next) => {
  * @returns {void}
  */
 router.get("/:id/zones", async (req, res, next) => {
-    // code here for getting city zones for a bike
+    try {
+        const bikeId = parseInt(req.params.id);
+
+        const bikeZones = await cityModel.bikeZones(bikeId);
+
+        res.status(200).json(bikeZones);
+    } catch (error) {
+        next(error);
+    }
 });
 
 /**
@@ -128,29 +137,6 @@ router.get("/instructions", async (req, res, next) => {
         req.on("close", () => {
             clientManager.removeBike(res);
         });
-    } catch (error) {
-        next(error);
-    }
-});
-
-/**
- * @description Route for starting simulation
- *
- * @param {express.Request} req Request object
- * @param {express.Response} res Response object
- * @param {express.NextFunction} next Next function
- *
- * @returns {void}
- */
-router.get("/simulate", async (req, res, next) => {
-    try {
-        const data = {
-            instruction_all: "run_simulation"
-        };
-
-        clientManager.broadcastToBikes(data);
-
-        res.status(204).send();
     } catch (error) {
         next(error);
     }

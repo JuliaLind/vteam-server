@@ -1,10 +1,10 @@
 import express from "express";
-import bikeModel from "../../../src/models/bike.js";
+import clientManager from "../../../src/utils/clientManager";
 
 const router = express.Router();
 
 /**
- * @description Route for getting available bikes of a city
+ * @description Route for starting simulation
  *
  * @param {express.Request} req Request object
  * @param {express.Response} res Response object
@@ -12,13 +12,15 @@ const router = express.Router();
  *
  * @returns {void}
  */
-router.get("/:id/bikes", async (req, res, next) => {
+router.get("/", async (req, res, next) => {
     try {
-        const cityId = req.params.id;
+        const data = {
+            instruction_all: "run_simulation"
+        };
 
-        const bikes = await bikeModel.getAvail(cityId);
+        clientManager.broadcastToBikes(data);
 
-        res.status(200).json(bikes);
+        res.status(204).send();
     } catch (error) {
         next(error);
     }
