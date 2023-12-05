@@ -81,6 +81,18 @@ CREATE PROCEDURE user_search(
     a_what VARCHAR(100)
 )
 BEGIN
+    DECLARE results INT;
+
+    SELECT COUNT(*) INTO results
+    FROM `user`
+    WHERE id LIKE a_what
+    OR email LIKE a_what;
+
+    IF results = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'No users matched the search-criteria';
+    END IF;
+
     SELECT
         `id`,
         `email`,
