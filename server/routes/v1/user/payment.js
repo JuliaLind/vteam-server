@@ -1,5 +1,5 @@
 import express from "express";
-// import some model from some file
+import paymentModel from "../../../src/models/payment.js";
 
 const router = express.Router();
 
@@ -17,9 +17,11 @@ router.post("/", async (req, res, next) => {
         const amount = req.body.amount;
         const userId = req.body.userId;
 
-        // TODO: Importera modell och anropa modellens payment-metod.
+        const receipt = await paymentModel.prepay(userId, amount);
+
+        res.status(200).json(receipt);
     } catch (error) {
-        
+        next(error);
     }
 });
 
