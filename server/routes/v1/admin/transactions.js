@@ -16,7 +16,7 @@ router.get("/", async (req, res, next) => {
     try {
         const userId = req.body.user_id;
 
-        const transactions = await paymentModel.user_payments(userId);
+        const transactions = await paymentModel.userPayments(userId);
 
         res.status(200).json(transactions);
     } catch (error) {
@@ -39,7 +39,7 @@ router.get("/limit/:limit/offset/:offset", async (req, res, next) => {
         const limit = parseInt(req.params.limit);
         const offset = parseInt(req.params.offset);
 
-        const transactions = await paymentModel.user_payments_pag(userId, offset, limit);
+        const transactions = await paymentModel.userPaymentsPag(userId, offset, limit);
 
         res.status(200).json(transactions);
     } catch (error) {
