@@ -398,6 +398,53 @@ describe('trip model', () => {
         });
     });
 
+    it('end a trip, duplicate request should not work', async () => {
+        let myTrip = await tripModel.start(4, 6);
+        let conn = await db.pool.getConnection();
+        sql = `
+        UPDATE trip
+        SET start_time = ?
+        WHERE id = ?;
+        ;`
+
+        // backdate starttime of the trip and start position to charge zone
+        let startTime = new Date();
+        startTime.setMinutes(startTime.getMinutes() - 49)
+        args = [startTime, myTrip.id];
+
+
+        await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
+
+        let isRented = await bikeModel.isRented(6);
+        expect(isRented).to.be.true;
+        myTrip = await tripModel.end(4, myTrip.id);
+        expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
+
+        isRented = await bikeModel.isRented(6);
+        expect(isRented).to.be.false;
+        delete myTrip.end_time;
+        delete myTrip.start_time;
+
+        // hight startcost  and high park cost
+        // because start in free parking and
+        // because end in fee parking
+        expect(myTrip).to.deep.equal({
+            id: myTrip.id,
+            user_id: 4,
+            bike_id: 6,
+            start_pos: [11.9721,57.70229],
+            end_pos: [11.9721,57.70229],
+            start_cost: 10.00,
+            var_cost: 49 * 3,
+            park_cost: 100.00,
+            total_cost: 49 * 3.00 + 10.00 + 100.00
+        });
+    });
+
     it('end a trip, start in bad parking end in charge zone = low start cost and low park cost', async () => {
         const conn = await db.pool.getConnection();
 
@@ -567,11 +614,6 @@ describe('trip model', () => {
 
     // Add test for:
 
-    // 1. that a maintenance required status is not overwriten
-    // when a trip ends
-    // 4. end a trip ok (check trip, check balance, different costs)
-    // 4.2 test with different start zone and end zone combos
-    // bad+bad, good+good, bad+good, good+bad
     // 5. end a trip, repeated request
     // 6. rent with different statuses, only 'available' should work
     // get all trips for a user
