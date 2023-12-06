@@ -1,5 +1,5 @@
 import express from "express";
-import clientManager from "../../../src/utils/clientManager";
+import clientManager from "../../../src/utils/clientManager.js";
 
 const router = express.Router();
 
