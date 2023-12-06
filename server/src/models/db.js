@@ -7,8 +7,8 @@ let host = process.env.DB_HOST;
 let database = process.env.DB_DATABASE;
 
 if (process.env.NODE_ENV === "test") {
-    host = process.env.DB_TEST_HOST,
-    database = process.env.TEST_DATABASE
+    host = process.env.DB_TEST_HOST;
+    database = process.env.TEST_DATABASE;
 }
 
 const pool = mariadb.createPool({

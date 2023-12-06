@@ -17,23 +17,28 @@ END
 CREATE FUNCTION within_zone(
     coord VARCHAR(100)
 )
-RETURNS INT
-READS SQL DATA
+RETURNS TINYINT
+DETERMINISTIC
 BEGIN
-    SET @zone := (SELECT
-        zone_id
+    SET @check := (SELECT
+        id
     FROM v_zone_loc
     WHERE
-    --     date_to IS NULL
-    -- AND
+        zone_id IN (1, 2)
+    AND
         ST_Within(
             ST_GeomFromGeoJSON(
                 CONCAT('{"type":"Point","coordinates":', coord, '}')
             ),
             ST_GeomFromGeoJSON(geometry)
         ) = 1
+    LIMIT 1
     );
-    RETURN @zone;
+
+    IF @check IS NOT NULL THEN
+        RETURN 1;
+    END IF;
+    RETURN 0;
 END
 ;;
 

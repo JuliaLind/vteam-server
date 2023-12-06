@@ -11,6 +11,7 @@ const trip = {
     start: async function(userId, bikeId) {
         const result = await db.queryWithArgs(`CALL start_trip(?, ?);`, [userId, bikeId]);
         const trip = result[0][0];
+        
 
         trip.start_pos = JSON.parse(trip.start_pos);
         return trip;
@@ -23,9 +24,10 @@ const trip = {
      */
     end: async function(userId, tripId) {
         const result = await db.queryWithArgs(`CALL end_trip(?, ?);`, [userId, tripId]);
+
         const trip = result[0][0];
-        trip.start_pos = JSON.parse(trip.start_pos);
-        return trip;
+        // return trip;
+        return this.adjTypes(trip);
     },
     adjTypes(tripObj){
         const updated = {
