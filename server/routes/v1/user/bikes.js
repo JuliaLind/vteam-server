@@ -45,7 +45,7 @@ router.post("/rent/:bikeId", async (req, res, next) => {
  *
  * @returns {void}
  */
-router.post("/return/:tripId", async (req, res, next) => {
+router.put("/return/:tripId", async (req, res, next) => {
     try {
         const tripId = parseInt(req.params.tripId);
         const userId = req.body.user_id;

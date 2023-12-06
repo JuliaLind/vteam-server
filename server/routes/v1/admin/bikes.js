@@ -12,7 +12,7 @@ const router = express.Router();
  *
  * @returns {void}
  */
-router.get("/:id/activate", async (req, res, next) => {
+router.put("/:id/activate", async (req, res, next) => {
     try {
         const bikeId = parseInt(req.params.id);
 
@@ -33,7 +33,7 @@ router.get("/:id/activate", async (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/:id/deactivate", async (req, res, next) => {
+router.put("/:id/deactivate", async (req, res, next) => {
     try {
         const bikeId = parseInt(req.params.id);
 
@@ -54,7 +54,7 @@ router.get("/:id/deactivate", async (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/:bikeId/status/:statusId", async (req, res, next) => {
+router.put("/:bikeId/status/:statusId", async (req, res, next) => {
     try {
         const bikeId = parseInt(req.params.bikeId);
         const statusId = parseInt(req.params.statusId);
@@ -89,7 +89,7 @@ router.get("/:bikeId/status/:statusId", async (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/:id/change/city", async (req, res, next) => {
+router.put("/:id/change/city", async (req, res, next) => {
     try {
         const bikeId = parseInt(req.params.id);
         const cityId = req.body.city_id;
