@@ -1,5 +1,5 @@
 import express from "express";
-import clientManager from "../../src/utils/clientManager";
+import clientManager from "../../src/utils/clientManager.js";
 import bikeModel from "../../src/models/bike.js";
 import cityModel from "../../src/models/city.js";
 

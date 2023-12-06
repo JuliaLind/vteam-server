@@ -1,5 +1,5 @@
 import express from "express";
-// import some model from some file
+import tripModel from "../../../src/models/trip.js";
 
 const router = express.Router();
 
@@ -12,10 +12,16 @@ const router = express.Router();
  *
  * @returns {void}
  */
-router.get("/", (req, res, next) => {
-    // code here for getting trips for one user
-    // Båda admin och användare använder den här routen
-    // user_id finns antingen i token eller body (admin)
+router.get("/", async (req, res, next) => {
+    try {
+        const userId = req.body.user_id;
+
+        const trips = await tripModel.userTrips(userId);
+
+        res.status(200).json(trips);
+    } catch (error) {
+        next(error);
+    }
 });
 
 /**
@@ -27,10 +33,18 @@ router.get("/", (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/limit/:limit/offset/:offset", (req, res, next) => {
-    // code here for getting trips for one user using pagination
-    // Båda admin och användare använder den här routen
-    // user_id finns antingen i token eller body (admin)
+router.get("/limit/:limit/offset/:offset", async (req, res, next) => {
+    try {
+        const userId = req.body.user_id;
+        const limit = parseInt(req.params.limit);
+        const offset = parseInt(req.params.offset);
+
+        const trips = await tripModel.userTripsPag(userId, offset, limit);
+
+        res.status(200).json(trips);
+    } catch (error) {
+        next(error);
+    }
 });
 
 /**
@@ -42,7 +56,7 @@ router.get("/limit/:limit/offset/:offset", (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/all", (req, res, next) => {
+router.get("/all", async (req, res, next) => {
     // code here for getting trips for one user
     // Båda admin och användare använder den här routen
     // user_id finns antingen i token eller body (admin)

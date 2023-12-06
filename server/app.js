@@ -8,7 +8,7 @@ dotenv.config();
 // dotenv.config({ path: '.env' });
 
 // import errorHandler from "./middleware/errors.js";
-// import apiRouter from "./routes/v1/index.js";
+import apiRouter from "./routes/v1/index.js";
 
 
 const app = express();
@@ -21,9 +21,9 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
-// Här kan vi lägga in en middleware för att kolla API-nyckel?
+// TODO: Här kan vi lägga in en middleware för att kolla API-nyckel?
 
-// app.use("/v1", apiRouter);
+app.use("/v1", apiRouter);
 
 // app.use(errorHandler);
 

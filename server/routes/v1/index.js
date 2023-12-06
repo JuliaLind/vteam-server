@@ -17,8 +17,8 @@ router.use("/user", /** + authModel.checkToken */ userRouter);
 router.use("/bikes", bikesRouter);
 router.use("/card", cardRouter);
 router.use("/cities", citiesRouter);
-router.use("login", loginRouter);
+router.use("/login", loginRouter);
 router.use("/register", registerRouter);
-router.use("zones", zonesRouter);
+router.use("/zones", zonesRouter);
 
 export default router;

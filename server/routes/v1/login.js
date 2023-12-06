@@ -13,7 +13,7 @@ const router = express.Router();
  * @returns {void}
  */
 router.post("/admin", async (req, res, next) => {
-    await empModel.login(req, res, next);
+    await empModel.login(req, res);
 });
 
 /**
