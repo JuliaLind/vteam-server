@@ -1,5 +1,6 @@
 import express from "express";
 import bikeModel from "../../../src/models/bike.js";
+import clientManager from "../../../src/utils/clientManager.js";
 
 const router = express.Router();
 
@@ -17,6 +18,13 @@ router.put("/:id/activate", async (req, res, next) => {
         const bikeId = parseInt(req.params.id);
 
         const bikeData = await bikeModel.activate(bikeId);
+
+        const data = {
+            bike_id: bikeId,
+            instruction: "unlock_bike"
+        };
+
+        clientManager.broadcastToBike(bikeId, data);
 
         res.status(200).json(bikeData);
     } catch (error) {
@@ -39,6 +47,13 @@ router.put("/:id/deactivate", async (req, res, next) => {
 
         const bikeData = await bikeModel.activate(bikeId);
 
+        const data = {
+            bike_id: bikeId,
+            instruction: "lock_bike"
+        };
+
+        clientManager.broadcastToBike(bikeId, data);
+
         res.status(200).json(bikeData);
     } catch (error) {
         next(error);
@@ -60,6 +75,14 @@ router.put("/:bikeId/status/:statusId", async (req, res, next) => {
         const statusId = parseInt(req.params.statusId);
 
         const bikeData = await bikeModel.updStatus(bikeId, statusId);
+
+        const data = {
+            bike_id: bikeId,
+            instruction: "set_status",
+            args: [statusId]
+        };
+
+        clientManager.broadcastToBike(bikeId, data);
 
         res.status(200).json(bikeData);
     } catch (error) {
