@@ -7,7 +7,45 @@ import { db } from "../src/models/db.js";
 import paymentModel from "../src/models/payment.js";
 import userModel from "../src/models/user.js";
 import { users } from './dummy-data/users.js'
+import { payments } from './dummy-data/payments.js'
 
+async function insertSomePayments() {
+    // const conn = await db.pool.getConnection()
+
+    // let placeholders = "";
+    // let args = [];
+
+    // let counter = 1;
+    // for (const payment of payments) {
+    //     args = args.concat([payment.id, payment.user_id, payment.date, payment.ref, payment.amount]);
+    //     placeholders += "(?, ?, ?, ?, ?)";
+    //     if (counter < payments.length) {
+    //         placeholders += ",";
+    //     }
+
+    //     counter += 1;
+    // }
+    // let sql = `
+    // DELETE FROM payment;
+    // INSERT INTO payment VALUES${placeholders};`;
+
+    // await conn.query(sql, args);
+    // if (conn) {
+    //     conn.end();
+    // }
+    let data = [];
+    for (const elem of payments) {
+        let newElem = {
+            ...elem
+        };
+        let inserted = await paymentModel.prepay(elem.
+            user_id, elem.amount);
+        newElem.id = inserted.id;
+        newElem.date = inserted.date;
+        data.push(newElem);
+    }
+    return data;
+}
 
 describe('payment model', () => {
     beforeEach(async () => {
@@ -110,18 +148,42 @@ describe('payment model', () => {
             // try invalid number
             await paymentModel.prepay(5, -1);
         
-            // this row will not be executed if the above function throws an error as expected
             throw new Error('Expected SqlError (Payment amount must be larger than 0)');
         } catch (error) {
             expect(error.sqlState).to.equal('45000');
             expect(error.message).to.include('Payment amount must be larger than 0');
         }
-        const payments = await paymentModel.userPayments(5)
+        const data = await paymentModel.userPayments(5)
 
-        expect(payments).to.deep.equal([]);
+        expect(data).to.deep.equal([]);
 
         const user = await userModel.search(5);
         expect(user[0].balance).to.equal(-372.87);
+    });
+    it('all payments', async () => {
+        let exp = await insertSomePayments();
+        let res = await paymentModel.allPayments();
+
+
+        expect(res).to.deep.equal(exp.reverse());
+    });
+
+    it('user_payments', async () => {
+        let exp = await insertSomePayments();
+        const data4 = exp.filter(elem => elem.user_id === 4);
+        const data5 = exp.filter(elem => elem.user_id === 5);
+        const data6 = exp.filter(elem => elem.user_id === 6);
+        const data7 = exp.filter(elem => elem.user_id === 7);
+
+        let data = await paymentModel.userPayments(4);
+
+        expect(data).to.deep.equal(data4.reverse());
+        data = await paymentModel.userPayments(5);
+        expect(data).to.deep.equal(data5.reverse());
+        data = await paymentModel.userPayments(6);
+        expect(data).to.deep.equal(data6.reverse());
+        data = await paymentModel.userPayments(7);
+        expect(data).to.deep.equal(data7.reverse());
     });
 });
 // add tests for:

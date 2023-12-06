@@ -34,7 +34,30 @@ const payment = {
         offset,
         limit
     ) {
-        const result = await db.queryWithArgs(`CALL user_payments(?, ?, ?);`, [userId, offset, limit]);
+        const result = await db.queryWithArgs(`CALL user_payments_pag(?, ?, ?);`, [userId, offset, limit]);
+        return result[0].map((transaction) => {
+            return this.adjustTypes(transaction);
+        });
+    },
+    allPayments: async function() {
+        const result = await db.queryNoArgs(`CALL all_payments();`);
+
+        return result[0].map((transaction) => {
+            return this.adjustTypes(transaction);
+        });
+    },
+    /**
+     * 
+     * @param {Number} userId 
+     * @param {Number} offset 
+     * @param {Number} limit 
+     * @returns {Promise<Array>}
+     */
+    allPaymentsPag: async function(
+        offset,
+        limit
+    ) {
+        const result = await db.queryWithArgs(`CALL all_payments_pag(?, ?);`, [offset, limit]);
         return result[0].map((transaction) => {
             return this.adjustTypes(transaction);
         });

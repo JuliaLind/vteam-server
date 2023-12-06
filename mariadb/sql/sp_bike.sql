@@ -8,6 +8,7 @@ DROP PROCEDURE IF EXISTS update_bike;
 DROP PROCEDURE IF EXISTS update_bike_city;
 DROP PROCEDURE IF EXISTS bikes_in_city;
 DROP PROCEDURE IF EXISTS upd_bike_status;
+DROP PROCEDURE IF EXISTS is_rented;
 
 DELIMITER ;;
 
@@ -90,7 +91,7 @@ BEGIN
 
     -- If the bike is rented, end the ongoing trip
     IF tripid IS NOT NULL THEN
-        CALL end_trip(tripid, userid);
+        CALL end_trip(userid, tripid);
     END IF;
 
     SELECT * FROM v_bike
