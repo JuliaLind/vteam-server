@@ -49,7 +49,11 @@ BEGIN
     WHERE
         user_id = u_id
     AND
-        bike_id = b_id;
+        bike_id = b_id
+    AND end_time IS NULL
+    -- ORDER BY id DESC
+    -- LIMIT 1
+    ;
 END
 ;;
 
