@@ -164,8 +164,6 @@ describe('trip model', () => {
 
     });
 
-    // add another assert to below to test bad start, good en dposition (add at the top)
-    // add additional tests for checking user balance after each trip
     it('end a trip, start in charge and end in bad parking = high start cost, high park cost', async () => {
         let myTrip = await tripModel.start(5, 6);
         let conn = await db.pool.getConnection();
@@ -199,7 +197,7 @@ describe('trip model', () => {
         }
 
         expect(bikeStatus[0].status_id).to.equal(2);
-        const isRented = await bikeModel.isRented(6);
+        let isRented = await bikeModel.isRented(6);
         expect(isRented).to.be.true;
         myTrip = await tripModel.end(5, myTrip.id);
 
@@ -242,6 +240,102 @@ describe('trip model', () => {
         }
         expect(bikeStatus[0].status_id).to.equal(1);
     });
+
+    it('test that maintenance required status_id is not overwritten when trip is ended', async () => {
+        let myTrip = await tripModel.start(5, 6);
+        let conn = await db.pool.getConnection();
+
+        let sql = `
+        UPDATE trip
+        SET start_time = ?,
+        start_pos = ?
+        WHERE id = ?
+        ;`;
+
+        // backdate starttime of the trip and strt position to charge zone
+        let startTime = new Date();
+        startTime.setMinutes(startTime.getMinutes() - 15)
+        let args = [startTime, JSON.stringify(points.ok_charge), myTrip.id];
+
+        await conn.query(sql, args);
+
+        sql = `
+        SELECT status_id
+        FROM bike
+        WHERE id = ?
+        ;`;
+
+        args = [6];
+        let bikeStatus = await conn.query(sql, args);
+
+
+        if (conn) {
+            conn.end();
+        }
+
+        expect(bikeStatus[0].status_id).to.equal(2);
+        let isRented = await bikeModel.isRented(6);
+        expect(isRented).to.be.true;
+
+        conn = await db.pool.getConnection();
+        sql = `
+        UPDATE bike
+        SET status_id = ?
+        WHERE id = ?;`
+
+        // new status_id 4 maintenance required
+        args = [4, 6];
+
+        await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
+
+
+        isRented = await bikeModel.isRented(6);
+        expect(isRented).to.be.true;
+
+        myTrip = await tripModel.end(5, myTrip.id);
+
+        expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
+
+
+        delete myTrip.end_time;
+        delete myTrip.start_time;
+
+        isRented = await bikeModel.isRented(6);
+        expect(isRented).to.be.false;
+        // high startcost and high park cost,
+        // because start in park zone and end in free parking
+        expect(myTrip).to.deep.equal({
+            id: myTrip.id,
+            user_id: 5,
+            bike_id: 6,
+            start_pos: points.ok_charge,
+            end_pos: [11.9721,57.70229],
+            start_cost: 10.00,
+            var_cost: 15 * 3,
+            park_cost: 100.00,
+            total_cost: 155.00
+        });
+
+        conn = await db.pool.getConnection();
+
+        sql = `
+        SELECT status_id
+        FROM bike
+        WHERE id = ?
+        ;`;
+
+        args = [6];
+
+        bikeStatus = await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
+        expect(bikeStatus[0].status_id).to.equal(4);
+    });
     it('end a trip, start in park zone and end in park zone = high start cost and low park cost', async () => {
         let conn = await db.pool.getConnection();
 
@@ -277,7 +371,7 @@ describe('trip model', () => {
             conn.end();
         }
 
-        const isRented = await bikeModel.isRented(6);
+        let isRented = await bikeModel.isRented(6);
         expect(isRented).to.be.true;
         myTrip = await tripModel.end(4, myTrip.id);
         expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
