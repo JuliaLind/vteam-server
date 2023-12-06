@@ -54,8 +54,8 @@ END
 ;;
 
 CREATE PROCEDURE end_trip(
-    t_id INT,
-    u_id INT
+    u_id INT,
+    t_id INT
 )
 BEGIN
     DECLARE userid INT;
@@ -64,7 +64,7 @@ BEGIN
     DECLARE startpos VARCHAR(100);
     DECLARE endtime DATETIME;
 
-    SET @endtime := CURRENT_TIMESTAMP;
+    SET @newtime := CURRENT_TIMESTAMP;
 
     --
     -- Select some current variables for the trip
@@ -105,14 +105,14 @@ BEGIN
 
         -- check if the trip is ended in
         -- parking zone or charging zone
-        IF @endzone IN (1, 2) THEN
+        IF @endzone = 1 THEN
             -- set the parking cost to low
             SET @parktype := "PARK_LOW";
 
             -- if the bike did not start in parking zone
             -- or charging zone, but ended in one of these
             -- zone types, the start cost should also be set to low
-            IF @startzone NOT IN (1, 2) THEN
+            IF @startzone = 0 THEN
                 SET @starttype := "START_LOW";
             END IF;
         END IF;
@@ -122,7 +122,7 @@ BEGIN
         -- I am using SECOND / 60 instead of MINUTE
         -- because MINUTE does not seem to return value if
         -- duration is less than a minute
-        SET @varcost := TIMESTAMPDIFF(SECOND, starttime, @endtime) / 60 * (SELECT amount FROM price WHERE id = "VAR");
+        SET @varcost := TIMESTAMPDIFF(SECOND, starttime, @newtime) / 60 * (SELECT amount FROM price WHERE id = "VAR");
         -- get the startcost based on cost type
         SET @startcost := (SELECT amount FROM price WHERE id = @starttype);
         -- get the parking cost based on cost type
@@ -132,7 +132,7 @@ BEGIN
         -- update the trip with the new additional data
         UPDATE trip
         SET
-            end_time = @endtime,
+            end_time = @newtime,
             end_pos = @endpos,
             start_cost = @startcost,
             var_cost = @varcost,

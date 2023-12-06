@@ -33,7 +33,6 @@ const trip = {
         const updated = {
             ...tripObj
         };
-        console.log("im updated", updated);
         updated.start_pos = JSON.parse(tripObj.start_pos);
         updated.end_pos ? updated.end_pos = JSON.parse(updated.end_pos) : undefined;
         updated.start_cost ? updated.start_cost = parseFloat(updated.start_cost) : undefined;

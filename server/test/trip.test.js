@@ -18,6 +18,7 @@ describe('trip model', () => {
         const conn = await db.pool.getConnection();
 
         let sql = `
+        DELETE FROM zone_loc_removed;
         DELETE FROM zone_loc;
         DELETE FROM trip;
         DELETE FROM user;
@@ -32,6 +33,7 @@ describe('trip model', () => {
             (?, ?, ?, ?, ?, ?);
         INSERT INTO zone_loc
         VALUES(?, ?, ?, ?, ?),
+            (?, ?, ?, ?, ?),
             (?, ?, ?, ?, ?),
             (?, ?, ?, ?, ?),
             (?, ?, ?, ?, ?),
@@ -59,7 +61,9 @@ describe('trip model', () => {
     after(async () => {
         const conn = await db.pool.getConnection();
 
-        let sql = `DELETE FROM trip;`;
+        let sql = `DELETE FROM trip;
+        DELETE FROM zone_loc_removed;
+        DELETE FROM zone_loc;`;
         await conn.query(sql);
         if (conn) {
             conn.end();
@@ -157,10 +161,10 @@ describe('trip model', () => {
 
     // add another assert to below to test bad start, good en dposition (add at the top)
     // add additional tests for checking user balance after each trip
-    it('end a trip, ok', async () => {
+    it('end a trip, start in charge and end in bad parking ok', async () => {
+        let myTrip = await tripModel.start(5, 6);
         const conn = await db.pool.getConnection();
 
-        let myTrip = await tripModel.start(5, 6);
         let sql = `
         UPDATE trip
         SET start_time = ?,
@@ -168,7 +172,7 @@ describe('trip model', () => {
         WHERE id = ?
         ;`;
 
-        // backdate starttime of the trip
+        // backdate starttime of the trip and strt position to charge zone
         let startTime = new Date();
         startTime.setMinutes(startTime.getMinutes() - 15)
         let args = [startTime, JSON.stringify(points.ok_charge), myTrip.id];
@@ -187,7 +191,8 @@ describe('trip model', () => {
         delete myTrip.end_time;
         delete myTrip.start_time;
 
-        // high startcost and high park cost
+        // high startcost and high park cost,
+        // because start in park zone and end in free parking
         expect(myTrip).to.deep.equal({
             id: myTrip.id,
             user_id: 5,
@@ -199,20 +204,36 @@ describe('trip model', () => {
             park_cost: 100.00,
             total_cost: 155.00
         });
+    });
+    it('end a trip, start in park zone and end in park zone ok', async () => {
+        let conn = await db.pool.getConnection();
 
-        myTrip = await tripModel.start(4, 6);
+        let sql = `
+        UPDATE bike
+        SET coords = ?
+        WHERE id = ?;`
+
+
+        let args = [JSON.stringify(points.ok_park), 6];
+        await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
+
+        let myTrip = await tripModel.start(4, 6);
+        conn = await db.pool.getConnection();
         sql = `
         UPDATE trip
         SET start_time = ?
         WHERE id = ?;
-        UPDATE bike
-        SET coords = ?
-        WHERE id = ?;`;
+        ;`
 
-        // backdate starttime of the trip
-        startTime = new Date();
-        startTime.setMinutes(startTime.getMinutes() - 33)
-        args = [startTime, myTrip.id, JSON.stringify(points.ok_charge), 6];
+        // backdate starttime of the trip and start position to charge zone
+        let startTime = new Date();
+        startTime.setMinutes(startTime.getMinutes() - 49)
+        args = [startTime, myTrip.id];
+
+
 
         await conn.query(sql, args);
         if (conn) {
@@ -227,8 +248,55 @@ describe('trip model', () => {
         delete myTrip.end_time;
         delete myTrip.start_time;
 
-        // low startcost because start in free parking and end in park_zone
-        // low park cost because end in park zone
+        // hight startcost  and high park cost
+        // because start in free parking and
+        // because end in fee parking
+        expect(myTrip).to.deep.equal({
+            id: myTrip.id,
+            user_id: 4,
+            bike_id: 6,
+            start_pos: points.ok_park,
+            end_pos: points.ok_park,
+            start_cost: 10.00,
+            var_cost: 49 * 3,
+            park_cost: 5.00,
+            total_cost: 49 * 3.00 + 10.00 + 5.00
+        });
+    });
+
+    it('end a trip, start in bad parking end in charge zone', async () => {
+        const conn = await db.pool.getConnection();
+
+        let myTrip = await tripModel.start(4, 6);
+        let sql = `
+        UPDATE trip
+        SET start_time = ?
+        WHERE id = ?;
+        UPDATE bike
+        SET coords = ?
+        WHERE id = ?;`
+
+        // backdate starttime of the trip and start position to charge zone
+        let startTime = new Date();
+        startTime.setMinutes(startTime.getMinutes() - 33)
+        let args = [startTime, myTrip.id, JSON.stringify(points.ok_charge), 6];
+
+        await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
+
+        myTrip = await tripModel.end(4, myTrip.id);
+        expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
+
+
+        delete myTrip.end_time;
+        delete myTrip.start_time;
+
+        // low startcost  and low park cost
+        // because start in free parking and
+        // because end in charge zone
         expect(myTrip).to.deep.equal({
             id: myTrip.id,
             user_id: 4,
@@ -236,12 +304,99 @@ describe('trip model', () => {
             start_pos: [11.9721,57.70229],
             end_pos: points.ok_charge,
             start_cost: 5.00,
-            var_cost: 33 * 3,
+            var_cost: 33 * 3.00,
             park_cost: 5.00,
             total_cost: 99.00 + 5.00 + 5.00
         });
     });
 
+    it('end a trip, start in bad parking end in park zone', async () => {
+        let myTrip = await tripModel.start(4, 6);
+        const conn = await db.pool.getConnection();
+        let sql = `
+        UPDATE trip
+        SET start_time = ?
+        WHERE id = ?;
+        UPDATE bike
+        SET coords = ?
+        WHERE id = ?;`
+
+        // backdate starttime of the trip and start position to park zone
+        let startTime = new Date();
+        startTime.setMinutes(startTime.getMinutes() - 28)
+        let args = [startTime, myTrip.id, JSON.stringify(points.ok_park), 6];
+
+        await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
+
+        myTrip = await tripModel.end(4, myTrip.id);
+        expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
+
+
+        delete myTrip.end_time;
+        delete myTrip.start_time;
+
+        // low startcost  and low park cost
+        // because start in free parking and
+        // because end in charge zone
+        expect(myTrip).to.deep.equal({
+            id: myTrip.id,
+            user_id: 4,
+            bike_id: 6,
+            start_pos: [11.9721,57.70229],
+            end_pos: points.ok_park,
+            start_cost: 5.00,
+            var_cost: 28 * 3,
+            park_cost: 5.00,
+            total_cost: 28.00 * 3 + 5.00 + 5.00
+        });
+    });
+
+    it('end a trip, start in bad parking end in bad parking', async () => {
+        let myTrip = await tripModel.start(4, 6);
+
+        const conn = await db.pool.getConnection();
+        let sql = `
+        UPDATE trip
+        SET start_time = ?
+        WHERE id = ?;`
+
+        // backdate starttime of the trip 
+        let startTime = new Date();
+        startTime.setMinutes(startTime.getMinutes() - 14)
+        let args = [startTime, myTrip.id];
+
+        await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
+
+        myTrip = await tripModel.end(4, myTrip.id);
+        expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
+
+
+        delete myTrip.end_time;
+        delete myTrip.start_time;
+
+        // hight startcost  and high park cost
+        // because start in free parking and
+        // because end in fee parking
+        expect(myTrip).to.deep.equal({
+            id: myTrip.id,
+            user_id: 4,
+            bike_id: 6,
+            start_pos: [11.9721,57.70229],
+            end_pos: [11.9721,57.70229],
+            start_cost: 10.00,
+            var_cost: 14 * 3,
+            park_cost: 100.00,
+            total_cost: 14.00 * 3 + 10.00 +100.00
+        });
+    });
 
     it('end a trip, not ok - different user', async () => {
 
