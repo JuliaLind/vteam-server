@@ -48,6 +48,22 @@ const trip = {
         });
 
         return trips;
+    },
+    /**
+     * Method that returns a user's trip in an interval
+     * created with offset and limit
+     * @param {Number} userId
+     * @param {Number} offset
+     * @param {Number} limit
+     * @returns {Promise<Array>}
+     */
+    userTripsPag: async function(userId, offset, limit) {
+        const result = await db.queryWithArgs(`CALL user_trips_pag(?, ?, ?);`, [userId, offset, limit]);
+        const trips = result[0].map((trip) => {
+            return this.adjTypes(trip);
+        });
+
+        return trips;
     }
 
 };
