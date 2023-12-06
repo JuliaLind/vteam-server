@@ -5,7 +5,7 @@ import sinon from 'sinon';
 chai.should();
 const expect = chai.expect;
 import { db } from "../src/models/db.js";
-import userModel from "../src/models/user.js";
+import bikeModel from "../src/models/bike.js";
 import tripModel from "../src/models/trip.js";
 import { bikes } from './dummy-data/bikes.js';
 import { users } from './dummy-data/users.js';
@@ -72,7 +72,8 @@ describe('trip model', () => {
     it('starts a trip, ok', async () => {
         const trip = await tripModel.start(4, 6);
         expect(Math.abs(new Date - trip.start_time)/1000).to.be.lessThan(1);
-
+        const isRented = await bikeModel.isRented(6);
+        expect(isRented).to.be.true;
         delete trip.start_time;
         expect(trip).to.deep.equal({
             id: trip.id,
@@ -123,6 +124,8 @@ describe('trip model', () => {
 
         const trips = await tripModel.userTrips(4);
         expect(trips.length).to.equal(0);
+        const isRented = await bikeModel.isRented(5);
+        expect(isRented).to.be.false;
     });
 
     it('cannot start a trip again because bike has status "rented", same error even if user same', async () => {
@@ -137,6 +140,8 @@ describe('trip model', () => {
             expect(error.sqlState).to.equal('45000');
             expect(error.message).to.include('Cannot rent bike 6');
         }
+        const isRented = await bikeModel.isRented(6);
+        expect(isRented).to.be.true;
         expect(secondTrip).to.be.an.undefined;
         const trips = await tripModel.userTrips(4);
         expect(trips.length).to.equal(1);
@@ -194,6 +199,8 @@ describe('trip model', () => {
         }
 
         expect(bikeStatus[0].status_id).to.equal(2);
+        const isRented = await bikeModel.isRented(6);
+        expect(isRented).to.be.true;
         myTrip = await tripModel.end(5, myTrip.id);
 
         expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
@@ -203,6 +210,8 @@ describe('trip model', () => {
         delete myTrip.end_time;
         delete myTrip.start_time;
 
+        isRented = await bikeModel.isRented(6);
+        expect(isRented).to.be.false;
         // high startcost and high park cost,
         // because start in park zone and end in free parking
         expect(myTrip).to.deep.equal({
@@ -268,11 +277,14 @@ describe('trip model', () => {
             conn.end();
         }
 
+        const isRented = await bikeModel.isRented(6);
+        expect(isRented).to.be.true;
         myTrip = await tripModel.end(4, myTrip.id);
         expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
         expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
 
-
+        isRented = await bikeModel.isRented(6);
+        expect(isRented).to.be.false;
         delete myTrip.end_time;
         delete myTrip.start_time;
 
@@ -461,7 +473,8 @@ describe('trip model', () => {
 
     // Add test for:
 
-
+    // 1. that a maintenance required status is not overwriten
+    // when a trip ends
     // 4. end a trip ok (check trip, check balance, different costs)
     // 4.2 test with different start zone and end zone combos
     // bad+bad, good+good, bad+good, good+bad

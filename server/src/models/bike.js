@@ -2,6 +2,20 @@ import { db } from "./db.js"
 
 
 const bike = {
+    /**
+     * Returns true om cykeln har en pågående resa,
+     * i annat fall false
+     * @param {Number} bikeId
+     * @returns {Promise<Object>}
+     */
+    isRented: async function(bikeId) {
+        const result = await db.queryWithArgs(`CALL is_rented(?);`, [bikeId]);
+        if (result[0][0]) {
+            return true;
+        }
+        return false;
+    },
+
     adjTypes(bikeObj) {
         const newObj = {
             id: bikeObj.id,
