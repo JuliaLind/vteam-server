@@ -4,8 +4,6 @@ import bikeModel from "../../src/models/bike.js";
 import cityModel from "../../src/models/city.js";
 
 const router = express.Router();
-// TODO: Glöm inte att lägga till en feed-route som klienterna kan koppla upp sig mot
-// Antagligen i en egen fil.
 
 /**
  * @description Route for getting all bikes
@@ -79,17 +77,17 @@ router.put("/:id", async (req, res, next) => {
         const bikeId = parseInt(req.params.id);
         const bikeData = req.body;
 
-        await bikeModel.updateBike(
-            bikeId,
-            bikeData.status_id,
-            bikeData.charge_perc,
-            bikeData.coords
-        );
+        const databaseData = {
+            id: bikeId,
+            status: bikeData.status_id,
+            charge: bikeData.charge_perc,
+            coords: bikeData.coords
+        };
 
-        // TODO: Fixa stream till klienter
+        clientManager.updateBikeData(bikeId, bikeData, databaseData, bikeModel.updateBike);
+
         clientManager.broadcastToClients(bikeData);
 
-        // TODO: Skicka annat än status 200?
         res.status(204).send();
     } catch (error) {
         next(error);
@@ -132,10 +130,19 @@ router.get("/instructions", async (req, res, next) => {
         res.setHeader("Cache-Control", "no-cache");
         res.setHeader("Connection", "keep-alive");
 
-        clientManager.addBike(res);
+        let bikeId = parseInt(String(req.headers["bike_id"]));
 
-        req.on("close", () => {
-            clientManager.removeBike(res);
+        // TODO: kom på ett bättre sätt att lösa det här på.
+        if (isNaN(bikeId)) {
+            return res.status(400).json({ error: "Invalid bike ID" });
+        }
+
+        clientManager.addBike(bikeId, res);;
+
+        res.on('close', () => {
+            clientManager.removeBike(bikeId);
+
+            res.end();
         });
     } catch (error) {
         next(error);
