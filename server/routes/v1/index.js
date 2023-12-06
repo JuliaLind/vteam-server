@@ -13,8 +13,8 @@ import zonesRouter from "./zones.js";
 
 const router = express.Router();
 
-router.use("/admin", empModel.checkAdminAcc, adminRouter);
-router.use("/user", userModel.checkToken, userRouter);
+router.use("/admin", /** empModel.checkAdminAcc */ adminRouter);
+router.use("/user", /** userModel.checkToken */ userRouter);
 router.use("/bikes", bikesRouter);
 router.use("/card", cardRouter);
 router.use("/cities", citiesRouter);
