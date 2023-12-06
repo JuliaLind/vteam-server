@@ -173,4 +173,13 @@ BEGIN
 END
 ;;
 
+CREATE PROCEDURE is_rented(
+    b_id INT
+)
+BEGIN
+    SELECT id FROM trip 
+    WHERE bike_id = b_id
+    AND end_time IS NULL;
+END;;
+
 DELIMITER ;
