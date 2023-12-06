@@ -1,7 +1,7 @@
-/* global it describe */
+/* global it describe beforeEach after */
 
 import chai from 'chai';
-import sinon from 'sinon';
+
 chai.should();
 const expect = chai.expect;
 import { db } from "../src/models/db.js";
@@ -121,7 +121,7 @@ describe('trip model', () => {
             expect(error.sqlState).to.equal('45000');
             expect(error.message).to.include('Cannot rent bike 5');
         }
-
+        expect(trip).to.be.an.undefined;
         const trips = await tripModel.userTrips(4);
         expect(trips.length).to.equal(0);
         const isRented = await bikeModel.isRented(5);

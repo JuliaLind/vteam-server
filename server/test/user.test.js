@@ -1,4 +1,4 @@
-/* global it describe */
+/* global it describe beforeEach afterEach */
 
 import chai from 'chai';
 import sinon from 'sinon';
@@ -371,12 +371,14 @@ describe('user model', () => {
     });
 
     it('gets a user from DB (used in login), email not ok)', async () => {
+        let user;
         try {
-            const user = await userModel.getFromDB("julia@bth.se");
+            await userModel.getFromDB("julia@bth.se");
             throw new Error("Expected Error (The user does not exist)");
         } catch (error) {
             expect(error.message).to.include("The user does not exist");
         }
+        expect(user).to.be.an.undefined;
     });
 
     it('update user email, email missing', async () => {
@@ -392,6 +394,7 @@ describe('user model', () => {
             expect(error.sqlState).to.equal('23000');
             expect(error.message).to.include("Column 'email' cannot be null");
         }
+        expect(updated).to.be.an.undefined;
 
         const notUpdated = await userModel.search(5);
         expect(notUpdated).to.deep.equal([{
