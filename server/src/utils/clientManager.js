@@ -1,19 +1,18 @@
-/**
- * Client manager module for managing connections and broadcasting messages.
- * @module clientManager
- */
-
 import express from "express";
 
+const CACHE_LIFETIME = 30 * 1000; // 30 seconds in milliseconds
+
 /**
- * Manages client and bike connections.
+ * Manages client and bike connections with caching.
  */
 const clientManager = {
     /** @type {Array<express.Response>} */
     clients: [],
 
-    /** @type {Array<express.Response>} */
-    bikes: [],
+    /** 
+     * @type {Object<string, {data: any, res: express.Response | null, timestamp: number | null}>} 
+     */
+    cachedBikeData: {},
 
     /**
      * Adds a new client to the clients array.
@@ -32,35 +31,58 @@ const clientManager = {
     },
 
     /**
-     * Adds a new bike to the bikes array.
-     * @param {express.Response} bike - The bike connection to add.
+     * Initializes a new bike entry in the cache.
+     * @param {Number} bikeId - The bike ID.
+     * @param {express.Response} res - The bike connection response to add.
      */
-    addBike(bike) {
-        this.bikes.push(bike);
+    addBike(bikeId, res) {
+        this.cachedBikeData[bikeId] = {
+            res: res,
+            data: null,
+            timestamp: null
+        };
     },
 
     /**
-     * Removes a bike from the bikes array.
-     * @param {express.Response} bike - The bike to remove.
+     * Removes a bike's res key (and value) from the cache object
+     * @param {Number} bikeId - Id of the bike for which to set res to null
      */
-    removeBike(bike) {
-        this.bikes = this.bikes.filter(b => b !== bike);
+    removeBike(bikeId) {
+        this.cachedBikeData[bikeId].res = null
     },
 
     /**
-     * Retrieves the current list of bikes.
-     * @returns {Array<express.Response>} The current list of bikes.
+     * Updates bike data in the cache and writes to database if necessary.
+     * @param {Number} bikeId - The bike ID.
+     * @param {any} dbData - Data to update database with.
+     * @param {any} cachedData - Data to cache.
+     * @param {Function} updateBike - Function to write data to the database.
      */
-    getBikes() {
-        return this.bikes;
-    },
+    async updateBikeData(bikeId, cachedData, dbData, updateBike) {
+        const cacheEntry = this.cachedBikeData[bikeId];
 
-    /**
-     * Retrieves the current list of clients.
-     * @returns {Array<express.Response>} The current list of clients.
-     */
-    getClients() {
-        return this.clients;
+        // Kolla om det finns en timestamp eller om cachen har gått ut
+        const isCacheExpired = !cacheEntry.timestamp || (Date.now() - cacheEntry.timestamp > CACHE_LIFETIME);
+
+        if (isCacheExpired) {
+            // Om cachen är utgången eller inte finns --> uppdatera databasen
+            await updateBike(
+                dbData.id,
+                dbData.status,
+                dbData.charge,
+                dbData.coords
+            );
+
+            // Uppdatera cachen med ny data och tidsstämpel
+            this.cachedBikeData[bikeId] = {
+                ...cacheEntry,
+                data: cachedData,
+                timestamp: Date.now()
+            };
+        } else {
+            // Annars uppdatera endast cachad data
+            this.cachedBikeData[bikeId].data = cachedData;
+        }
     },
 
     /**
@@ -71,12 +93,18 @@ const clientManager = {
         this.clients.forEach(client => client.write(`data: ${JSON.stringify(message)}\n\n`));
     },
 
+
     /**
-     * Broadcasts a message to all bikes.
+     * Broadcasts a message to a specific bike.
+     * @param {Number} bikeId - The ID of the bike to which the message should be broadcast.
      * @param {Object} message - The message to broadcast.
      */
-    broadcastToBikes(message) {
-        this.bikes.forEach(bike => bike.write(`data: ${JSON.stringify(message)}\n\n`));
+    broadcastToBike(bikeId, message) {
+        const bike = this.cachedBikeData[bikeId];
+        
+        if (bike && bike.res) {
+            bike.res.write(`data: ${JSON.stringify(message)}\n\n`);
+        }
     }
 };
 
