@@ -145,7 +145,7 @@ describe('trip model', () => {
         expect(secondTrip).to.be.an.undefined;
         const trips = await tripModel.userTrips(4);
         expect(trips.length).to.equal(1);
-        // expect(Math.abs(new Date - trips[0].start_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(new Date - trips[0].start_time)/1000).to.be.lessThan(1);
         delete trips[0].start_time;
 
         // check that no changes were done to the trip initiated by first user
@@ -201,7 +201,7 @@ describe('trip model', () => {
         expect(isRented).to.be.true;
         myTrip = await tripModel.end(5, myTrip.id);
 
-        // expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
         expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
 
 
@@ -297,7 +297,7 @@ describe('trip model', () => {
 
         myTrip = await tripModel.end(5, myTrip.id);
 
-        // expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
         expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
 
 
@@ -374,7 +374,7 @@ describe('trip model', () => {
         let isRented = await bikeModel.isRented(6);
         expect(isRented).to.be.true;
         myTrip = await tripModel.end(4, myTrip.id);
-        // expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
         expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
 
         isRented = await bikeModel.isRented(6);
@@ -421,7 +421,7 @@ describe('trip model', () => {
         let isRented = await bikeModel.isRented(6);
         expect(isRented).to.be.true;
         myTrip = await tripModel.end(4, myTrip.id);
-        // expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
         expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
 
         isRented = await bikeModel.isRented(6);
@@ -468,7 +468,7 @@ describe('trip model', () => {
         }
 
         myTrip = await tripModel.end(4, myTrip.id);
-        // expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
         expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
 
 
@@ -513,7 +513,7 @@ describe('trip model', () => {
         }
 
         myTrip = await tripModel.end(4, myTrip.id);
-        // expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
         expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
 
 
@@ -556,8 +556,10 @@ describe('trip model', () => {
         }
 
         myTrip = await tripModel.end(4, myTrip.id);
-        // expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
         expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
+
 
 
         delete myTrip.end_time;
@@ -595,7 +597,7 @@ describe('trip model', () => {
         // check that the trip has not been ended
         let trips = await tripModel.userTrips(5);
 
-        // expect(Math.abs(new Date - trips[0].start_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(new Date - trips[0].start_time)/1000).to.be.lessThan(1);
         delete trips[0].start_time;
         expect(trips.length).to.equal(1);
         expect(trips[0]).to.deep.equal({

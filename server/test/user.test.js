@@ -381,6 +381,17 @@ describe('user model', () => {
         expect(user).to.be.an.undefined;
     });
 
+        it('gets a user from DB (used in login), email not ok)', async () => {
+        let user;
+        try {
+            await userModel.getFromDB("julia@bth.se");
+            throw new Error("Expected Error (The user does not exist)");
+        } catch (error) {
+            expect(error.message).to.include("The user does not exist");
+        }
+        expect(user).to.be.an.undefined;
+    });
+
     it('update user email, email missing', async () => {
 
         let updated;
@@ -388,7 +399,6 @@ describe('user model', () => {
         try {
             // try passing undefined instead of email
             updated = await userModel.updEmail(5, undefined);
-            // this row will not be executed if the above function throws an error as expected
             throw new Error('Expected SqlError (email column cannot be null)');
         } catch (error) {
             expect(error.sqlState).to.equal('23000');
@@ -410,7 +420,4 @@ describe('user model', () => {
     //1. get token from github
     // 2. register
     // 3. login
-    // 4. user serch one ok
-    // 5. user seach one not ok
-    // 6. 
 });

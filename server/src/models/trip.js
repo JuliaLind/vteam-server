@@ -51,6 +51,14 @@ const trip = {
 
         return trips;
     },
+    allTrips: async function() {
+        const result = await db.queryNoArgs(`CALL all_trips();`);
+        const trips = result[0].map((trip) => {
+            return this.adjTypes(trip);
+        });
+
+        return trips;
+    },
     /**
      * Method that returns a user's trip in an interval
      * created with offset and limit
@@ -66,7 +74,16 @@ const trip = {
         });
 
         return trips;
-    }
+    },
+    allTripsPag: async function(offset, limit) {
+        const result = await db.queryWithArgs(`CALL all_trips_pag(?, ?);`, [offset, limit]);
+        const trips = result[0].map((trip) => {
+            return this.adjTypes(trip);
+        });
+
+        return trips;
+    },
+
 
 };
 

@@ -23,7 +23,7 @@ describe('bike model', () => {
 
         let args = [];
         for (const bike of bikes) {
-            args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active,])
+            args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active])
         }
 
         await conn.query(sql, args);
