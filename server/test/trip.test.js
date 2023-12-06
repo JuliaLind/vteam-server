@@ -161,9 +161,9 @@ describe('trip model', () => {
 
     // add another assert to below to test bad start, good en dposition (add at the top)
     // add additional tests for checking user balance after each trip
-    it('end a trip, start in charge and end in bad parking ok', async () => {
+    it('end a trip, start in charge and end in bad parking = high start cost, high park cost', async () => {
         let myTrip = await tripModel.start(5, 6);
-        const conn = await db.pool.getConnection();
+        let conn = await db.pool.getConnection();
 
         let sql = `
         UPDATE trip
@@ -178,10 +178,22 @@ describe('trip model', () => {
         let args = [startTime, JSON.stringify(points.ok_charge), myTrip.id];
 
         await conn.query(sql, args);
+
+        sql = `
+        SELECT status_id
+        FROM bike
+        WHERE id = ?
+        ;`;
+
+        args = [6];
+        let bikeStatus = await conn.query(sql, args);
+
+
         if (conn) {
             conn.end();
         }
 
+        expect(bikeStatus[0].status_id).to.equal(2);
         myTrip = await tripModel.end(5, myTrip.id);
 
         expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
@@ -204,8 +216,24 @@ describe('trip model', () => {
             park_cost: 100.00,
             total_cost: 155.00
         });
+
+        conn = await db.pool.getConnection();
+
+        sql = `
+        SELECT status_id
+        FROM bike
+        WHERE id = ?
+        ;`;
+
+        args = [6];
+
+        bikeStatus = await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
+        expect(bikeStatus[0].status_id).to.equal(1);
     });
-    it('end a trip, start in park zone and end in park zone ok', async () => {
+    it('end a trip, start in park zone and end in park zone = high start cost and low park cost', async () => {
         let conn = await db.pool.getConnection();
 
         let sql = `
@@ -264,7 +292,7 @@ describe('trip model', () => {
         });
     });
 
-    it('end a trip, start in bad parking end in charge zone', async () => {
+    it('end a trip, start in bad parking end in charge zone = low start cost and low park cost', async () => {
         const conn = await db.pool.getConnection();
 
         let myTrip = await tripModel.start(4, 6);
@@ -310,7 +338,7 @@ describe('trip model', () => {
         });
     });
 
-    it('end a trip, start in bad parking end in park zone', async () => {
+    it('end a trip, start in bad parking end in park zone = low start cost and low park cost', async () => {
         let myTrip = await tripModel.start(4, 6);
         const conn = await db.pool.getConnection();
         let sql = `
@@ -355,7 +383,7 @@ describe('trip model', () => {
         });
     });
 
-    it('end a trip, start in bad parking end in bad parking', async () => {
+    it('end a trip, start in bad parking end in bad parking = high start cost and high park cost', async () => {
         let myTrip = await tripModel.start(4, 6);
 
         const conn = await db.pool.getConnection();
