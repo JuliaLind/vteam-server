@@ -18,14 +18,14 @@ export const trips = [
         id: 2,
         user_id: 5,
         bike_id: 4,
-        start_time: new Date("2023-10-01 14:31:45"),
-        end_time: new Date("2023-10-01 14:58:45"),
+        start_time: new Date("2023-10-01 14:12:45"),
+        end_time: new Date("2023-10-01 14:18:45"),
         start_pos: [18.05371,59.32705],
         end_pos: [18.06656,59.32301],
         start_cost: 5.00,
         var_cost: 45.00,
         park_cost: 5.00,
-        total_cost: 155.00
+        total_cost: 55.00
     },
     {
         id: 3,
@@ -70,7 +70,7 @@ export const trips = [
         id: 6,
         user_id: 6,
         bike_id: 4,
-        start_time: new Date("2023-10-05 08:31:45"),
+        start_time: new Date("2023-10-05 08:39:45"),
         end_time: new Date("2023-10-05 09:08:34"),
         start_pos: [18.08633,59.3168],
         end_pos: [18.06714,59.33586],

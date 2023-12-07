@@ -91,29 +91,113 @@ describe('trip model part 2', () => {
     it('get all trips', async () => {
         let res = await tripModel.allTrips();
         expect(res.length).to.equal(15);
+        res = res.map((elem) => {
+            delete elem.id;
+            return elem;
+        });
+        expect(res).to.deep.equal(dataAdj);
+    });
 
-    //     delete trips[0].start_time;
-    //     expect(trips[0]).to.deep.equal({
-    //         id: trip.id,
-    //         user_id: 4,
-    //         bike_id: 6,
-    //         start_pos: [11.9721,57.70229],
-    //         end_time: null,
-    //         end_pos: null,
-    //         start_cost: null,
-    //         var_cost: null,
-    //         park_cost: null,
-    //         total_cost: null
-    //     });
+    it('get all trips paginated', async () => {
+        let res = await tripModel.allTripsPag(2, 5);
+        expect(res.length).to.equal(5);
+        res = res.map((elem) => {
+            delete elem.id;
+            return elem;
+        });
+        expect(res).to.deep.equal(dataAdj.slice(2, 2 + 5));
+
+        res = await tripModel.allTripsPag(1, 8);
+        expect(res.length).to.equal(8);
+        res = res.map((elem) => {
+            delete elem.id;
+            return elem;
+        });
+        expect(res).to.deep.equal(dataAdj.slice(1, 1 + 8));
+
+        // out of range, 15 elements total
+        res = await tripModel.allTripsPag(12, 20);
+        expect(res.length).to.equal(3);
+        res = res.map((elem) => {
+            delete elem.id;
+            return elem;
+        });
+        expect(res).to.deep.equal(dataAdj.slice(12, 20));
+    });
+
+    it('get all trips for a user', async () => {
+
+        // user 6
+        let userTrips = dataAdj.filter((elem) => elem.user_id === 6);
+        let res = await tripModel.userTrips(6);
+        expect(res.length).to.equal(7);
+        res = res.map((elem) => {
+            delete elem.id;
+            return elem;
+        });
+        expect(res).to.deep.equal(userTrips);
+
+        // user 7
+        userTrips = dataAdj.filter((elem) => elem.user_id === 7);
+        res = await tripModel.userTrips(7);
+        expect(res.length).to.equal(3);
+        res = res.map((elem) => {
+            delete elem.id;
+            return elem;
+        });
+        expect(res).to.deep.equal(userTrips);
+
+        
+        // user 5
+        userTrips = dataAdj.filter((elem) => elem.user_id === 5);
+        res = await tripModel.userTrips(5);
+        expect(res.length).to.equal(5);
+        res = res.map((elem) => {
+            delete elem.id;
+            return elem;
+        });
+        expect(res).to.deep.equal(userTrips);
+    });
+
+    it('get all trips for a user paginated', async () => {
+
+        // user 6
+        let userTrips = dataAdj.filter((elem) => elem.user_id === 6);
+        let res = await tripModel.userTripsPag(6, 2, 3);
+        expect(res.length).to.equal(3);
+        res = res.map((elem) => {
+            delete elem.id;
+            return elem;
+        });
+        expect(res).to.deep.equal(userTrips.slice(2, 2 + 3));
+
+        res = await tripModel.userTripsPag(6, 3, 3);
+        expect(res.length).to.equal(3);
+        res = res.map((elem) => {
+            delete elem.id;
+            return elem;
+        });
+        expect(res).to.deep.equal(userTrips.slice(3, 3 + 3));
+
+        res = await tripModel.userTripsPag(6, 3, 5);
+        // because only 7 elemens in tital so, 3 + 4
+        expect(res.length).to.equal(4);
+        res = res.map((elem) => {
+            delete elem.id;
+            return elem;
+        });
+        expect(res).to.deep.equal(userTrips.slice(3, 3 + 5));
 
 
-    //     expect(trips[0].end_time).to.be.null;
-    //     expect(trips[0].end_pos).to.be.null;
-    //     expect(trips[0].start_pos).to.deep.equal([11.9721,57.70229]);
-    //     expect(trips[0].start_cost).to.be.null;
-    //     expect(trips[0].var_cost).to.be.null;
-    //     expect(trips[0].park_cost).to.be.null;
-
+        // user 5
+        userTrips = dataAdj.filter((elem) => elem.user_id === 5);
+        res = await tripModel.userTripsPag(5, 2, 3);
+        expect(res.length).to.equal(3);
+        res = res.map((elem) => {
+            delete elem.id;
+            return elem;
+        });
+        expect(res).to.deep.equal(userTrips.slice(2, 2 + 3));
     });
 });
 

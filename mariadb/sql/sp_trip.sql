@@ -176,7 +176,7 @@ BEGIN
     WHERE
         `user_id` = u_id
     ORDER BY
-        id DESC
+        start_time DESC
     ;
 END
 ;;
@@ -188,13 +188,12 @@ BEGIN
     FROM
         `v_trip`
     ORDER BY
-        id DESC
+        start_time DESC
     ;
 END
 ;;
 
 CREATE PROCEDURE all_trips_pag(
-    u_id INT,
     a_offset INT,
     a_limit INT
 )
@@ -202,9 +201,9 @@ BEGIN
     SELECT
         *
     FROM
-        `trip`
+        `v_trip`
     ORDER BY
-        id DESC
+        start_time DESC
     LIMIT a_limit
     OFFSET a_offset
     ;
@@ -220,10 +219,10 @@ BEGIN
     SELECT
         *
     FROM
-        `trip`
+        `v_trip`
     WHERE
         `user_id` = u_id
-    ORDER BY id DESC
+    ORDER BY start_time DESC
     LIMIT a_limit
     OFFSET a_offset
     ;
