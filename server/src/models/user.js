@@ -39,19 +39,37 @@ const user = {
             return next();
         });
     },
+    /**
+     * Exchanges a github token for the
+     * user's email
+     * @param {String} githubToken 
+     */
     extractEmail: async function(githubToken) {
         // add logic here for extracting user email from Github
         // await ....
     },
+    /**
+     * Inserts a new user into the
+     * database (to be used in the register
+     * method). Returns an object containing
+     * the id and the email of the user
+     * @param {String} email 
+     * @param {String} cardnr 
+     * @param {Number} cardtype 
+     * @returns {Promise<Object>}
+     */
     insertIntoDB: async function(email, cardnr, cardtype) {
 
         const result = await db.queryWithArgs(`CALL new_user(?, ?, ?);`, [email, cardnr, cardtype]);
 
         return result[0][0];
-
     },
     /**
-     * 
+     * Gets user details from db.
+     * Returns an object containing the
+     * users id and email (to be used in the
+     * login method). Throws an error if
+     * the user has been deactivated
      * @param {String} email 
      * @returns {Promise<Object>}
      */
@@ -66,7 +84,8 @@ const user = {
 
     },
     /**
-     * body should contain Github Token,
+     * Registers a new user
+     * Body should contain Github Token,
      * Card nr as string and card type as int
      * @param {express.Request} req
      * @param {express.Response} res
@@ -86,16 +105,20 @@ const user = {
         });
     },
     /**
-     * body should contain Github Token
+     * Body should contain Github Token.
+     * Logins the user and returns a token.
+     * The tokens payload contains the user's
+     * id and email
      * @param {express.Request} req
      * @param {express.Response} res
      * @param {express.NextFunction} next
      */
     login: async function(req, res, next) {
         const email = this.extractEmail(req.body.token)
-        const payload = await db.queryWithArgs(`CALL user_login(?);`, [email]);
+        const payload = await this.getFromDB(email);
 ;
         const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: "24h" });
+
         return res.json({
             data: {
                 type: "success",
@@ -107,7 +130,7 @@ const user = {
     },
     /**
      * 
-     * @param {String | Number} what id or email to search for, for wilcard search add % before, after or both
+     * @param {String | Number} what id or email to search for, for wildcard search add % before, after or both
      * @return {Promise<Array>} if the search string is not a wildcard the array will only contain one object. Use this method so get data for single user, make sure to pick out the first elem from array
      */
     search: async function(what) {
@@ -117,7 +140,9 @@ const user = {
         });
     },
     /**
-     * 
+     * Updates the user's active-status.
+     * Returns an updated user-object containing:
+     * id, email, balance and active (bool)
      * @param {Number} userId 
      * @param {Boolean} active 
      * @returns {Promise<Object>}
@@ -127,7 +152,9 @@ const user = {
         return this.adjTypes(result[0][0]);
     },
     /**
-     * 
+     * Updates the user's email. Returns an
+     * updated user-object containing:
+     * id, email, balance and active (bool)
      * @param {Number} userId
      * @param {String} email
      * @returns {Promise<Object>}
