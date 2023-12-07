@@ -198,6 +198,11 @@ describe('trip model part 2', () => {
             return elem;
         });
         expect(res).to.deep.equal(userTrips.slice(2, 2 + 3));
+
+        // non-existsing user
+        res = await tripModel.userTripsPag(9, 2, 3);
+        expect(res.length).to.equal(0);
+        expect(res).to.deep.equal([]);
     });
 });
 
