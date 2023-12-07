@@ -10,20 +10,38 @@ import express from "express";
 
 const jwtSecret = String(process.env.JWT_SECRET);
 
-// separata modeller för emp och user eftersom
-// inloggningen och registereringen fungerar annorlunda
-// och checkToken funktionen kommer också skilja sig,
-// dels ingen check för roll och dets lyfta ut idt och lägga till på req.body
 const emp = {
+    /**
+     * Returns id, username,
+     * password-hash and role.
+     * Will not return anything if
+     * the admin's account has been
+     * deactivated
+     * @param {String} username 
+     * @returns {Promise<Object>}
+     */
     getOneFromDb: async function(username) {
         const result = await db.queryWithArgs(`CALL emp_login(?);`, [username]);
         return result[0][0];
     },
+    /**
+     * Checks if a token is valid
+     * and if it's payload contains
+     * role attribute with value
+     * "admin"
+     * @param {express.Request} req 
+     * @param {express.Response} res 
+     * @param {express.NextFunction} next 
+     */
     checkAdminAcc: function(req, res, next) {
         this.checkToken(req, res, next, ["admin"]);
     },
     /**
-     * 
+     * Checks if a token is valid
+     * and if it's payload contains
+     * role attribute with a value
+     * that is included in the array
+     * of acceptable rows
      * @param {express.Request} req 
      * @param {express.Response} res 
      * @param {express.NextFunction} next 
@@ -65,11 +83,20 @@ const emp = {
                     }
                 });
             }
-            // kallar den för emp för att skilja från user attributet som kan vara med i vissa förfrågningar
-            req.body.emp = {
-                id: decoded.id,
-                role: decoded.role
-            };
+            /**
+             * OBS! osäker på om vi
+             * behöver lägga till
+             * dessa detaljer i bodyn,
+             * jag tror inte att
+             * det kommer behövas någonstans? 
+             * Har användaren passerat denna route
+             * så är det redan säkerställt att man har behörighet
+             * Kommetnerar ut sålänge
+             */
+            // req.body.emp = {
+            //     id: decoded.id,
+            //     role: decoded.role
+            // };
 
             return next();
         });
