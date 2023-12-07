@@ -14,7 +14,7 @@ BEGIN
     FROM
         `payment`
     ORDER BY
-        `date` DESC
+        `id` DESC
     ;
 END
 ;;
@@ -30,7 +30,7 @@ BEGIN
     WHERE
         `user_id` = u_id
     ORDER BY
-        `date` DESC
+        `id` DESC
     ;
 END
 ;;
@@ -48,7 +48,7 @@ BEGIN
     WHERE
         `user_id` = u_id
     ORDER BY
-        `date` DESC
+        `id` DESC
     LIMIT a_limit
     OFFSET a_offset
     ;
@@ -65,7 +65,7 @@ BEGIN
     FROM
         `payment`
     ORDER BY
-        `date` DESC
+        `id` DESC
     LIMIT a_limit
     OFFSET a_offset
     ;
@@ -138,7 +138,7 @@ END
 
 CREATE PROCEDURE prepay(
     u_id INT,
-    p_amount INT
+    p_amount DECIMAL(7,2)
 )
 BEGIN
     SET @ref := extract_ref((SELECT card_nr FROM `user` WHERE id = u_id));

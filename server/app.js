@@ -4,6 +4,8 @@ import cors from "cors";
 import morgan from "morgan";
 
 
+
+
 dotenv.config();
 // dotenv.config({ path: '.env' });
 
@@ -28,15 +30,18 @@ app.use("/v1", apiRouter);
 
 app.use(errorHandler);
 
+// just for testing via browser
+import userModel from "./src/models/user.js";
+
+
 
 /**
  * Just to check that database connection
  * is working.. will remove later
  */
 app.get("/", async (req, res) => {
-    res.json({
-        data: "Hej från team2 server",
-    });
+    const result = await userModel.allPag(10, 3);
+    res.json(result);
 });
 
 app.listen(port, () => {

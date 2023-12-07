@@ -1,4 +1,4 @@
-/* global it describe */
+/* global it describe beforeEach afterEach */
 
 import chai from 'chai';
 import sinon from 'sinon';
@@ -371,12 +371,25 @@ describe('user model', () => {
     });
 
     it('gets a user from DB (used in login), email not ok)', async () => {
+        let user;
         try {
-            const user = await userModel.getFromDB("julia@bth.se");
+            await userModel.getFromDB("julia@bth.se");
             throw new Error("Expected Error (The user does not exist)");
         } catch (error) {
             expect(error.message).to.include("The user does not exist");
         }
+        expect(user).to.be.an.undefined;
+    });
+
+        it('gets a user from DB (used in login), email not ok)', async () => {
+        let user;
+        try {
+            await userModel.getFromDB("julia@bth.se");
+            throw new Error("Expected Error (The user does not exist)");
+        } catch (error) {
+            expect(error.message).to.include("The user does not exist");
+        }
+        expect(user).to.be.an.undefined;
     });
 
     it('update user email, email missing', async () => {
@@ -386,12 +399,12 @@ describe('user model', () => {
         try {
             // try passing undefined instead of email
             updated = await userModel.updEmail(5, undefined);
-            // this row will not be executed if the above function throws an error as expected
             throw new Error('Expected SqlError (email column cannot be null)');
         } catch (error) {
             expect(error.sqlState).to.equal('23000');
             expect(error.message).to.include("Column 'email' cannot be null");
         }
+        expect(updated).to.be.an.undefined;
 
         const notUpdated = await userModel.search(5);
         expect(notUpdated).to.deep.equal([{
@@ -407,7 +420,4 @@ describe('user model', () => {
     //1. get token from github
     // 2. register
     // 3. login
-    // 4. user serch one ok
-    // 5. user seach one not ok
-    // 6. 
 });

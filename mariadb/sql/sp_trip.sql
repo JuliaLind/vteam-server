@@ -1,5 +1,7 @@
 DROP PROCEDURE IF EXISTS user_trips;
 DROP PROCEDURE IF EXISTS user_trips_pag;
+DROP PROCEDURE IF EXISTS all_trips;
+DROP PROCEDURE IF EXISTS all_trips_pag;
 DROP PROCEDURE IF EXISTS start_trip;
 DROP PROCEDURE IF EXISTS end_trip;
 
@@ -49,7 +51,11 @@ BEGIN
     WHERE
         user_id = u_id
     AND
-        bike_id = b_id;
+        bike_id = b_id
+    AND end_time IS NULL
+    -- ORDER BY id DESC
+    -- LIMIT 1
+    ;
 END
 ;;
 
@@ -169,6 +175,37 @@ BEGIN
         `v_trip`
     WHERE
         `user_id` = u_id
+    ORDER BY
+        id DESC
+    ;
+END
+;;
+
+CREATE PROCEDURE all_trips()
+BEGIN
+    SELECT
+        *
+    FROM
+        `v_trip`
+    ORDER BY
+        id DESC
+    ;
+END
+;;
+
+CREATE PROCEDURE all_trips_pag(
+    a_offset INT,
+    a_limit INT
+)
+BEGIN
+    SELECT
+        *
+    FROM
+        `v_trip`
+    ORDER BY
+        id DESC
+    LIMIT a_limit
+    OFFSET a_offset
     ;
 END
 ;;
@@ -182,9 +219,10 @@ BEGIN
     SELECT
         *
     FROM
-        `trip`
+        `v_trip`
     WHERE
         `user_id` = u_id
+    ORDER BY id DESC
     LIMIT a_limit
     OFFSET a_offset
     ;

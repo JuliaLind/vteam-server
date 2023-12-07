@@ -1,4 +1,4 @@
-/* global it describe */
+/* global it describe before afterEach */
 
 import dotenv from "dotenv";
 dotenv.config();

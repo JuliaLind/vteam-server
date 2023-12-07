@@ -1,4 +1,4 @@
-/* global it describe */
+/* global it describe beforeEach */
 
 import chai from 'chai';
 chai.should();
@@ -12,7 +12,9 @@ import { users } from './dummy-data/users.js';
 
 describe('card model', () => {
     beforeEach(async () => {
-        let sql = `DELETE FROM user;`;
+        let sql = `
+        DELETE FROM payment;
+        DELETE FROM user;`;
         const conn = await db.pool.getConnection();
         await conn.query(sql);
 
