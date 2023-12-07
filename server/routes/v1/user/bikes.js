@@ -23,7 +23,8 @@ router.post("/rent/:bikeId", async (req, res, next) => {
 
         const data = {
             bike_id: bikeId,
-            instruction: "unlock_bike"
+            instruction: "set_status",
+            args: [2]
         };
 
         clientManager.broadcastToBikes(data)
@@ -55,7 +56,8 @@ router.put("/return/:tripId", async (req, res, next) => {
 
         const data = {
             bike_id: bikeId,
-            instruction: "lock_bike"
+            instruction: "set_status",
+            args: [1]
         };
 
         clientManager.broadcastToBikes(data);
