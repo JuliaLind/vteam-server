@@ -55,15 +55,21 @@ const city = {
     /**
      * 
      * @param {Number} bikeId 
-     * @returns {Promise<Array>} forbidden zones
+     * @returns {Promise<Object>} forbidden zones
      * in the same city as the bike is registered to
+     * and the city limits
      */
     bikeZones: async function(bikeId) {
         const result = await db.queryWithArgs(`CALL bike_zones(?);`, [bikeId]);
 
-        return result[0].map((zone) => {
+        const city = this.adjTypes(result[0][0]);
+        const zones = result[1].map((zone) => {
             return this.adjTypes(zone);
         });
+        return {
+            ...city,
+            zones: zones
+        };
     }
 }
 
