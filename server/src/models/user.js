@@ -164,7 +164,19 @@ const user = {
         return this.adjTypes(result[0][0]);
     },
     /**
-     * 
+     * Returns an array with all users.
+     * Each user-object contains:
+     * id, email, balance and active attribute (bool)
+     * @returns {Promise<Array>}
+     */
+    all: async function() {
+        const result = await db.queryNoArgs(`CALL all_users();`);
+        return result[0].map((user) => {
+            return this.adjTypes(user);
+        });
+    },
+    /**
+     * Returns all users in an interval.
      * @param {Number} offset
      * @param {Number} limit
      * @returns {Promise<Array>}
@@ -175,16 +187,7 @@ const user = {
             return this.adjTypes(user);
         });
     },
-    /**
-     * 
-     * @returns {Promise<Array>}
-     */
-    all: async function() {
-        const result = await db.queryNoArgs(`CALL all_users();`);
-        return result[0].map((user) => {
-            return this.adjTypes(user);
-        });
-    },
+    
     /**
      * Database returns all attributes
      * as either integers or strings.
