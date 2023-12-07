@@ -42,10 +42,7 @@ async function insertData() {
         conn.end();
     }
     trips = await insertTrips();
-    dataAdj = trips.reverse().map((elem) => {
-        delete elem.id;
-        return elem;
-    })
+    dataAdj = trips.reverse();
 
 }
 
@@ -67,37 +64,21 @@ describe('trip model part 2', () => {
     it('get all trips', async () => {
         let res = await tripModel.allTrips();
         expect(res.length).to.equal(15);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
         expect(res).to.deep.equal(dataAdj);
     });
 
     it('get all trips paginated', async () => {
         let res = await tripModel.allTripsPag(2, 5);
         expect(res.length).to.equal(5);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
         expect(res).to.deep.equal(dataAdj.slice(2, 2 + 5));
 
         res = await tripModel.allTripsPag(1, 8);
         expect(res.length).to.equal(8);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
         expect(res).to.deep.equal(dataAdj.slice(1, 1 + 8));
 
         // out of range, 15 elements total
         res = await tripModel.allTripsPag(12, 20);
         expect(res.length).to.equal(3);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
         expect(res).to.deep.equal(dataAdj.slice(12, 20));
     });
 
@@ -107,20 +88,12 @@ describe('trip model part 2', () => {
         let userTrips = dataAdj.filter((elem) => elem.user_id === 6);
         let res = await tripModel.userTrips(6);
         expect(res.length).to.equal(7);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
         expect(res).to.deep.equal(userTrips);
 
         // user 7
         userTrips = dataAdj.filter((elem) => elem.user_id === 7);
         res = await tripModel.userTrips(7);
         expect(res.length).to.equal(3);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
         expect(res).to.deep.equal(userTrips);
 
         
@@ -128,10 +101,6 @@ describe('trip model part 2', () => {
         userTrips = dataAdj.filter((elem) => elem.user_id === 5);
         res = await tripModel.userTrips(5);
         expect(res.length).to.equal(5);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
         expect(res).to.deep.equal(userTrips);
     });
 
@@ -141,27 +110,15 @@ describe('trip model part 2', () => {
         let userTrips = dataAdj.filter((elem) => elem.user_id === 6);
         let res = await tripModel.userTripsPag(6, 2, 3);
         expect(res.length).to.equal(3);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
         expect(res).to.deep.equal(userTrips.slice(2, 2 + 3));
 
         res = await tripModel.userTripsPag(6, 3, 3);
         expect(res.length).to.equal(3);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
         expect(res).to.deep.equal(userTrips.slice(3, 3 + 3));
 
         res = await tripModel.userTripsPag(6, 3, 5);
         // because only 7 elemens in tital so, 3 + 4
         expect(res.length).to.equal(4);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
         expect(res).to.deep.equal(userTrips.slice(3, 3 + 5));
 
 
@@ -169,10 +126,6 @@ describe('trip model part 2', () => {
         userTrips = dataAdj.filter((elem) => elem.user_id === 5);
         res = await tripModel.userTripsPag(5, 2, 3);
         expect(res.length).to.equal(3);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
         expect(res).to.deep.equal(userTrips.slice(2, 2 + 3));
 
         // non-existsing user
