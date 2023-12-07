@@ -1,5 +1,6 @@
 import express from "express";
 import bikeModel from "../../../src/models/bike.js";
+import clientManager from "../../../src/utils/clientManager.js";
 
 const router = express.Router();
 
@@ -12,11 +13,18 @@ const router = express.Router();
  *
  * @returns {void}
  */
-router.get("/:id/activate", async (req, res, next) => {
+router.put("/:id/activate", async (req, res, next) => {
     try {
         const bikeId = parseInt(req.params.id);
 
         const bikeData = await bikeModel.activate(bikeId);
+
+        const data = {
+            bike_id: bikeId,
+            instruction: "unlock_bike"
+        };
+
+        clientManager.broadcastToBike(bikeId, data);
 
         res.status(200).json(bikeData);
     } catch (error) {
@@ -33,11 +41,18 @@ router.get("/:id/activate", async (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/:id/deactivate", async (req, res, next) => {
+router.put("/:id/deactivate", async (req, res, next) => {
     try {
         const bikeId = parseInt(req.params.id);
 
         const bikeData = await bikeModel.activate(bikeId);
+
+        const data = {
+            bike_id: bikeId,
+            instruction: "lock_bike"
+        };
+
+        clientManager.broadcastToBike(bikeId, data);
 
         res.status(200).json(bikeData);
     } catch (error) {
@@ -54,12 +69,20 @@ router.get("/:id/deactivate", async (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/:bikeId/status/:statusId", async (req, res, next) => {
+router.put("/:bikeId/status/:statusId", async (req, res, next) => {
     try {
         const bikeId = parseInt(req.params.bikeId);
         const statusId = parseInt(req.params.statusId);
 
         const bikeData = await bikeModel.updStatus(bikeId, statusId);
+
+        const data = {
+            bike_id: bikeId,
+            instruction: "set_status",
+            args: [statusId]
+        };
+
+        clientManager.broadcastToBike(bikeId, data);
 
         res.status(200).json(bikeData);
     } catch (error) {
@@ -89,7 +112,7 @@ router.get("/:bikeId/status/:statusId", async (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/:id/change/city", async (req, res, next) => {
+router.put("/:id/change/city", async (req, res, next) => {
     try {
         const bikeId = parseInt(req.params.id);
         const cityId = req.body.city_id;

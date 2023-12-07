@@ -96,7 +96,7 @@ router.get("/:id", async (req, res, next) => {
  *
  * @returns {void}
  */
-router.post("/invoice", async (req, res, next) => {
+router.put("/invoice", async (req, res, next) => {
     try {
         const invoiceData = await paymentModel.invoice();
 

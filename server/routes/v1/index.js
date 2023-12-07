@@ -1,5 +1,6 @@
 import express from "express";
-// import some model from some file
+import empModel from "../../src/models/emp.js";
+import userModel from "../../src/models/user.js";
 
 import adminRouter from "./admin/index.js";
 import userRouter from "./user/index.js";
@@ -12,8 +13,8 @@ import zonesRouter from "./zones.js";
 
 const router = express.Router();
 
-router.use("/admin", /** + authModel.checkToken + role */ adminRouter);
-router.use("/user", /** + authModel.checkToken */ userRouter);
+router.use("/admin", /** empModel.checkAdminAcc */ adminRouter);
+router.use("/user", /** userModel.checkToken */ userRouter);
 router.use("/bikes", bikesRouter);
 router.use("/card", cardRouter);
 router.use("/cities", citiesRouter);

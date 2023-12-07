@@ -1,4 +1,5 @@
 import express from "express";
+import tripModel from "../../../src/models/trip.js";
 import clientManager from "../../../src/utils/clientManager.js";
 
 const router = express.Router();
@@ -14,21 +15,22 @@ const router = express.Router();
  */
 router.post("/rent/:bikeId", async (req, res, next) => {
     try {
-        const bikeId = req.params.bikeId;
+        const bikeId = parseInt(req.params.bikeId);
         const userId = req.body.userId;
 
-        // const result = await bikeModel createTrip etc..
-        // Hämta parseIntad tripId ur resultatet
+        const trip = await tripModel.start(userId, bikeId);
+        const tripId = trip.id;
 
         const data = {
             bike_id: bikeId,
-            instruction: "unlock_bike"
+            instruction: "set_status",
+            args: [2]
         };
 
         clientManager.broadcastToBikes(data)
 
         res.status(200).json({
-            // trip_id: tripId
+            trip_id: tripId
         });
     } catch (error) {
         next(error);
@@ -44,16 +46,18 @@ router.post("/rent/:bikeId", async (req, res, next) => {
  *
  * @returns {void}
  */
-router.post("/return/:tripId", async (req, res, next) => {
+router.put("/return/:tripId", async (req, res, next) => {
     try {
         const tripId = parseInt(req.params.tripId);
-        const bikeId = req.body.bike_id;
+        const userId = req.body.user_id;
 
-        // const result = await bikeModel endTrip etc..
+        const trip = await tripModel.end(userId, tripId);
+        const bikeId = trip.bike_id;
 
         const data = {
             bike_id: bikeId,
-            instruction: "lock_bike"
+            instruction: "set_status",
+            args: [1]
         };
 
         clientManager.broadcastToBikes(data);
