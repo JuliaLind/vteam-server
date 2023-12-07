@@ -11,8 +11,8 @@ import apiRouter from "./routes/v1/index.js";
 import errorHandler from "./src/middleware/error-handler.js";
 // import apiKeyHandler from "./src/middleware/apiKey-handler.js";
 
-
 const app = express();
+const port = 1337;
 
 app.use(morgan("dev"));
 
@@ -37,6 +37,10 @@ app.get("/", async (req, res) => {
     res.json({
         data: "Hej från team2 server",
     });
+});
+
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 });
 
 export default app;
