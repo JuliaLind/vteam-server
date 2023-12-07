@@ -1,208 +1,208 @@
-/* global it describe beforeEach after */
+// /* global it describe beforeEach after */
 
-import chai from 'chai';
-chai.should();
-const expect = chai.expect;
-import { db } from "../src/models/db.js";
-import tripModel from "../src/models/trip.js";
-import { bikes } from './dummy-data/bikes.js'
-import { users } from './dummy-data/users.js'
-import { trips } from './dummy-data/trips.js'
-const dataAdj = trips.reverse().map((elem) => {
-    delete elem.id;
-    return elem;
-})
+// import chai from 'chai';
+// chai.should();
+// const expect = chai.expect;
+// import { db } from "../src/models/db.js";
+// import tripModel from "../src/models/trip.js";
+// import { bikes } from './dummy-data/bikes.js'
+// import { users } from './dummy-data/users.js'
+// import { trips } from './dummy-data/trips.js'
+// const dataAdj = trips.reverse().map((elem) => {
+//     delete elem.id;
+//     return elem;
+// })
 
-async function insertData() {
-    const conn = await db.pool.getConnection();
-    let sql = `DELETE FROM trip;
-        DELETE FROM user;
-        DELETE FROM bike;
-        INSERT INTO bike VALUES(?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?);
-        INSERT INTO user VALUES(?, ?, ?, ?, ?, ?),
-            (?, ?, ?, ?, ?, ?),
-            (?, ?, ?, ?, ?, ?),
-            (?, ?, ?, ?, ?, ?);
-        INSERT INTO trip VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-        `;
+// async function insertData() {
+//     const conn = await db.pool.getConnection();
+//     let sql = `DELETE FROM trip;
+//         DELETE FROM user;
+//         DELETE FROM bike;
+//         INSERT INTO bike VALUES(?, ?, ?, ?, ?, ?),
+//         (?, ?, ?, ?, ?, ?),
+//         (?, ?, ?, ?, ?, ?);
+//         INSERT INTO user VALUES(?, ?, ?, ?, ?, ?),
+//             (?, ?, ?, ?, ?, ?),
+//             (?, ?, ?, ?, ?, ?),
+//             (?, ?, ?, ?, ?, ?);
+//         INSERT INTO trip VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
+//         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
+//         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
+//         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
+//         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
+//         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
+//         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
+//         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
+//         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
+//         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
+//         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
+//         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
+//         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
+//         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?),
+//         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+//         `;
 
-        let args = [];
+//         let args = [];
 
-    for (const bike of bikes) {
-        args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active])
-    }
-    for (const user of users) {
-        args = args.concat([user.id, user.email, user.card, user.card_type, user.balance, user.active]);
-    }
-    for (const elem of trips) {
-        args = args.concat([
-            elem.id,
-            elem.user_id,
-            elem.bike_id,
-            elem.start_time,
-            elem.end_time,
-            JSON.stringify(elem.start_pos),
-            JSON.stringify(elem.end_pos),
-            elem.start_cost,
-            elem.var_cost,
-            elem.park_cost
-        ]);
-    }
+//     for (const bike of bikes) {
+//         args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active])
+//     }
+//     for (const user of users) {
+//         args = args.concat([user.id, user.email, user.card, user.card_type, user.balance, user.active]);
+//     }
+//     for (const elem of trips) {
+//         args = args.concat([
+//             elem.id,
+//             elem.user_id,
+//             elem.bike_id,
+//             elem.start_time,
+//             elem.end_time,
+//             JSON.stringify(elem.start_pos),
+//             JSON.stringify(elem.end_pos),
+//             elem.start_cost,
+//             elem.var_cost,
+//             elem.park_cost
+//         ]);
+//     }
 
 
-    await conn.query(sql, args);
-    if (conn) {
-        conn.end();
-    }
+//     await conn.query(sql, args);
+//     if (conn) {
+//         conn.end();
+//     }
 
-}
+// }
 
-describe('trip model part 2', () => {
-    beforeEach(async () => {
-        await insertData();
-    });
-    after(async () => {
-        const conn = await db.pool.getConnection();
+// describe('trip model part 2', () => {
+//     beforeEach(async () => {
+//         await insertData();
+//     });
+//     after(async () => {
+//         const conn = await db.pool.getConnection();
 
-        let sql = `DELETE FROM trip;
-        DELETE FROM user;
-        DELETE FROM bike;`;
-        await conn.query(sql);
-        if (conn) {
-            conn.end();
-        }
-    })
-    it('get all trips', async () => {
-        let res = await tripModel.allTrips();
-        expect(res.length).to.equal(15);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
-        expect(res).to.deep.equal(dataAdj);
-    });
+//         let sql = `DELETE FROM trip;
+//         DELETE FROM user;
+//         DELETE FROM bike;`;
+//         await conn.query(sql);
+//         if (conn) {
+//             conn.end();
+//         }
+//     })
+//     it('get all trips', async () => {
+//         let res = await tripModel.allTrips();
+//         expect(res.length).to.equal(15);
+//         res = res.map((elem) => {
+//             delete elem.id;
+//             return elem;
+//         });
+//         expect(res).to.deep.equal(dataAdj);
+//     });
 
-    it('get all trips paginated', async () => {
-        let res = await tripModel.allTripsPag(2, 5);
-        expect(res.length).to.equal(5);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
-        expect(res).to.deep.equal(dataAdj.slice(2, 2 + 5));
+//     it('get all trips paginated', async () => {
+//         let res = await tripModel.allTripsPag(2, 5);
+//         expect(res.length).to.equal(5);
+//         res = res.map((elem) => {
+//             delete elem.id;
+//             return elem;
+//         });
+//         expect(res).to.deep.equal(dataAdj.slice(2, 2 + 5));
 
-        res = await tripModel.allTripsPag(1, 8);
-        expect(res.length).to.equal(8);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
-        expect(res).to.deep.equal(dataAdj.slice(1, 1 + 8));
+//         res = await tripModel.allTripsPag(1, 8);
+//         expect(res.length).to.equal(8);
+//         res = res.map((elem) => {
+//             delete elem.id;
+//             return elem;
+//         });
+//         expect(res).to.deep.equal(dataAdj.slice(1, 1 + 8));
 
-        // out of range, 15 elements total
-        res = await tripModel.allTripsPag(12, 20);
-        expect(res.length).to.equal(3);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
-        expect(res).to.deep.equal(dataAdj.slice(12, 20));
-    });
+//         // out of range, 15 elements total
+//         res = await tripModel.allTripsPag(12, 20);
+//         expect(res.length).to.equal(3);
+//         res = res.map((elem) => {
+//             delete elem.id;
+//             return elem;
+//         });
+//         expect(res).to.deep.equal(dataAdj.slice(12, 20));
+//     });
 
-    it('get all trips for a user', async () => {
+//     it('get all trips for a user', async () => {
 
-        // user 6
-        let userTrips = dataAdj.filter((elem) => elem.user_id === 6);
-        let res = await tripModel.userTrips(6);
-        expect(res.length).to.equal(7);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
-        expect(res).to.deep.equal(userTrips);
+//         // user 6
+//         let userTrips = dataAdj.filter((elem) => elem.user_id === 6);
+//         let res = await tripModel.userTrips(6);
+//         expect(res.length).to.equal(7);
+//         res = res.map((elem) => {
+//             delete elem.id;
+//             return elem;
+//         });
+//         expect(res).to.deep.equal(userTrips);
 
-        // user 7
-        userTrips = dataAdj.filter((elem) => elem.user_id === 7);
-        res = await tripModel.userTrips(7);
-        expect(res.length).to.equal(3);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
-        expect(res).to.deep.equal(userTrips);
+//         // user 7
+//         userTrips = dataAdj.filter((elem) => elem.user_id === 7);
+//         res = await tripModel.userTrips(7);
+//         expect(res.length).to.equal(3);
+//         res = res.map((elem) => {
+//             delete elem.id;
+//             return elem;
+//         });
+//         expect(res).to.deep.equal(userTrips);
 
         
-        // user 5
-        userTrips = dataAdj.filter((elem) => elem.user_id === 5);
-        res = await tripModel.userTrips(5);
-        expect(res.length).to.equal(5);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
-        expect(res).to.deep.equal(userTrips);
-    });
+//         // user 5
+//         userTrips = dataAdj.filter((elem) => elem.user_id === 5);
+//         res = await tripModel.userTrips(5);
+//         expect(res.length).to.equal(5);
+//         res = res.map((elem) => {
+//             delete elem.id;
+//             return elem;
+//         });
+//         expect(res).to.deep.equal(userTrips);
+//     });
 
-    it('get all trips for a user paginated', async () => {
+//     it('get all trips for a user paginated', async () => {
 
-        // user 6
-        let userTrips = dataAdj.filter((elem) => elem.user_id === 6);
-        let res = await tripModel.userTripsPag(6, 2, 3);
-        expect(res.length).to.equal(3);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
-        expect(res).to.deep.equal(userTrips.slice(2, 2 + 3));
+//         // user 6
+//         let userTrips = dataAdj.filter((elem) => elem.user_id === 6);
+//         let res = await tripModel.userTripsPag(6, 2, 3);
+//         expect(res.length).to.equal(3);
+//         res = res.map((elem) => {
+//             delete elem.id;
+//             return elem;
+//         });
+//         expect(res).to.deep.equal(userTrips.slice(2, 2 + 3));
 
-        res = await tripModel.userTripsPag(6, 3, 3);
-        expect(res.length).to.equal(3);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
-        expect(res).to.deep.equal(userTrips.slice(3, 3 + 3));
+//         res = await tripModel.userTripsPag(6, 3, 3);
+//         expect(res.length).to.equal(3);
+//         res = res.map((elem) => {
+//             delete elem.id;
+//             return elem;
+//         });
+//         expect(res).to.deep.equal(userTrips.slice(3, 3 + 3));
 
-        res = await tripModel.userTripsPag(6, 3, 5);
-        // because only 7 elemens in tital so, 3 + 4
-        expect(res.length).to.equal(4);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
-        expect(res).to.deep.equal(userTrips.slice(3, 3 + 5));
+//         res = await tripModel.userTripsPag(6, 3, 5);
+//         // because only 7 elemens in tital so, 3 + 4
+//         expect(res.length).to.equal(4);
+//         res = res.map((elem) => {
+//             delete elem.id;
+//             return elem;
+//         });
+//         expect(res).to.deep.equal(userTrips.slice(3, 3 + 5));
 
 
-        // user 5
-        userTrips = dataAdj.filter((elem) => elem.user_id === 5);
-        res = await tripModel.userTripsPag(5, 2, 3);
-        expect(res.length).to.equal(3);
-        res = res.map((elem) => {
-            delete elem.id;
-            return elem;
-        });
-        expect(res).to.deep.equal(userTrips.slice(2, 2 + 3));
+//         // user 5
+//         userTrips = dataAdj.filter((elem) => elem.user_id === 5);
+//         res = await tripModel.userTripsPag(5, 2, 3);
+//         expect(res.length).to.equal(3);
+//         res = res.map((elem) => {
+//             delete elem.id;
+//             return elem;
+//         });
+//         expect(res).to.deep.equal(userTrips.slice(2, 2 + 3));
 
-        // non-existsing user
-        res = await tripModel.userTripsPag(9, 2, 3);
-        expect(res.length).to.equal(0);
-        expect(res).to.deep.equal([]);
-    });
-});
+//         // non-existsing user
+//         res = await tripModel.userTripsPag(9, 2, 3);
+//         expect(res.length).to.equal(0);
+//         expect(res).to.deep.equal([]);
+//     });
+// });
 

@@ -580,6 +580,65 @@ describe('trip model', () => {
             total_cost: 14.00 * 3 + 10.00 +100.00
         });
     });
+    // it('trip should end when bike is deactivated', async () => {
+    //     let myTrip = await tripModel.start(4, 6);
+
+    //     const conn = await db.pool.getConnection();
+    //     let sql = `
+    //     UPDATE trip
+    //     SET start_time = ?
+    //     WHERE id = ?;`
+
+    //     // backdate starttime of the trip 
+    //     let startTime = new Date();
+    //     startTime.setMinutes(startTime.getMinutes() - 14)
+    //     let args = [startTime, myTrip.id];
+
+    //     await conn.query(sql, args);
+    //     if (conn) {
+    //         conn.end();
+    //     }
+
+    //     let data = await bikeModel.deactivate(6);
+    //     let bike = data.bike;
+    //     myTrip = data.trip;
+
+    //     expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
+    //     expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
+    //     expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
+
+
+
+    //     delete myTrip.end_time;
+    //     delete myTrip.start_time;
+
+    //     // hight startcost  and high park cost
+    //     // because start in free parking and
+    //     // because end in fee parking
+    //     expect(myTrip).to.deep.equal({
+    //         id: myTrip.id,
+    //         user_id: 4,
+    //         bike_id: 6,
+    //         start_pos: [11.9721,57.70229],
+    //         end_pos: [11.9721,57.70229],
+    //         start_cost: 10.00,
+    //         var_cost: 14 * 3,
+    //         park_cost: 100.00,
+    //         total_cost: 14.00 * 3 + 10.00 + 100.00
+    //     });
+
+    //     expect(bike).to.deep.equal([
+    //         {
+    //             id: 6,
+    //             city_id: "GBG",
+    //             status_id: 1,
+    //             status_descr: "available",
+    //             charge_perc: 0.2,
+    //             coords: [11.9721,57.70229],
+    //             active: false,
+    //         }
+    //     ]);
+    // });
 
     it('end a trip, not ok - different user', async () => {
 
@@ -616,6 +675,7 @@ describe('trip model', () => {
 
     // Add test for:
 
-    // 5. end a trip, repeated request
-    // 6. rent with different statuses, only 'available' should work
+    // 1. end a trip, repeated request
+    // 2. rent with different statuses, only 'available' should work
+    // 3. deactivate when active trip, check that trip has ended
 });

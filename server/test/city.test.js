@@ -103,5 +103,5 @@ describe('city model', () => {
 
 // add tests for
 // 1. zones in city
-// 2. zones for bike
+// 2. bike zones (should return city data + array with zones)
 // 3. all zones
