@@ -42,14 +42,26 @@ describe('api key model', () => {
         ]);
     });
 
-    it('test check one active', async () => {
+    it('active key', async () => {
         const result = await apiKeyModel.checkOne("02311fc3c16ab94abd005e82e4ada31c");
 
         expect(result).to.be.true;
     });
 
-    it('test check one inactive', async () => {
+    it('inactive key', async () => {
         const result = await apiKeyModel.checkOne("9ecf1298e36401fb8da2cc7daa255625");
+
+        expect(result).to.be.false;
+    });
+
+    it('key not in db', async () => {
+        const result = await apiKeyModel.checkOne("notavalidkey");
+
+        expect(result).to.be.false;
+    });
+
+    it('missing key', async () => {
+        const result = await apiKeyModel.checkOne(undefined);
 
         expect(result).to.be.false;
     });

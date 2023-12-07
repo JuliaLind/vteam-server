@@ -618,6 +618,4 @@ describe('trip model', () => {
 
     // 5. end a trip, repeated request
     // 6. rent with different statuses, only 'available' should work
-    // get all trips for a user
-    // get all trips for a user paginated
 });
