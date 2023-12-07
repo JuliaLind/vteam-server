@@ -2,6 +2,9 @@ import { db } from "./db.js"
 
 
 const apiKey = {
+    /**
+     * @type {Array<String>}
+     */
     keys: [],
 
     /**
@@ -10,7 +13,13 @@ const apiKey = {
      */
     getActiveFromDB: async function() {
         const result = await db.queryNoArgs(`CALL active_api_keys();`);
-        this.keys = result[0].map((elem) => {
+
+        /**
+         * @type {Array<Object>}
+         */
+        const activeKeys = result[0];
+
+        this.keys = activeKeys.map((elem) => {
             return elem.key;
         })
     },
