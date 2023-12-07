@@ -176,7 +176,7 @@ BEGIN
     WHERE
         `user_id` = u_id
     ORDER BY
-        start_time DESC
+        id DESC
     ;
 END
 ;;
@@ -188,7 +188,7 @@ BEGIN
     FROM
         `v_trip`
     ORDER BY
-        start_time DESC
+        id DESC
     ;
 END
 ;;
@@ -203,7 +203,7 @@ BEGIN
     FROM
         `v_trip`
     ORDER BY
-        start_time DESC
+        id DESC
     LIMIT a_limit
     OFFSET a_offset
     ;
@@ -222,7 +222,7 @@ BEGIN
         `v_trip`
     WHERE
         `user_id` = u_id
-    ORDER BY start_time DESC
+    ORDER BY id DESC
     LIMIT a_limit
     OFFSET a_offset
     ;
