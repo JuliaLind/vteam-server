@@ -89,14 +89,13 @@ const emp = {
              * dessa detaljer i bodyn,
              * jag tror inte att
              * det kommer behövas någonstans? 
-             * Har användaren passerat denna route
+             * Har admin  passerat denna route
              * så är det redan säkerställt att man har behörighet
-             * Kommetnerar ut sålänge
              */
-            // req.body.emp = {
-            //     id: decoded.id,
-            //     role: decoded.role
-            // };
+            req.body.emp = {
+                id: decoded.id,
+                role: decoded.role
+            };
 
             return next();
         });
