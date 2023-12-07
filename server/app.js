@@ -31,18 +31,18 @@ app.use("/v1", apiRouter);
 app.use(errorHandler);
 
 // just for testing via browser
-import userModel from "./src/models/user.js";
+// import userModel from "./src/models/user.js";
 
 
 
-/**
- * Just to check that database connection
- * is working.. will remove later
- */
-app.get("/", async (req, res) => {
-    const result = await userModel.allPag(10, 3);
-    res.json(result);
-});
+// /**
+//  * Just to check that database connection
+//  * is working.. will remove later
+//  */
+// app.get("/", async (req, res) => {
+//     const result = await userModel.allPag(10, 3);
+//     res.json(result);
+// });
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
