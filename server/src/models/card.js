@@ -2,6 +2,12 @@ import { db } from "./db.js"
 
 
 const card = {
+    /**
+     * Returns all valid cards.
+     * Each card objects contains
+     * id (int) and name (string)
+     * @returns {Promise<Array>}
+     */
     getTypes: async function() {
         const result = await db.queryNoArgs(`CALL card_types();`);
         return result[0];
@@ -17,7 +23,9 @@ const card = {
         return result[0][0];
     },
     /**
-     * 
+     * Updates cardnr and cardtype
+     * of a user. Returns the updated
+     * card_nr, card_type and card_type_descr
      * @param {Number} userId 
      * @param {String} cardnr 
      * @param {Number} cardType 
