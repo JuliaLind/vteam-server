@@ -6,6 +6,9 @@ import mariadb from 'mariadb';
 let host = process.env.DB_HOST;
 let database = process.env.DB_DATABASE;
 
+/**
+ * Changes to test database
+ */
 if (process.env.NODE_ENV === "test") {
     host = process.env.DB_TEST_HOST;
     database = process.env.TEST_DATABASE;
@@ -23,8 +26,18 @@ const pool = mariadb.createPool({
 
 
 export const db = {
+    /**
+     * For handling connections
+     * to the database
+     */
     pool: pool,
 
+    /**
+     * For database queries without
+     * arguments
+     * @param {String} sql 
+     * @returns {Promise<Array>}
+     */
     queryNoArgs: async function(sql) {
         let conn;
 
@@ -41,6 +54,13 @@ export const db = {
         }
     },
 
+    /**
+     * For database queries
+     * with arguments
+     * @param {String} sql 
+     * @param {Array} args 
+     * @returns {Promise<Array>}
+     */
     queryWithArgs: async function(sql, args) {
         let conn;
 

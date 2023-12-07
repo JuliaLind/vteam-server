@@ -1,4 +1,4 @@
-/* global it describe */
+/* global it describe beforeEach */
 
 import chai from 'chai';
 chai.should();
@@ -23,7 +23,7 @@ describe('bike model', () => {
 
         let args = [];
         for (const bike of bikes) {
-            args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active,])
+            args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active])
         }
 
         await conn.query(sql, args);
@@ -258,7 +258,7 @@ describe('bike model', () => {
     it('deactivate an active or inactive bike, no ongoing trip. Both should work', async () => {
         let bike = await bikeModel.deactivate(5)
 
-        expect(bike).to.deep.equal({
+        expect(bike.bike).to.deep.equal({
             id: 5,
             city_id: "KRLST",
             status_id: 1,
@@ -269,7 +269,7 @@ describe('bike model', () => {
         });
         bike = await bikeModel.deactivate(4)
 
-        expect(bike).to.deep.equal({
+        expect(bike.bike).to.deep.equal({
             id: 4,
             city_id: "STHLM",
             status_id: 4,
@@ -379,8 +379,4 @@ describe('bike model', () => {
             }
         ]);
     });
-
-    // add test for
-    // 1. deactivate when active trip, check that trip has ended
-
 });

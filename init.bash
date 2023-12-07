@@ -2,7 +2,9 @@
 
 docker-compose up -d --build
 
-# docker-compose down -v
+docker exec -it server bash
+
+docker-compose down -v
 
 
 
