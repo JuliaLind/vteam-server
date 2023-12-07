@@ -3,6 +3,7 @@ import { db } from "./db.js"
 
 const apiKey = {
     /**
+     * An array with all active API keys
      * @type {Array<String>}
      */
     keys: [],
