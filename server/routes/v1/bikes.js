@@ -6,6 +6,60 @@ import cityModel from "../../src/models/city.js";
 const router = express.Router();
 
 /**
+ * @description Route for getting bike instructions
+ *
+ * @param {express.Request} req Request object
+ * @param {express.Response} res Response object
+ * @param {express.NextFunction} next Next function
+ *
+ * @returns {void}
+ */
+router.get("/instructions", async (req, res, next) => {
+    try {
+        res.setHeader("Content-Type", "text/event-stream");
+        res.setHeader("Cache-Control", "no-cache");
+        res.setHeader("Connection", "keep-alive");
+
+        let bikeId = parseInt(String(req.headers["bike_id"]));
+
+        // TODO: kom på ett bättre sätt att lösa det här på.
+        if (isNaN(bikeId)) {
+            return res.status(400).json({ error: "Invalid bike ID" });
+        }
+
+        clientManager.addBike(bikeId, res);;
+
+        res.on('close', () => {
+            clientManager.removeBike(bikeId);
+
+            res.end();
+        });
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+});
+
+/**
+ * @description Route for getting all statuses a bike can have
+ *
+ * @param {express.Request} req Request object
+ * @param {express.Response} res Response object
+ * @param {express.NextFunction} next Next function
+ *
+ * @returns {void}
+ */
+router.get("/status", async (req, res, next) => {
+    try {
+        const statuses = await bikeModel.statuses();
+
+        res.status(200).json(statuses);
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
  * @description Route for getting all bikes
  *
  * @param {express.Request} req Request object
@@ -39,25 +93,6 @@ router.get("/:id", async (req, res, next) => {
         const bike = await bikeModel.getOne(bikeId);
 
         res.status(200).json(bike);
-    } catch (error) {
-        next(error);
-    }
-});
-
-/**
- * @description Route for getting all statuses a bike can have
- *
- * @param {express.Request} req Request object
- * @param {express.Response} res Response object
- * @param {express.NextFunction} next Next function
- *
- * @returns {void}
- */
-router.get("/status", async (req, res, next) => {
-    try {
-        const statuses = await bikeModel.statuses();
-
-        res.status(200).json(statuses);
     } catch (error) {
         next(error);
     }
@@ -110,40 +145,6 @@ router.get("/:id/zones", async (req, res, next) => {
         const bikeZones = await cityModel.bikeZones(bikeId);
 
         res.status(200).json(bikeZones);
-    } catch (error) {
-        next(error);
-    }
-});
-
-/**
- * @description Route for getting bike instructions
- *
- * @param {express.Request} req Request object
- * @param {express.Response} res Response object
- * @param {express.NextFunction} next Next function
- *
- * @returns {void}
- */
-router.get("/instructions", async (req, res, next) => {
-    try {
-        res.setHeader("Content-Type", "text/event-stream");
-        res.setHeader("Cache-Control", "no-cache");
-        res.setHeader("Connection", "keep-alive");
-
-        let bikeId = parseInt(String(req.headers["bike_id"]));
-
-        // TODO: kom på ett bättre sätt att lösa det här på.
-        if (isNaN(bikeId)) {
-            return res.status(400).json({ error: "Invalid bike ID" });
-        }
-
-        clientManager.addBike(bikeId, res);;
-
-        res.on('close', () => {
-            clientManager.removeBike(bikeId);
-
-            res.end();
-        });
     } catch (error) {
         next(error);
     }
