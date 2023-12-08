@@ -57,9 +57,13 @@ router.get("/limit/:limit/offset/:offset", async (req, res, next) => {
  * @returns {void}
  */
 router.get("/all", async (req, res, next) => {
-    // code here for getting trips for one user
-    // Båda admin och användare använder den här routen
-    // user_id finns antingen i token eller body (admin)
+    try {
+        const trips = await tripModel.allTrips();
+
+        res.status(200).json(trips);
+    } catch (error) {
+        next(error);
+    }
 });
 
 export default router;

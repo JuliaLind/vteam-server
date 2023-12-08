@@ -58,12 +58,9 @@ router.get("/limit/:limit/offset/:offset", async (req, res, next) => {
  */
 router.get("/all", async (req, res, next) => {
     try {
-        const userId = req.body.user_id;
+        const transactions = await paymentModel.allPayments();
 
-        // TODO: uncomment below and change method
-        // const transactions = await paymentModel.user_payments(userId);
-
-        // res.status(200).json(transactions);
+        res.status(200).json(transactions);
     } catch (error) {
         next(error);
     }

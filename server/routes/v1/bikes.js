@@ -27,7 +27,7 @@ router.get("/instructions", async (req, res, next) => {
             return res.status(400).json({ error: "Invalid bike ID" });
         }
 
-        clientManager.addBike(bikeId, res);;
+        clientManager.addBike(bikeId, res);
 
         res.on('close', () => {
             clientManager.removeBike(bikeId);
@@ -112,14 +112,12 @@ router.put("/:id", async (req, res, next) => {
         const bikeId = parseInt(req.params.id);
         const bikeData = req.body;
 
-        const databaseData = {
-            id: bikeId,
-            status: bikeData.status_id,
-            charge: bikeData.charge_perc,
-            coords: bikeData.coords
-        };
-
-        clientManager.updateBikeData(bikeId, bikeData, databaseData, bikeModel.updateBike);
+        await bikeModel.updateBike(
+            bikeId,
+            bikeData.status_id,
+            bikeData.charge_perc,
+            bikeData.coords
+        );
 
         clientManager.broadcastToClients(bikeData);
 
