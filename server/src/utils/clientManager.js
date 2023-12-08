@@ -70,7 +70,6 @@ const clientManager = {
 
         // If statements can be changed to something better.
         if (bike && bike.res) {
-            bike.res.write(`data: ${JSON.stringify(message)}\n\n`);
             bike.res.write(`data: ${message}\n\n`);
         }
 
