@@ -7,22 +7,26 @@ import { db } from "../src/models/db.js";
 import paymentModel from "../src/models/payment.js";
 import userModel from "../src/models/user.js";
 import { users } from './dummy-data/users.js'
-import { payments } from './dummy-data/payments.js'
+// import { payments } from './dummy-data/payments.js'
+import { insertPayments } from './helper.js'
 
-async function insertSomePayments() {
-    let data = [];
-    for (const elem of payments) {
-        let newElem = {
-            ...elem
-        };
-        let inserted = await paymentModel.prepay(elem.
-            user_id, elem.amount);
-        newElem.id = inserted.id;
-        newElem.date = inserted.date;
-        data.push(newElem);
-    }
-    return data.reverse();
-}
+let payments;
+let exp;
+
+// async function insertSomePayments() {
+//     let data = [];
+//     for (const elem of payments) {
+//         let newElem = {
+//             ...elem
+//         };
+//         let inserted = await paymentModel.prepay(elem.
+//             user_id, elem.amount);
+//         newElem.id = inserted.id;
+//         newElem.date = inserted.date;
+//         data.push(newElem);
+//     }
+//     return data.reverse();
+// }
 
 describe('payment model', () => {
     beforeEach(async () => {
@@ -45,6 +49,8 @@ describe('payment model', () => {
         if (conn) {
             conn.end();
         }
+        payments = await insertPayments();
+        exp = payments.reverse();
     });
     after(async () => {
         const conn = await db.pool.getConnection()
@@ -85,7 +91,7 @@ describe('payment model', () => {
         }
 
         const payments4 = await paymentModel.userPayments(4);
-        expect(payments4).to.deep.equal([]);
+        expect(payments4).to.deep.equal(exp.filter((elem) => elem.user_id === 4));
 
         const payments7 = await paymentModel.userPayments(7);
 
@@ -132,13 +138,13 @@ describe('payment model', () => {
         }
         const data = await paymentModel.userPayments(5)
 
-        expect(data).to.deep.equal([]);
+        expect(data).to.deep.equal(exp.filter((elem) => elem.user_id === 5));
 
         const user = await userModel.search(5);
         expect(user[0].balance).to.equal(-372.87);
     });
     it('all_payments', async () => {
-        let exp = await insertSomePayments();
+
         let res = await paymentModel.allPayments();
 
 
@@ -146,7 +152,8 @@ describe('payment model', () => {
     });
 
     it('user_payments, tests 4 user payment sets', async () => {
-        let exp = await insertSomePayments();
+        // let exp = await insertSomePayments();
+
         const data4 = exp.filter(elem => elem.user_id === 4);
         const data5 = exp.filter(elem => elem.user_id === 5);
         const data6 = exp.filter(elem => elem.user_id === 6);
@@ -164,7 +171,8 @@ describe('payment model', () => {
     });
 
     it('all_payments_pag within and outside range', async () => {
-        let exp = await insertSomePayments();
+        // let exp = await insertSomePayments();
+
         let res = await paymentModel.allPaymentsPag(3,4);
 
         // within range
@@ -185,7 +193,7 @@ describe('payment model', () => {
 });
 
 it('user_payments_pag within and outside range', async () => {
-    let exp = await insertSomePayments();
+    // let exp = await insertSomePayments();
     const exp6 = exp.filter(elem => elem.user_id === 6);
 
     let data = await paymentModel.userPaymentsPag(6, 2, 2);

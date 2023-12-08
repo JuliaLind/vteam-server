@@ -1,5 +1,6 @@
 import { db } from "../src/models/db.js";
 import { trips } from './dummy-data/trips.js'
+import { payments } from './dummy-data/payments.js'
 
 
 export const insertTrips = async function () {
@@ -38,4 +39,38 @@ export const insertTrips = async function () {
         }
     }
     return trips;
+}
+
+export const insertPayments = async function () {
+    const conn = await db.pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        for (const elem of payments) {
+            await conn.query(`INSERT INTO payment(user_id, date, ref, amount)
+             VALUES(?, ?, ?, ?);`, [
+                // elem.id,
+                elem.user_id,
+                new Date(elem.date),
+                elem.ref,
+                elem.amount
+            ]);
+            const id = await conn.query('SELECT MAX(id) AS last_id FROM payment');
+            elem.id = id[0].last_id;
+            // console.log(elem);
+        }
+
+        await conn.commit();
+
+    } catch (err) {
+        if (conn) {
+            await conn.rollback();
+        }
+        throw err;
+    } finally {
+        if (conn) {
+            await conn.end();
+        }
+    }
+    return payments;
 }
