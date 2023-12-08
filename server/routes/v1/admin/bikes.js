@@ -24,7 +24,7 @@ router.put("/:id/activate", async (req, res, next) => {
             instruction: "unlock_bike"
         };
 
-        clientManager.broadcastToBike(bikeId, data);
+        clientManager.broadcastToBikes(bikeId, data);
 
         res.status(200).json(bikeData);
     } catch (error) {
@@ -52,7 +52,7 @@ router.put("/:id/deactivate", async (req, res, next) => {
             instruction: "lock_bike"
         };
 
-        clientManager.broadcastToBike(bikeId, data);
+        clientManager.broadcastToBikes(bikeId, data);
 
         res.status(200).json(bikeData);
     } catch (error) {
@@ -82,7 +82,7 @@ router.put("/:bikeId/status/:statusId", async (req, res, next) => {
             args: [statusId]
         };
 
-        clientManager.broadcastToBike(bikeId, data);
+        clientManager.broadcastToBikes(bikeId, data);
 
         res.status(200).json(bikeData);
     } catch (error) {

@@ -10,7 +10,7 @@ const clientManager = {
     clients: [],
 
     /** 
-     * @type {Object<string, {data: any, res: express.Response | null, timestamp: number | null}>} 
+     * @type {Object<string, {res: express.Response | null}>} 
      */
     cachedBikeData: {},
 
@@ -37,9 +37,7 @@ const clientManager = {
      */
     addBike(bikeId, res) {
         this.cachedBikeData[bikeId] = {
-            res: res,
-            data: null,
-            timestamp: null
+            res: res
         };
     },
 
@@ -52,45 +50,12 @@ const clientManager = {
     },
 
     /**
-     * Updates bike data in the cache and writes to database if necessary.
-     * @param {Number} bikeId - The bike ID.
-     * @param {any} dbData - Data to update database with.
-     * @param {any} cachedData - Data to cache.
-     * @param {Function} updateBike - Function to write data to the database.
-     */
-    async updateBikeData(bikeId, cachedData, dbData, updateBike) {
-        const cacheEntry = this.cachedBikeData[bikeId];
-
-        // Kolla om det finns en timestamp eller om cachen har gått ut
-        const isCacheExpired = !cacheEntry.timestamp || (Date.now() - cacheEntry.timestamp > CACHE_LIFETIME);
-
-        if (isCacheExpired) {
-            // Om cachen är utgången eller inte finns --> uppdatera databasen
-            await updateBike(
-                dbData.id,
-                dbData.status,
-                dbData.charge,
-                dbData.coords
-            );
-
-            // Uppdatera cachen med ny data och tidsstämpel
-            this.cachedBikeData[bikeId] = {
-                ...cacheEntry,
-                data: cachedData,
-                timestamp: Date.now()
-            };
-        } else {
-            // Annars uppdatera endast cachad data
-            this.cachedBikeData[bikeId].data = cachedData;
-        }
-    },
-
-    /**
      * Broadcasts a message to all clients.
      * @param {Object} message - The message to broadcast.
      */
     broadcastToClients(message) {
-        this.clients.forEach(client => client.write(`data: ${JSON.stringify(message)}\n\n`));
+        message = JSON.stringify(message)
+        this.clients.forEach(client => client.write(`data: ${message}\n\n`));
     },
 
 
@@ -99,11 +64,21 @@ const clientManager = {
      * @param {Number} bikeId - The ID of the bike to which the message should be broadcast.
      * @param {Object} message - The message to broadcast.
      */
-    broadcastToBike(bikeId, message) {
+    broadcastToBikes(bikeId, message) {
         const bike = this.cachedBikeData[bikeId];
-        
+        message = JSON.stringify(message)
+
+        // If statements can be changed to something better.
         if (bike && bike.res) {
-            bike.res.write(`data: ${JSON.stringify(message)}\n\n`);
+            bike.res.write(`data: ${message}\n\n`);
+        }
+
+        if (bikeId == -1) {
+            for (const [_, bike] of Object.entries(this.cachedBikeData)) {
+                if (bike.res) {
+                    bike.res.write(`data: ${message}\n\n`);
+                }
+            }
         }
     }
 };

@@ -27,7 +27,7 @@ router.post("/rent/:bikeId", async (req, res, next) => {
             args: [2]
         };
 
-        clientManager.broadcastToBikes(data)
+        clientManager.broadcastToBikes(bikeId, data)
 
         res.status(200).json({
             trip_id: tripId
@@ -60,7 +60,7 @@ router.put("/return/:tripId", async (req, res, next) => {
             args: [1]
         };
 
-        clientManager.broadcastToBikes(data);
+        clientManager.broadcastToBikes(bikeId, data);
 
         res.status(200).json({
             trip_id: tripId

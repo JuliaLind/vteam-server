@@ -18,7 +18,7 @@ router.get("/", async (req, res, next) => {
             instruction_all: "run_simulation"
         };
 
-        clientManager.broadcastToBikes(data);
+        clientManager.broadcastToBikes(-1, data);
 
         res.status(204).send();
     } catch (error) {

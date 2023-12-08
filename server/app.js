@@ -4,7 +4,10 @@ import cors from "cors";
 import morgan from "morgan";
 
 
-
+const corsOptions = {
+    origin: true,
+    credentials: true
+};
 
 dotenv.config();
 // dotenv.config({ path: '.env' });
@@ -18,12 +21,12 @@ const port = 1337;
 
 app.use(morgan("dev"));
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
-// TODO: Här kan vi lägga in en middleware för att kolla API-nyckel?
+// TODO: Avkommentera den här och rad 17 när det är dags.
 // app.use(apiKeyHandler);
 
 app.use("/v1", apiRouter);
