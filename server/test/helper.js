@@ -1,6 +1,7 @@
 import { db } from "../src/models/db.js";
 import { trips } from './dummy-data/trips.js'
 import { payments } from './dummy-data/payments.js'
+import { users } from './dummy-data/users.js'
 
 
 export const insertTrips = async function () {
@@ -55,7 +56,7 @@ export const insertPayments = async function () {
                 elem.ref,
                 elem.amount
             ]);
-            const id = await conn.query('SELECT MAX(id) AS last_id FROM payment');
+            const id = await conn.query('SELECT MAX(id) AS last_id FROM payment;');
             elem.id = id[0].last_id;
             // console.log(elem);
         }
