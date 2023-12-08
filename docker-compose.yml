@@ -11,7 +11,7 @@ services:
     ports:
       - "3306:3306"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-p${DB_ROOT_PASSWORD}"]
+      test: ["CMD", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
       start_period: 10s
       interval: 10s
       timeout: 5s
@@ -30,7 +30,7 @@ services:
     ports:
       - "3307:3306"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-p${DB_ROOT_PASSWORD}"]
+      test: ["CMD", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
       start_period: 10s
       interval: 10s
       timeout: 5s
