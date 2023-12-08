@@ -381,6 +381,17 @@ describe('user model', () => {
         expect(user).to.be.an.undefined;
     });
 
+        it('gets a user from DB (used in login), email not ok)', async () => {
+        let user;
+        try {
+            await userModel.getFromDB("julia@bth.se");
+            throw new Error("Expected Error (The user does not exist)");
+        } catch (error) {
+            expect(error.message).to.include("The user does not exist");
+        }
+        expect(user).to.be.an.undefined;
+    });
+
     it('update user email, email missing', async () => {
 
         let updated;

@@ -3,6 +3,7 @@ DROP PROCEDURE IF EXISTS user_trips_pag;
 DROP PROCEDURE IF EXISTS all_trips;
 DROP PROCEDURE IF EXISTS all_trips_pag;
 DROP PROCEDURE IF EXISTS start_trip;
+DROP PROCEDURE IF EXISTS end_ongoing_trip;
 DROP PROCEDURE IF EXISTS end_trip;
 
 DELIMITER ;;
@@ -162,7 +163,27 @@ BEGIN
 END
 ;;
 
+CREATE PROCEDURE end_ongoing_trip(
+    b_id INT
+)
+BEGIN
+    DECLARE tripid INT;
+    DECLARE userid INT;
+    SELECT id, user_id
+    INTO tripid, userid
+    FROM
+        `trip`
+    WHERE
+        bike_id = b_id
+    AND
+        end_pos IS NULL;
 
+    -- If the bike is rented, end the ongoing trip
+    IF tripid IS NOT NULL THEN
+        CALL end_trip(userid, tripid);
+    END IF;
+END
+;;
 
 
 CREATE PROCEDURE user_trips(

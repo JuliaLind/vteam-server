@@ -1,6 +1,7 @@
 import { db } from "../src/models/db.js";
 import { trips } from './dummy-data/trips.js'
 import { payments } from './dummy-data/payments.js'
+import { zones } from './dummy-data/zones.js'
 import { users } from './dummy-data/users.js'
 
 
@@ -74,4 +75,34 @@ export const insertPayments = async function () {
         }
     }
     return payments;
+}
+
+export const insertZones = async function () {
+    const conn = await db.pool.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        for (const zone of zones) {
+            await conn.query(`INSERT INTO zone_loc(zone_id, city_id, date_from, geometry)
+             VALUES(?, ?, ?, ?, ?);`, [
+                zone.zone_id, zone.city_id, zone.date_from, JSON.stringify(zone.geometry)
+            ]);
+            const id = await conn.query('SELECT MAX(id) AS last_id FROM zone_loc;');
+            zone.id = id[0].last_id;
+            // console.log(elem);
+        }
+
+        await conn.commit();
+
+    } catch (err) {
+        if (conn) {
+            await conn.rollback();
+        }
+        throw err;
+    } finally {
+        if (conn) {
+            await conn.end();
+        }
+    }
+    return zones;
 }

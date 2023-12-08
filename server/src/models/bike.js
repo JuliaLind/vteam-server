@@ -194,7 +194,11 @@ const bike = {
         chargePerc,
         bikeCoords
     ) {
-        await db.queryWithArgs(`CALL update_bike(?, ?, ?, ?);`, [bikeId, bikeStatus, chargePerc, JSON.stringify(bikeCoords)]);
+        const endedTrip = await db.queryWithArgs(`CALL update_bike(?, ?, ?, ?);`, [bikeId, bikeStatus, chargePerc, JSON.stringify(bikeCoords)]);
+        if (endedTrip.length > 0) {
+            return tripModel.adjTypes(endedTrip[0][0]);
+        }
+        return undefined;
     }
 
 

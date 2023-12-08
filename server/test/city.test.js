@@ -5,7 +5,10 @@ chai.should();
 const expect = chai.expect;
 import { db } from "../src/models/db.js";
 import cityModel from "../src/models/city.js";
-import { zones } from './dummy-data/zones.js'
+// import { zones } from './dummy-data/zones.js'
+let zones;
+
+import { insertZones } from './helper.js'
 
 
 
@@ -16,23 +19,13 @@ describe('city model', () => {
         const conn = await db.pool.getConnection()
         let sql = `
         DELETE FROM zone_loc_removed;
-        DELETE FROM zone_loc;
-        INSERT INTO zone_loc VALUES(?, ?, ?, ?, ?),
-            (?, ?, ?, ?, ?),
-            (?, ?, ?, ?, ?),
-            (?, ?, ?, ?, ?),
-            (?, ?, ?, ?, ?),
-            (?, ?, ?, ?, ?),
-            (?, ?, ?, ?, ?);`;
+        DELETE FROM zone_loc;`;
 
-        let args = [];
-        for (const zone of zones) {
-            args = args.concat([zone.id, zone.zone_id, zone.city_id, zone.date_from, JSON.stringify(zone.geometry)]);
-        }
-        await conn.query(sql, args);
+        conn.query(sql);
         if (conn) {
             conn.end();
         }
+        zones = insertZones();
     });
     after(async () => {
         const conn = await db.pool.getConnection()
