@@ -686,7 +686,7 @@ describe('trip model', () => {
         if (conn) {
             conn.end();
         }
-        let myTrip = await tripModel.start(4, 6);
+        await tripModel.start(4, 6);
 
         let endedTrip = await bikeModel.updateBike(6, 2, 0.02, [ 11.3456,57.1123 ]);
 
@@ -781,9 +781,52 @@ describe('trip model', () => {
             total_cost: null
         });
     });
+    it('ending trip twice will not change the values', async () => {
+        let myTrip = await tripModel.start(4, 6);
+        await tripModel.end(4, myTrip.id);
+
+        const conn = await db.pool.getConnection();
+        let sql = `
+        UPDATE trip
+        SET start_time = ?,
+        end_time = ?,
+        var_cost = ?
+        WHERE id = ?;`
+
+        // backdate starttime and endtime of the trip 
+        let startTime = new Date();
+        startTime.setMinutes(startTime.getMinutes() - 20 - 14);
+        let endTime = new Date();
+        endTime.setMinutes(endTime.getMinutes() - 20);
+        let args = [startTime, endTime, 18 * 3, myTrip.id];
+
+        await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
+
+        const latest = await tripModel.end(4, myTrip.id);
+
+        expect(Math.abs(startTime - latest.start_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(endTime - latest.end_time)/1000).to.be.lessThan(1);
+
+        delete latest.end_time;
+        delete latest.start_time;
+
+        expect(latest).to.deep.equal({
+            id: myTrip.id,
+            user_id: 4,
+            bike_id: 6,
+            start_pos: [ 11.9721,57.70229 ],
+            end_pos: [ 11.9721,57.70229 ],
+            start_cost: 10.00,
+            var_cost: 18.00 * 3,
+            park_cost: 100.00,
+            total_cost: 18.00 * 3 + 10.00 + 100.00
+        });
+    });
 
     // Add test for:
 
-    // 1. end a trip, repeated request
     // 2. rent with different statuses, only 'available' should work
 });
