@@ -5,7 +5,6 @@ chai.should();
 const expect = chai.expect;
 import { db } from "../src/models/db.js";
 import cityModel from "../src/models/city.js";
-// import { zones } from './dummy-data/zones.js'
 let zones;
 
 import { insertZones } from './helper.js'
