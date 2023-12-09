@@ -348,8 +348,8 @@ describe('trip model', () => {
 
         myTrip = await tripModel.end(5, myTrip.id);
 
-        // expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
-        // expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
 
 
         delete myTrip.end_time;
@@ -876,8 +876,4 @@ describe('trip model', () => {
             total_cost: 18.00 * 3 + 10.00 + 100.00
         });
     });
-
-    // Add test for:
-
-    // 2. rent with different statuses, only 'available' should work
 });
