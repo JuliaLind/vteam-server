@@ -127,6 +127,57 @@ describe('trip model', () => {
         const isRented = await bikeModel.isRented(5);
         expect(isRented).to.be.false;
     });
+    it('cannot start a trip because bike has status "maintenance required"', async () => {
+
+        let trip;
+        try {
+            // bike 5 has active = false
+            trip = await tripModel.start(6, 4);
+            throw new Error('Expected SqlError (Cannot rent bike 4)');
+        } catch (error) {
+            expect(error.sqlState).to.equal('45000');
+            expect(error.message).to.include('Cannot rent bike 4');
+        }
+        expect(trip).to.be.an.undefined;
+        const trips = await tripModel.userTrips(6);
+        expect(trips.length).to.equal(0);
+        const isRented = await bikeModel.isRented(4);
+        expect(isRented).to.be.false;
+    });
+
+    it('cannot start a trip because bike has status "in maintenance"', async () => {
+
+        let conn = await db.pool.getConnection();
+        let sql = `
+        UPDATE bike
+        SET status_id = ?
+        WHERE id = ?;
+        ;`
+
+        // backdate starttime of the trip and start position to charge zone
+        let startTime = new Date();
+        startTime.setMinutes(startTime.getMinutes() - 49)
+        let args = [3, 4];
+        await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
+
+        let trip;
+        try {
+            // bike 5 has active = false
+            trip = await tripModel.start(6, 4);
+            throw new Error('Expected SqlError (Cannot rent bike 4)');
+        } catch (error) {
+            expect(error.sqlState).to.equal('45000');
+            expect(error.message).to.include('Cannot rent bike 4');
+        }
+        expect(trip).to.be.an.undefined;
+        const trips = await tripModel.userTrips(6);
+        expect(trips.length).to.equal(0);
+        const isRented = await bikeModel.isRented(4);
+        expect(isRented).to.be.false;
+    });
 
     it('cannot start a trip again because bike has status "rented", same error even if user same', async () => {
 
