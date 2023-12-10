@@ -10,7 +10,7 @@ build:
         coverage:
               tests:
                 override:
-                  - command: npm --prefix ./server/ run test
+                  - command: npm --prefix ./server/ install && npm --prefix ./server/ run test
                     coverage:
                       file: ./server/clover/clover.xml
                       format: clover
