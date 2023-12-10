@@ -13,6 +13,7 @@ import { keys } from './dummy-data/keys.js'
 
 describe('api key model', () => {
     beforeEach(async () => {
+        apiKeyModel.keys = [];
         let sql = `DELETE FROM api_key;`;
         const conn = await db.pool.getConnection();
         await conn.query(sql);
@@ -33,6 +34,7 @@ describe('api key model', () => {
         }
     });
     it('test getActiveFromDB', async () => {
+        expect(apiKeyModel.keys).to.deep.equal([]);
         await apiKeyModel.getActiveFromDB();
 
         expect(apiKeyModel.keys).to.deep.equal([

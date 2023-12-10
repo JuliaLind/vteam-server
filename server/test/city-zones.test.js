@@ -130,6 +130,7 @@ describe('city model part 2', () => {
             zones: []
         });
 
+
         // limited zones in GBG
         let gbgZones = zones.filter(zone => zone.city_id === "GBG" && zone.speed_limit !== undefined)
         let expZones = gbgZones.map((zone) => {
@@ -152,6 +153,7 @@ describe('city model part 2', () => {
 
         expect(bikeZones).to.deep.equal(gbgBikeData);
         expect(bikeZones.zones.length).to.equal(2);
+
 
         let removed = gbgZones[1];
 
