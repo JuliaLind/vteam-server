@@ -3,40 +3,9 @@
 import chai from 'chai';
 chai.should();
 const expect = chai.expect;
-import { db } from "../src/models/db.js";
 import cityModel from "../src/models/city.js";
-let zones;
-
-import { insertZones } from './helper.js'
-
-
-
-
 
 describe('city model', () => {
-    beforeEach(async () => {
-        const conn = await db.pool.getConnection()
-        let sql = `
-        DELETE FROM zone_loc_removed;
-        DELETE FROM zone_loc;`;
-
-        conn.query(sql);
-        if (conn) {
-            conn.end();
-        }
-        zones = insertZones();
-    });
-    after(async () => {
-        const conn = await db.pool.getConnection()
-        let sql = `
-        DELETE FROM zone_loc_removed;
-        DELETE FROM zone_loc;`;
-
-        await conn.query(sql);
-        if (conn) {
-            conn.end();
-        }
-    });
     it('Get all cities', async () => {
         const cities = await cityModel.all();
         expect(cities).to.deep.include({
@@ -90,10 +59,5 @@ describe('city model', () => {
             }
         );
     });
-
 });
 
-// add tests for
-// 1. zones in city
-// 2. bike zones (should return city data + array with zones)
-// 3. all zones

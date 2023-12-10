@@ -43,7 +43,23 @@ const city = {
             return this.adjTypes(zone);
         });
     },
-        /**
+    /**
+     * Returns all active zones in all cities.
+     *  A zone object contains id, zone_id,
+     * descr, city_id, geometry and
+     * speed_limit for limited (forbidden)
+     * zones
+     * @returns {Promise<Array>} all zones
+     */
+    allZones: async function() {
+        const result = await db.queryNoArgs(`CALL all_zones();`);
+
+
+        return result[0].map((zone) => {
+            return this.adjTypes(zone);
+        });
+    },
+    /**
      * Returns array with all zone objects
      * in a city. Zoneobject contains:
      * id, zone_id (type of zone),
@@ -62,20 +78,6 @@ const city = {
     },
 
     /**
-     * Returns all zones in all cities
-     * @returns {Promise<Array>} all zones
-     */
-    allZones: async function() {
-        const result = await db.queryNoArgs(`CALL all_zones();`);
-
-        return result[0].map((zone) => {
-            return this.adjTypes(zone);
-        });
-    },
-
-
-
-    /**
      *  Returns city id, geometry and
      * general speed limit for a city,
      * and an array with
@@ -91,9 +93,9 @@ const city = {
         const result = await db.queryWithArgs(`CALL bike_zones(?);`, [bikeId]);
 
         const city = this.adjTypes(result[0][0]);
-        const zones = result[1].map((zone) => {
+        const zones = result[1] ? result[1].map((zone) => {
             return this.adjTypes(zone);
-        });
+        }) : [];
         return {
             ...city,
             zones: zones
