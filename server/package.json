@@ -8,7 +8,7 @@
         "start": "nodemon server.js",
         "lint": "eslint --fix --ignore-path .eslintignore --ext .js .",
         "format": "prettier --write ./",
-        "test": "cross-env NODE_ENV=test -reporter=lcov --report-dir=./coverage c8 mocha --config mocha.json --exit"
+        "test": "cross-env NODE_ENV=test c8 mocha --config mocha.json --all --exit"
     },
     "keywords": [],
     "author": "Julia Lind & Martin Fooladi",
