@@ -1,0 +1,16 @@
+checks:
+    javascript: true
+build:
+    nodes:
+        analysis:
+            tests:
+                override:
+                    - js-scrutinizer-run
+        tests: true
+    coverage:
+          tests:
+            override:
+              - command: ./run-my-tests
+                coverage:
+                  file: ./server/clover/clover.xml
+                  format: clover
