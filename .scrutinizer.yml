@@ -7,10 +7,13 @@ build:
                 override:
                     - js-scrutinizer-run
         tests: true
-    coverage:
-          tests:
-            override:
-              - command: ./run-my-tests
-                coverage:
-                  file: ./server/clover/clover.xml
-                  format: clover
+        coverage:
+              tests:
+                override:
+                  - command: ./run-my-tests
+                    coverage:
+                      file: ./server/clover/clover.xml
+                      format: clover
+artifacts:
+    paths:
+        - ./server/clover/clover.xml
