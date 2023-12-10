@@ -4,7 +4,7 @@
 
 -- source ./sql/ddl.sql;
 -- source ./sql/insert-local.sql;
--- source ./sql/triggers.sql;
+
 -- source ./sql/functions.sql;
 -- source ./sql/view.sql;
 -- source ./sql/functions2.sql;
@@ -16,6 +16,7 @@
 -- source ./sql/sp_city.sql;
 -- source ./sql/sp_card.sql;
 -- source ./sql/sp_key.sql;
+-- source ./sql/triggers.sql;
 
 
 

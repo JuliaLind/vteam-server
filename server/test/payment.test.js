@@ -7,26 +7,10 @@ import { db } from "../src/models/db.js";
 import paymentModel from "../src/models/payment.js";
 import userModel from "../src/models/user.js";
 import { users } from './dummy-data/users.js'
-// import { payments } from './dummy-data/payments.js'
 import { insertPayments } from './helper.js'
 
 let payments;
 let exp;
-
-// async function insertSomePayments() {
-//     let data = [];
-//     for (const elem of payments) {
-//         let newElem = {
-//             ...elem
-//         };
-//         let inserted = await paymentModel.prepay(elem.
-//             user_id, elem.amount);
-//         newElem.id = inserted.id;
-//         newElem.date = inserted.date;
-//         data.push(newElem);
-//     }
-//     return data.reverse();
-// }
 
 describe('payment model', () => {
     beforeEach(async () => {
@@ -86,7 +70,7 @@ describe('payment model', () => {
                     expect(user.balance).to.equal(0);
                     break;
                 default:
-                  console.error('Check the tests');
+                    console.error('Check the tests');
             }
         }
 
@@ -171,8 +155,6 @@ describe('payment model', () => {
     });
 
     it('all_payments_pag within and outside range', async () => {
-        // let exp = await insertSomePayments();
-
         let res = await paymentModel.allPaymentsPag(3,4);
 
         // within range
@@ -190,24 +172,25 @@ describe('payment model', () => {
         res = await paymentModel.allPaymentsPag(15, 5);
         expect(res).to.deep.equal(exp.slice(15, 15 + 5));
     });
+
+    it('user_payments_pag within and outside range', async () => {
+        const exp6 = exp.filter(elem => elem.user_id === 6);
+    
+        let data = await paymentModel.userPaymentsPag(6, 2, 2);
+        expect(data.length).to.equal(2);
+    
+        expect(data).to.deep.equal(exp6.slice(2, 2 + 2));
+        data = await paymentModel.userPaymentsPag(6, 1, 3);
+        expect(data.length).to.equal(3);
+    
+        expect(data).to.deep.equal(exp6.slice(1, 1 + 3));
+    
+        data = await paymentModel.userPaymentsPag(6, 2, 6);
+        expect(data.length).to.equal(3);
+    
+        expect(data).to.deep.equal(exp6.slice(2, 2 + 6));
+    
+    });
+    
 });
 
-it('user_payments_pag within and outside range', async () => {
-    // let exp = await insertSomePayments();
-    const exp6 = exp.filter(elem => elem.user_id === 6);
-
-    let data = await paymentModel.userPaymentsPag(6, 2, 2);
-    expect(data.length).to.equal(2);
-
-    expect(data).to.deep.equal(exp6.slice(2, 2 + 2));
-    data = await paymentModel.userPaymentsPag(6, 1, 3);
-    expect(data.length).to.equal(3);
-
-    expect(data).to.deep.equal(exp6.slice(1, 1 + 3));
-
-    data = await paymentModel.userPaymentsPag(6, 2, 6);
-    expect(data.length).to.equal(3);
-
-    expect(data).to.deep.equal(exp6.slice(2, 2 + 6));
-
-});

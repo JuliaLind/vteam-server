@@ -229,7 +229,7 @@ describe('bike model', () => {
         expect(bikes).to.deep.equal([]);
     });
 
-    it('activate an active bike och activate an already active bike. Both should work', async () => {
+    it('activate a deactivated bike and activate an already active bike. Both should work', async () => {
         let bike = await bikeModel.activate(5)
 
         expect(bike).to.deep.equal({
@@ -345,7 +345,7 @@ describe('bike model', () => {
     });
 
     
-    it("should not be able to update to non-existsent city", async () => {
+    it("should not be able to update to non-existent city", async () => {
         try {
             // MALM is not in the system
             await bikeModel.updCity(5, "MALM");

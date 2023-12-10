@@ -91,7 +91,6 @@ describe('card model', () => {
         try {
             // try invalid card type
             cardDetails = await cardModel.updUserDetails(6, "1234 5678 9123 4567", 9);
-            // this row will not be executed if the above function throws an error as expected
             throw new Error('Expected SqlError (foreign key constraint violation)');
         } catch (error) {
             expect(error.sqlState).to.equal('23000');

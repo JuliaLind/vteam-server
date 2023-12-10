@@ -73,8 +73,8 @@ const clientManager = {
             bike.res.write(`data: ${message}\n\n`);
         }
 
-        if (bikeId == -1) {
-            for (const [_, bike] of Object.entries(this.cachedBikeData)) {
+        if (bikeId === -1) {
+            for (const bike of Object.values(this.cachedBikeData)) {
                 if (bike.res) {
                     bike.res.write(`data: ${message}\n\n`);
                 }

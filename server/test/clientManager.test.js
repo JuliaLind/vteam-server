@@ -58,7 +58,7 @@ describe('clientManager', () => {
         const bikeId = 123;
         clientManager.addBike(bikeId, mockRes);
         const message = { test: 'message' };
-        clientManager.broadcastToBike(bikeId, message);
+        clientManager.broadcastToBikes(bikeId, message);
         sinon.assert.calledWith(mockRes.write, `data: ${JSON.stringify(message)}\n\n`);
     });
 });

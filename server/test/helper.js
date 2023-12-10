@@ -1,6 +1,8 @@
 import { db } from "../src/models/db.js";
 import { trips } from './dummy-data/trips.js'
 import { payments } from './dummy-data/payments.js'
+import { zones } from './dummy-data/zones.js'
+
 
 
 export const insertTrips = async function () {
@@ -55,7 +57,7 @@ export const insertPayments = async function () {
                 elem.ref,
                 elem.amount
             ]);
-            const id = await conn.query('SELECT MAX(id) AS last_id FROM payment');
+            const id = await conn.query('SELECT MAX(id) AS last_id FROM payment;');
             elem.id = id[0].last_id;
             // console.log(elem);
         }
@@ -73,4 +75,42 @@ export const insertPayments = async function () {
         }
     }
     return payments;
+}
+
+export const insertZones = async function () {
+    const conn = await db.pool.getConnection();
+    try {
+        await conn.beginTransaction();
+        const descr = {
+            1: "parking",
+            2: "charging",
+            3: "forbidden"
+        }
+        for (const zone of zones) {
+            await conn.query(`INSERT INTO zone_loc(zone_id, city_id, date_from, geometry)
+             VALUES(?, ?, ?, ?);`, [
+                zone.zone_id, zone.city_id, zone.date_from, JSON.stringify(zone.geometry)
+            ]);
+            const id = await conn.query('SELECT MAX(id) AS last_id FROM zone_loc;');
+            zone.id = id[0].last_id;
+            zone.descr = descr[zone.zone_id];
+            delete zone.date_from;
+            if (zone.zone_id === 3) {
+                zone.speed_limit = 0;
+            }
+        }
+
+        await conn.commit();
+
+    } catch (err) {
+        if (conn) {
+            await conn.rollback();
+        }
+        throw err;
+    } finally {
+        if (conn) {
+            await conn.end();
+        }
+    }
+    return zones;
 }

@@ -129,7 +129,7 @@ CREATE TABLE `zone_loc`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `zone_id` INT NOT NULL,
     `city_id` VARCHAR(10),
-    `date_from` DATETIME,
+    `date_from` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `geometry` vARCHAR(10000),
 
     PRIMARY KEY (`id`),

@@ -71,7 +71,7 @@ describe('trip model', () => {
     })
     it('starts a trip, ok', async () => {
         const trip = await tripModel.start(4, 6);
-        // expect(Math.abs(new Date - trip.start_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(new Date - trip.start_time)/1000).to.be.lessThan(1);
         const isRented = await bikeModel.isRented(6);
         expect(isRented).to.be.true;
         delete trip.start_time;
@@ -85,7 +85,7 @@ describe('trip model', () => {
 
         const trips = await tripModel.userTrips(4);
         expect(trips.length).to.equal(1);
-        // expect(Math.abs(new Date - trips[0].start_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(new Date - trips[0].start_time)/1000).to.be.lessThan(1);
         delete trips[0].start_time;
         expect(trips[0]).to.deep.equal({
             id: trip.id,
@@ -125,6 +125,57 @@ describe('trip model', () => {
         const trips = await tripModel.userTrips(4);
         expect(trips.length).to.equal(0);
         const isRented = await bikeModel.isRented(5);
+        expect(isRented).to.be.false;
+    });
+    it('cannot start a trip because bike has status "maintenance required"', async () => {
+
+        let trip;
+        try {
+            // bike 5 has active = false
+            trip = await tripModel.start(6, 4);
+            throw new Error('Expected SqlError (Cannot rent bike 4)');
+        } catch (error) {
+            expect(error.sqlState).to.equal('45000');
+            expect(error.message).to.include('Cannot rent bike 4');
+        }
+        expect(trip).to.be.an.undefined;
+        const trips = await tripModel.userTrips(6);
+        expect(trips.length).to.equal(0);
+        const isRented = await bikeModel.isRented(4);
+        expect(isRented).to.be.false;
+    });
+
+    it('cannot start a trip because bike has status "in maintenance"', async () => {
+
+        let conn = await db.pool.getConnection();
+        let sql = `
+        UPDATE bike
+        SET status_id = ?
+        WHERE id = ?;
+        ;`
+
+        // backdate starttime of the trip and start position to charge zone
+        let startTime = new Date();
+        startTime.setMinutes(startTime.getMinutes() - 49)
+        let args = [3, 4];
+        await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
+
+        let trip;
+        try {
+            // bike 5 has active = false
+            trip = await tripModel.start(6, 4);
+            throw new Error('Expected SqlError (Cannot rent bike 4)');
+        } catch (error) {
+            expect(error.sqlState).to.equal('45000');
+            expect(error.message).to.include('Cannot rent bike 4');
+        }
+        expect(trip).to.be.an.undefined;
+        const trips = await tripModel.userTrips(6);
+        expect(trips.length).to.equal(0);
+        const isRented = await bikeModel.isRented(4);
         expect(isRented).to.be.false;
     });
 
@@ -297,8 +348,8 @@ describe('trip model', () => {
 
         myTrip = await tripModel.end(5, myTrip.id);
 
-        // expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
-        // expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
 
 
         delete myTrip.end_time;
@@ -580,66 +631,175 @@ describe('trip model', () => {
             total_cost: 14.00 * 3 + 10.00 +100.00
         });
     });
-    // it('trip should end when bike is deactivated', async () => {
-    //     let myTrip = await tripModel.start(4, 6);
+    it('trip should end when bike is deactivated', async () => {
+        let myTrip = await tripModel.start(4, 6);
 
-    //     const conn = await db.pool.getConnection();
-    //     let sql = `
-    //     UPDATE trip
-    //     SET start_time = ?
-    //     WHERE id = ?;`
+        const conn = await db.pool.getConnection();
+        let sql = `
+        UPDATE trip
+        SET start_time = ?
+        WHERE id = ?;`
 
-    //     // backdate starttime of the trip 
-    //     let startTime = new Date();
-    //     startTime.setMinutes(startTime.getMinutes() - 14)
-    //     let args = [startTime, myTrip.id];
+        // backdate starttime of the trip 
+        let startTime = new Date();
+        startTime.setMinutes(startTime.getMinutes() - 14);
+        let args = [startTime, myTrip.id];
 
-    //     await conn.query(sql, args);
-    //     if (conn) {
-    //         conn.end();
-    //     }
+        await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
 
-    //     let data = await bikeModel.deactivate(6);
-    //     let bike = data.bike;
-    //     myTrip = data.trip;
-
-    //     expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
-    //     expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
-    //     expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
+        let data = await bikeModel.deactivate(6);
+        let bike = data.bike;
+        myTrip = data.trip;
 
 
+        expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
 
-    //     delete myTrip.end_time;
-    //     delete myTrip.start_time;
+        delete myTrip.end_time;
+        delete myTrip.start_time;
 
-    //     // hight startcost  and high park cost
-    //     // because start in free parking and
-    //     // because end in fee parking
-    //     expect(myTrip).to.deep.equal({
-    //         id: myTrip.id,
-    //         user_id: 4,
-    //         bike_id: 6,
-    //         start_pos: [11.9721,57.70229],
-    //         end_pos: [11.9721,57.70229],
-    //         start_cost: 10.00,
-    //         var_cost: 14 * 3,
-    //         park_cost: 100.00,
-    //         total_cost: 14.00 * 3 + 10.00 + 100.00
-    //     });
+        expect(myTrip).to.deep.equal({
+            id: myTrip.id,
+            user_id: 4,
+            bike_id: 6,
+            start_pos: [ 11.9721,57.70229 ],
+            end_pos: [ 11.9721,57.70229 ],
+            start_cost: 10.00,
+            var_cost: 14.00 * 3,
+            park_cost: 100.00,
+            total_cost: 14.00 * 3 + 10.00 + 100.00
+        });
 
-    //     expect(bike).to.deep.equal([
-    //         {
-    //             id: 6,
-    //             city_id: "GBG",
-    //             status_id: 1,
-    //             status_descr: "available",
-    //             charge_perc: 0.2,
-    //             coords: [11.9721,57.70229],
-    //             active: false,
-    //         }
-    //     ]);
-    // });
+        expect(bike).to.deep.equal(
+            {
+                id: 6,
+                city_id: "GBG",
+                status_id: 1,
+                status_descr: "available",
+                charge_perc: 0.2,
+                coords: [ 11.9721,57.70229 ],
+                active: false,
+            }
+        );
+    });
 
+    it('trip should end when charge_perc is at 3%', async () => {
+        let myTrip = await tripModel.start(4, 6);
+
+        const conn = await db.pool.getConnection();
+        let sql = `
+        UPDATE trip
+        SET start_time = ?
+        WHERE id = ?;`
+
+        // backdate starttime of the trip 
+        let startTime = new Date();
+        startTime.setMinutes(startTime.getMinutes() - 14);
+        let args = [startTime, myTrip.id];
+
+        await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
+
+        let endedTrip = await bikeModel.updateBike(6, 2, 0.03, [ 11.3456,57.1123 ]);
+
+        expect(Math.abs(startTime - endedTrip.start_time)/1000).to.be.lessThan(1);
+
+        delete endedTrip.end_time;
+        delete endedTrip.start_time;
+
+        expect(endedTrip).to.deep.equal({
+            id: endedTrip.id,
+            user_id: 4,
+            bike_id: 6,
+            start_pos: [ 11.9721,57.70229 ],
+            end_pos: [ 11.3456,57.1123 ],
+            start_cost: 10.00,
+            var_cost: 14.00 * 3,
+            park_cost: 100.00,
+            total_cost: 14.00 * 3 + 10.00 + 100.00
+        });
+    });
+    it('trip should end when charge_perc is below 3%', async () => {
+        const conn = await db.pool.getConnection();
+        let sql = `
+        UPDATE bike
+        SET charge_perc = ?
+        WHERE id = ?
+        ;`
+
+        let args = [0.04, 6];
+
+        await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
+        await tripModel.start(4, 6);
+
+        let endedTrip = await bikeModel.updateBike(6, 2, 0.02, [ 11.3456,57.1123 ]);
+
+        expect(Math.abs(new Date() - endedTrip.end_time)/1000).to.be.lessThan(1);
+
+        delete endedTrip.end_time;
+        delete endedTrip.start_time;
+
+        expect(endedTrip).to.deep.equal({
+            id: endedTrip.id,
+            user_id: 4,
+            bike_id: 6,
+            start_pos: [ 11.9721,57.70229 ],
+            end_pos: [ 11.3456,57.1123 ],
+            start_cost: 10.00,
+            var_cost: 0,
+            park_cost: 100.00,
+            total_cost: 0 + 10.00 + 100.00
+        });
+    });
+
+    it('trip should not end when charge_perc is above 3%', async () => {
+
+        let myTrip = await tripModel.start(4, 6);
+
+        let endedTrip = await bikeModel.updateBike(6, 2, 0.04, [ 11.3456,57.1123 ]);
+
+        expect(endedTrip).to.be.undefined;
+
+
+
+        const conn = await db.pool.getConnection();
+        let sql = `
+        SELECT * FROM v_trip
+        WHERE id = ?
+        ;`
+
+        let args = [myTrip.id];
+
+        const data = await conn.query(sql, args);
+        myTrip = data[0];
+        if (conn) {
+            conn.end();
+        }
+
+
+        expect(Math.abs(new Date() - myTrip.start_time)/1000).to.be.lessThan(1);
+        delete myTrip.start_time;
+
+        expect(myTrip).to.deep.equal({
+            id: myTrip.id,
+            user_id: 4,
+            bike_id: 6,
+            end_time: null,
+            start_pos: JSON.stringify([11.9721,57.70229]),
+            end_pos: null,
+            start_cost: null,
+            var_cost: null,
+            park_cost: null,
+            total_cost: null
+        });
+    });
     it('end a trip, not ok - different user', async () => {
 
         let myTrip = await tripModel.start(5, 6);
@@ -672,10 +832,48 @@ describe('trip model', () => {
             total_cost: null
         });
     });
+    it('ending trip twice will not change the values', async () => {
+        let myTrip = await tripModel.start(4, 6);
+        await tripModel.end(4, myTrip.id);
 
-    // Add test for:
+        const conn = await db.pool.getConnection();
+        let sql = `
+        UPDATE trip
+        SET start_time = ?,
+        end_time = ?,
+        var_cost = ?
+        WHERE id = ?;`
 
-    // 1. end a trip, repeated request
-    // 2. rent with different statuses, only 'available' should work
-    // 3. deactivate when active trip, check that trip has ended
+        // backdate starttime and endtime of the trip 
+        let startTime = new Date();
+        startTime.setMinutes(startTime.getMinutes() - 20 - 14);
+        let endTime = new Date();
+        endTime.setMinutes(endTime.getMinutes() - 20);
+        let args = [startTime, endTime, 18 * 3, myTrip.id];
+
+        await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
+
+        const latest = await tripModel.end(4, myTrip.id);
+
+        expect(Math.abs(startTime - latest.start_time)/1000).to.be.lessThan(1);
+        expect(Math.abs(endTime - latest.end_time)/1000).to.be.lessThan(1);
+
+        delete latest.end_time;
+        delete latest.start_time;
+
+        expect(latest).to.deep.equal({
+            id: myTrip.id,
+            user_id: 4,
+            bike_id: 6,
+            start_pos: [ 11.9721,57.70229 ],
+            end_pos: [ 11.9721,57.70229 ],
+            start_cost: 10.00,
+            var_cost: 18.00 * 3,
+            park_cost: 100.00,
+            total_cost: 18.00 * 3 + 10.00 + 100.00
+        });
+    });
 });
