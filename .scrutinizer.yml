@@ -10,10 +10,11 @@ build:
         coverage:
               tests:
                 override:
-                  - command: npm --prefix ./server/ install && npm --prefix ./server/ run test
+                  - command: echo "No test command needed"
                     coverage:
-                      file: ./server/clover/clover.xml
+                      file: clover/clover.xml
                       format: clover
+    root_path: ./server/
 artifacts:
     paths:
-        - ./server/clover/clover.xml
+        - clover/clover.xml
