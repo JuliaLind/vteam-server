@@ -1,5 +1,7 @@
 checks:
     javascript: true
+filter:
+    excluded_paths: [test/*]
 build:
     nodes:
         analysis:
@@ -10,7 +12,8 @@ build:
         coverage:
               tests:
                 override:
-                  - command: echo "No test command needed"
+                  - title: "Generate code coverage"
+                    command: echo "No test command needed"
                     coverage:
                       file: clover/clover.xml
                       format: clover
