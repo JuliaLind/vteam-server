@@ -1,3 +1,7 @@
+--
+-- For local use. Different relative paths
+-- to csv files compared to those used from container
+--
 
 LOAD DATA LOCAL INFILE './csv/keys.csv'
 INTO TABLE `api_key`

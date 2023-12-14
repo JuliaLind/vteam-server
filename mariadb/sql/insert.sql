@@ -1,3 +1,6 @@
+-- To be used from docker-container.
+-- Different relative paths compared to
+-- the local files
 
 LOAD DATA LOCAL INFILE './docker-entrypoint-initdb.d/csv/keys.csv'
 INTO TABLE `api_key`

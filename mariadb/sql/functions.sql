@@ -3,6 +3,13 @@ DROP FUNCTION IF EXISTS within_zone;
 
 DELIMITER ;;
 
+--
+-- Takes the full cardnumber as parameter
+-- and returns the referense for a prepay
+-- user payment. The reference consists of
+-- three * plus the last four digits of the
+-- card number
+--
 CREATE FUNCTION extract_ref(
     c_nr VARCHAR(100)
 )
@@ -14,6 +21,13 @@ BEGIN
 END
 ;;
 
+--
+-- The passed coord paramtere is a json stringified
+-- array with lng and lat coordinates. Returns 1 if
+-- the coordinate is within a parking or a charging
+-- zone, otherwise returns 0. Used to determine the
+-- start-cost and the parking cost for a trip
+--
 CREATE FUNCTION within_zone(
     coord VARCHAR(100)
 )

@@ -8,6 +8,14 @@ DROP PROCEDURE IF EXISTS end_trip;
 
 DELIMITER ;;
 
+--
+-- Initiates a new trip by inserting a new row
+-- into the trip table. Parameters are user's id
+-- and the id of the bike the user wants to rent.
+-- Returns the initally registered details of
+-- the trip: trip id, user id, bike id, start time
+-- and start position (coordinates)
+--
 CREATE PROCEDURE start_trip(
     u_id INT,
     b_id INT
@@ -42,6 +50,11 @@ BEGIN
     INSERT INTO `trip`(user_id, bike_id, start_pos)
     VALUES(u_id, b_id, @start_pos);
 
+    --
+    -- No need to use order or limit as
+    -- a bike can only have one unended trip
+    -- at a time
+    --
     SELECT
         `id`,
         `user_id`,
@@ -60,6 +73,17 @@ BEGIN
 END
 ;;
 
+--
+-- Ends a trip by adding an end-time, an
+-- end-position and calculating all the
+-- parts of the cost. If the current status
+-- of bike is rented, will set the bike-status
+-- to available. If not, will not change the bike status.
+-- Parameters are the user id and the trip id.
+-- User id is neccessary so that no-one tries to
+-- end another user's trip.
+-- "Returns" the full details of the trip + the calculated total cost.
+--
 CREATE PROCEDURE end_trip(
     u_id INT,
     t_id INT
@@ -163,6 +187,13 @@ BEGIN
 END
 ;;
 
+--
+-- This procedure is to be used when the bike
+-- is being deactivated by admin. Checks if
+-- there is an ongoing trip for the bike
+-- that is being deactivated and if yes- ends it.
+-- Parameter is the id of the bike
+--
 CREATE PROCEDURE end_ongoing_trip(
     b_id INT
 )
@@ -185,7 +216,10 @@ BEGIN
 END
 ;;
 
-
+--
+-- Returns all trips done by a user.
+-- Parameter is the id of the user
+--
 CREATE PROCEDURE user_trips(
     u_id INT
 )
@@ -202,6 +236,9 @@ BEGIN
 END
 ;;
 
+--
+-- Returns all trips done by all users
+--
 CREATE PROCEDURE all_trips()
 BEGIN
     SELECT
@@ -214,6 +251,12 @@ BEGIN
 END
 ;;
 
+
+--
+-- Returns all trips done by all users in
+-- intervals. Parameters are the offset and the
+-- limit for the interval
+--
 CREATE PROCEDURE all_trips_pag(
     a_offset INT,
     a_limit INT
@@ -231,6 +274,11 @@ BEGIN
 END
 ;;
 
+--
+-- Returns trips for a user in intervals.
+-- Parameters are user's id, offset and limit
+-- for the selected interval
+--
 CREATE PROCEDURE user_trips_pag(
     u_id INT,
     a_offset INT,

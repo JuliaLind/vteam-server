@@ -14,6 +14,11 @@ DROP PROCEDURE IF EXISTS is_rented;
 
 DELIMITER ;;
 
+--
+-- Sets a bike's active-field to true
+-- Takes bike's id as parameter
+-- "Returns" the bikes most recent data
+--
 CREATE PROCEDURE activate(
     b_id INT
 )
@@ -31,6 +36,12 @@ BEGIN
 END
 ;;
 
+--
+-- Updates a bike's status.
+-- The parameters are bike's id
+-- and the new status id.
+-- "Returns" the bikes most recent data
+--
 CREATE PROCEDURE upd_bike_status(
     b_id INT,
     s_id INT
@@ -49,7 +60,13 @@ BEGIN
 END
 ;;
 
-
+--
+-- Updates the city to which the bike
+-- is registered. The bike must be within
+-- the registered city to be able to move.
+-- Takes bike's id and the city's id as parameters.
+-- "Returns" the bikes most recent data
+--
 CREATE PROCEDURE update_bike_city(
     b_id INT,
     c_id VARCHAR(10)
@@ -68,6 +85,16 @@ BEGIN
 END
 ;;
 
+--
+-- Sets the bike's active-field to false.
+-- Checks if there is any trip registered to the
+-- bike in the trip table that does not have
+-- an end-time. If there is one the trip
+-- is ended in the 'standard' way and both the
+-- full trip-info and the bike-data are "returned".
+-- If no ongoing trip then only the bike data
+-- is returned
+--
 CREATE PROCEDURE deactivate(
     b_id INT
 )
@@ -92,6 +119,10 @@ BEGIN
 END
 ;;
 
+--
+-- "Returns" all possible statuses that a bike
+-- can have. 
+--
 CREATE PROCEDURE bike_statuses()
 BEGIN
     SELECT
@@ -102,6 +133,10 @@ BEGIN
 END
 ;;
 
+--
+-- "Returns" all bikes, both active and inactivated
+-- in all cities
+--
 CREATE PROCEDURE all_bikes()
 BEGIN
     SELECT
@@ -110,6 +145,12 @@ BEGIN
 END
 ;;
 
+--
+-- "Returns" only the bikes that
+-- can be rented. The request is done
+-- for one city at a time and the parameter
+-- is the city's id
+--
 CREATE PROCEDURE available_bikes(
     c_id VARCHAR(10)
 )
@@ -124,6 +165,10 @@ BEGIN
 END
 ;;
 
+--
+-- Returns data for a single bike.
+-- Parameter is the bike's id
+--
 CREATE PROCEDURE single_bike(
     b_id INT
 )
@@ -136,6 +181,11 @@ BEGIN
 END
 ;;
 
+--
+-- Returns all bikes in a city, both active
+-- and inactive. The parameter is the
+-- city's id
+--
 CREATE PROCEDURE bikes_in_city(
     c_id VARCHAR(10)
 )
@@ -148,6 +198,11 @@ BEGIN
 END
 ;;
 
+--
+-- Updates a bikes attributes.
+-- the parameters are: the id of the bike to be updated
+-- and the new statusid, charge percentage and coordinates
+--
 CREATE PROCEDURE update_bike(
     b_id INT,
     b_status INT,
@@ -181,6 +236,10 @@ BEGIN
 END
 ;;
 
+--
+-- Procedure for checking if a bike is rented.
+-- If the bike is rented, "returns" the id of the trip
+--
 CREATE PROCEDURE is_rented(
     b_id INT
 )

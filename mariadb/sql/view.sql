@@ -3,7 +3,10 @@ DROP VIEW IF EXISTS v_all_zone_loc;
 DROP VIEW IF EXISTS v_trip;
 DROP VIEW IF EXISTS v_bike;
 
-
+--
+-- View contains all zones and all
+-- their data, including from- and to-dates
+--
 CREATE VIEW v_all_zone_loc AS
 SELECT
     zl.id AS id,
@@ -23,6 +26,7 @@ LEFT JOIN `zone`
 LEFT JOIN speed_limit
     ON zl.zone_id = speed_limit.zone_id
 ;
+
 --
 -- only active zones
 --
@@ -39,6 +43,10 @@ WHERE
     date_to IS NULL
 ;
 
+--
+-- Besides all data in trip table,
+-- also contains the total cot for the trip
+--
 CREATE VIEW v_trip AS
 SELECT
     *,
@@ -47,6 +55,11 @@ SELECT
         `trip`
 ;
 
+--
+-- Besides the data in the bike table
+-- also contains the description of the bike's
+-- status
+--
 CREATE VIEW v_bike AS
 SELECT
     bike.id AS id,

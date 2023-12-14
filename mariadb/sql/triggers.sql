@@ -3,6 +3,10 @@ DROP TRIGGER IF EXISTS check_payment_value;
 
 DELIMITER ;;
 
+--
+-- Ensures that the charge value is 'correct'.
+-- cannot be below 0% or above 100%
+--
 CREATE TRIGGER check_charge_value
 BEFORE UPDATE ON `bike`
 FOR EACH ROW
@@ -14,6 +18,10 @@ BEGIN
 END
 ;;
 
+--
+-- Ensure that the 'payment' done by user
+-- is correct, the amount should not be 0 or negative
+--
 CREATE TRIGGER check_payment_value
 BEFORE INSERT ON `payment`
 FOR EACH ROW
