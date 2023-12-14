@@ -49,7 +49,7 @@ router.post("/rent/:bikeId", async (req, res, next) => {
 router.put("/return/:tripId", async (req, res, next) => {
     try {
         const tripId = parseInt(req.params.tripId);
-        const userId = req.body.user_id;
+        const userId = req.body.userId;
 
         const trip = await tripModel.end(userId, tripId);
         const bikeId = trip.bike_id;

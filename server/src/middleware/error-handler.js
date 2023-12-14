@@ -13,9 +13,11 @@ function errorHandler(err, req, res, next) {
         return next(err);
     }
 
-    console.error(err.stack);
+    if (process.env.NODE_ENV !== 'test') {
+        console.error(err.stack);
+    }
 
-    const statusCode = res.statusCode || 500;
+    const statusCode = 500;
 
     res.status(statusCode).json({
         errors: {

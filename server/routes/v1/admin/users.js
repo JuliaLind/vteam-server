@@ -58,7 +58,9 @@ router.get("/search/:search", async (req, res, next) => {
     try {
         const searchParam = req.params.search;
 
-        const users = await userModel.userSearch(searchParam)[0];
+        let users = await userModel.search(searchParam);
+
+        users = users[0];
 
         res.status(200).json(users);
     } catch (error) {
@@ -79,7 +81,7 @@ router.get("/:id", async (req, res, next) => {
     try {
         const searchParam = parseInt(req.params.id);
 
-        const users = await userModel.userSearch(searchParam)[0];
+        const users = await userModel.search(searchParam)[0];
 
         res.status(200).json(users);
     } catch (error) {

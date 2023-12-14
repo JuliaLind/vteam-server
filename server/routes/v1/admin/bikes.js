@@ -45,7 +45,7 @@ router.put("/:id/deactivate", async (req, res, next) => {
     try {
         const bikeId = parseInt(req.params.id);
 
-        const bikeData = await bikeModel.activate(bikeId);
+        const bikeData = await bikeModel.deactivate(bikeId);
 
         const data = {
             bike_id: bikeId,
