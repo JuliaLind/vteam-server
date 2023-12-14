@@ -4,7 +4,7 @@ import clientManager from "../../../src/utils/clientManager.js";
 const router = express.Router();
 
 /**
- * @description Route for starting simulation
+ * @description Route for connecting to sse for receiving bike data
  *
  * @param {express.Request} req Request object
  * @param {express.Response} res Response object
