@@ -5,9 +5,9 @@
 -- source ./sql/ddl.sql;
 -- source ./sql/insert-local.sql;
 
--- source ./sql/functions.sql;
+
 -- source ./sql/view.sql;
--- source ./sql/functions2.sql;
+-- source ./sql/functions.sql;
 -- source ./sql/sp_payment.sql;
 -- source ./sql/sp_user.sql;
 -- source ./sql/sp_emp.sql;
