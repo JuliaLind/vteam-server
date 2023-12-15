@@ -1,3 +1,4 @@
+DROP VIEW IF EXISTS v_user;
 DROP VIEW IF EXISTS v_zone_loc;
 DROP VIEW IF EXISTS v_all_zone_loc;
 DROP VIEW IF EXISTS v_trip;
@@ -73,5 +74,20 @@ FROM
     `bike`
 LEFT JOIN `status`
 ON status_id = status.id
+;
+
+--
+-- The fields that
+-- are selected together
+-- in several stored procedures
+--
+CREATE VIEW v_user AS
+SELECT
+    `id`,
+    `email`,
+    `balance`,
+    `active`
+FROM
+    `user`
 ;
 
