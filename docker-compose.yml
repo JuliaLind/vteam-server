@@ -57,6 +57,7 @@ services:
       - ./server/package-lock.json:/server/package-lock.json
       - ./server/mocha.json:/server/mocha.json
       - ./server/app.js:/server/app.js
+      - ./server/server.js:/server/server.js
       - ./server/routes/:/server/routes/
       - ./server/test/:/server/test/
       - ./server/src/:/server/src/
