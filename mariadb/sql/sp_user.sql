@@ -65,12 +65,9 @@ BEGIN
     WHERE id = u_id;
 
     SELECT
-        `id`,
-        `email`,
-        `balance`,
-        `active`
+        *
     FROM
-        `user`
+        `v_user`
     WHERE `id` = u_id
     ;
 END
@@ -92,12 +89,9 @@ BEGIN
     WHERE id = u_id;
 
     SELECT
-        `id`,
-        `email`,
-        `balance`,
-        `active`
+        *
     FROM
-        `user`
+        `v_user`
     WHERE `id` = u_id
     ;
 END
@@ -126,12 +120,9 @@ BEGIN
     END IF;
 
     SELECT
-        `id`,
-        `email`,
-        `balance`,
-        `active`
+        *
     FROM
-        `user`
+        `v_user`
     WHERE `id` LIKE a_what
     OR `email` LIKE a_what
     ;
@@ -145,12 +136,8 @@ END
 CREATE PROCEDURE all_users()
 BEGIN
     SELECT
-        `id`,
-        `email`,
-        `balance`,
-        `active`
-    FROM
-        `user`
+        *
+    FROM `v_user`
     ;
 END
 ;;
@@ -167,12 +154,9 @@ CREATE PROCEDURE all_users_pag(
 )
 BEGIN
     SELECT
-        `id`,
-        `email`,
-        `balance`,
-        `active`
+        *
     FROM
-        `user`
+        `v_user`
     LIMIT a_limit
     OFFSET a_offset
     ;
