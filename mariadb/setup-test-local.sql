@@ -1,6 +1,6 @@
--- DROP DATABASE IF EXISTS `test`;
--- CREATE DATABASE `test`;
--- USE `test`;
+DROP DATABASE IF EXISTS `test`;
+CREATE DATABASE `test`;
+USE `test`;
 
 -- source ./sql/ddl.sql;
 -- source ./sql/insert-test-local.sql;
