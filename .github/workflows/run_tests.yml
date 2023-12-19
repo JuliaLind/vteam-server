@@ -20,9 +20,9 @@ jobs:
           MYSQL_LOCAL_INFILE: 1
         ports:
           - 3306:3306
-        volumes:
-          - ./my.cnf:/etc/mysql/my.cnf
-        # options: >-
+        #volumes:
+          #- ./my.cnf:/etc/mysql/my.cnf
+        #options: >-
           #--health-cmd "mysqladmin ping -h localhost -uroot -proot"
           #--health-interval 10s
           #--health-timeout 5s
@@ -43,7 +43,7 @@ jobs:
 
     - name: Set up test database
       run: |
-        mysql -h 127.0.0.1 -u${{ secrets.DB_USER }} -p${{ secrets.DB_ROOT_PASSWORD }} < ./mariadb/setup-test-local.sql
+        mysql --local-infile=1 -h 127.0.0.1 -u${{ secrets.DB_USER }} -p${{ secrets.DB_ROOT_PASSWORD }} < ./mariadb/setup-test-local.sql
 
     - name: Run tests
       env:
