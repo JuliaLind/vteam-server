@@ -39,7 +39,7 @@ jobs:
 
     - name: Set up test database
       run: |
-        mysql -h mariadb -u${{ secrets.DB_NAME }} -p${{ secrets.DB_ROOT_PASSWORD }} < ./mariadb/setup-test-local.sql
+        mysql -h mariadb -u${{ secrets.DB_USER }} -p${{ secrets.DB_ROOT_PASSWORD }} < ./mariadb/setup-test-local.sql
 
     - name: Run tests
       env:
