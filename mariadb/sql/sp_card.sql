@@ -4,7 +4,9 @@ DROP PROCEDURE IF EXISTS upd_user_card;
 
 DELIMITER ;;
 
-
+--
+-- "Returns" all currently available card types
+--
 CREATE PROCEDURE card_types()
 BEGIN
     SELECT
@@ -15,6 +17,9 @@ BEGIN
 END
 ;;
 
+--
+-- "Returns" card details of a user
+--
 CREATE PROCEDURE user_card(
     u_id INT
 )
@@ -33,6 +38,12 @@ BEGIN
 END
 ;;
 
+--
+-- Updates card nr and card type of a user.
+-- Parameters are the id of the user, the new
+-- number of the card and the id of the
+-- new card type
+--
 CREATE PROCEDURE upd_user_card(
     u_id INT,
     c_nr VARCHAR(100),

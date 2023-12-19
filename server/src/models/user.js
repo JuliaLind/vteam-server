@@ -24,9 +24,9 @@ const user = {
             // or if provided token is expired
             // this block will be executed
             if (err) {
-                return res.status(500).json({
+                return res.status(401).json({
                     errors: {
-                        status: 500,
+                        status: 401,
                         source: "authorization",
                         title: "Failed authentication",
                         detail: err.message

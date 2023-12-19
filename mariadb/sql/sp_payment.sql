@@ -7,6 +7,10 @@ DROP PROCEDURE IF EXISTS invoice;
 
 DELIMITER ;;
 
+--
+-- "Returns" all payments (a payment can be
+-- a prepaid amount or an 'automatic' payment)
+--
 CREATE PROCEDURE all_payments()
 BEGIN
     SELECT
@@ -19,6 +23,10 @@ BEGIN
 END
 ;;
 
+--
+-- "Returns" all payments for a user.
+-- Parameter is the user's id
+--
 CREATE PROCEDURE user_payments(
     u_id INT
 )
@@ -35,6 +43,14 @@ BEGIN
 END
 ;;
 
+--
+-- Returns user's payments in intervals.
+-- Parameters are the user's id,
+-- offset - i.e. the last row before
+-- the row to be selected
+-- and the limit - i.e. the max number
+-- of rows to be selected
+--
 CREATE PROCEDURE user_payments_pag(
     u_id INT,
     a_offset INT,
@@ -55,6 +71,15 @@ BEGIN
 END
 ;;
 
+
+--
+-- Returns all payments in intervals.
+-- Parameters are:
+-- offset - i.e. the last row before
+-- the row to be selected
+-- and the limit - i.e. the max number
+-- of rows to be selected
+--
 CREATE PROCEDURE all_payments_pag(
     a_offset INT,
     a_limit INT
@@ -72,7 +97,16 @@ BEGIN
 END
 ;;
 
-
+--
+-- Adds a new transaction for each user that
+-- has a negative balance, of the corresponding
+-- positive amount. And adjusts the
+-- balance accordingly. The reference for the
+-- automatic payment will consist of the word
+-- "AUTO " plus the ordinary reference of ***
+-- and the four last digits of the user's card
+-- that has been debited
+--
 CREATE PROCEDURE invoice()
 BEGIN
     DECLARE cursor_id INT;
@@ -135,7 +169,15 @@ BEGIN
 END
 ;;
 
-
+--
+-- A payment done by user. Parameters
+-- are the user's id and the amount to be paid.
+-- There is a trigger connected to the payment table
+-- that will detected a negative or 0 amount and
+-- raise an error.
+--
+-- "Returns" the details of the payments + the new balance of the user
+--
 CREATE PROCEDURE prepay(
     u_id INT,
     p_amount DECIMAL(7,2)
@@ -162,10 +204,6 @@ BEGIN
     ORDER BY
         id DESC
     LIMIT 1;
-
-    -- SELECT balance
-    -- FROM user
-    -- WHERE id = u_id;
 END
 ;;
 

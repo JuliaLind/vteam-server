@@ -14,6 +14,11 @@ DROP TABLE IF EXISTS `card`;
 DROP TABLE IF EXISTS `third_party`;
 DROP TABLE IF EXISTS `api_key`;
 
+--
+-- alla api keys, can be trporarily
+-- inactivated by setting 'active'
+-- field to false
+--
 CREATE TABLE `api_key` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `key` CHAR(32) NOT NULL,
@@ -38,6 +43,10 @@ CREATE TABLE `third_party` (
     FOREIGN KEY (`api_key_id`) REFERENCES `api_key` (`id`)
 );
 
+--
+-- Card types. Example: Mastercard,
+-- Visa, American Express
+--
 CREATE TABLE `card` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(20),
@@ -45,6 +54,9 @@ CREATE TABLE `card` (
     PRIMARY KEY (`id`)
 );
 
+--
+-- Ordinary users
+--
 CREATE TABLE `user`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `email` VARCHAR(100) NOT NULL,
@@ -58,6 +70,11 @@ CREATE TABLE `user`(
     FOREIGN KEY (`card_type`) REFERENCES `card` (`id`)
 );
 
+--
+-- This table only includes payments
+-- from users card into the users
+-- "bike-rental-account"
+--
 CREATE TABLE `payment`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `user_id` INT NOT NULL,
@@ -69,6 +86,10 @@ CREATE TABLE `payment`(
     FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 );
 
+--
+-- employees, role can be for example
+-- admin, superadmin, service
+--
 CREATE TABLE `employee`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `username` VARCHAR(30) NOT NULL,
@@ -81,7 +102,13 @@ CREATE TABLE `employee`(
 );
 
 
-
+--
+-- Prices for fixed and variable
+-- elements of a trip, aka
+-- start cost (low or high),
+-- variable cost per minute
+-- and parking cost (low or high)
+--
 CREATE TABLE `price`(
     `id` VARCHAR(20) NOT NULL,
     `amount` DECIMAL(5,2) NOT NULL,
@@ -89,6 +116,15 @@ CREATE TABLE `price`(
     PRIMARY KEY (`id`)
 );
 
+--
+-- table includes the general
+-- speed limit in the city.
+-- if a user is not within a
+-- specific zone or if the zone
+-- the user is in does not have
+-- an own limit, then the general
+-- city limit applies
+--
 CREATE TABLE `city`(
     `id` VARCHAR(10),
     `name` VARCHAR(40),
@@ -98,6 +134,11 @@ CREATE TABLE `city`(
     PRIMARY KEY (`id`)
 );
 
+--
+-- Statuses that a bike can have:
+-- 1. available, 2. rented, 3. in maintenance,
+-- 4. maintenance required
+--
 CREATE TABLE `status`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `descr` VARCHAR(20),
@@ -105,6 +146,11 @@ CREATE TABLE `status`(
     PRIMARY KEY (`id`)
 );
 
+--
+-- All bikes. Coords is the coordinates
+-- of the bikes current (most recent)
+-- position
+--
 CREATE TABLE `bike`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `city_id` VARCHAR(10),
@@ -118,6 +164,10 @@ CREATE TABLE `bike`(
     FOREIGN KEY (`status_id`) REFERENCES `status` (`id`)
 );
 
+--
+-- A zone within the city. Currently used
+-- zones are: parking, charging, forbidden
+--
 CREATE TABLE `zone`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `descr` VARCHAR(20),
@@ -125,6 +175,11 @@ CREATE TABLE `zone`(
     PRIMARY KEY (`id`)
 );
 
+--
+-- The locations of the zones.
+-- The geometry is a stringified json of
+-- a geojson geometry object
+--
 CREATE TABLE `zone_loc`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `zone_id` INT NOT NULL,
@@ -137,6 +192,10 @@ CREATE TABLE `zone_loc`(
     FOREIGN KEY (`city_id`) REFERENCES `city` (`id`)
 );
 
+--
+-- For "softdeleting" a zone that is
+-- no longer in use
+--
 CREATE TABLE `zone_loc_removed`(
     `zone_loc_id` INT,
     `date_to` DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -145,6 +204,11 @@ CREATE TABLE `zone_loc_removed`(
     FOREIGN KEY (`zone_loc_id`) REFERENCES `zone_loc` (`id`)
 );
 
+--
+-- Max speed limits for limited zones.
+-- At the current only forbidden zones
+-- have a speed limit, which is 0.
+--
 CREATE TABLE `speed_limit`(
     `zone_id` INT NOT NULL,
     `speed` INT NOT NULL,
@@ -153,6 +217,12 @@ CREATE TABLE `speed_limit`(
     FOREIGN KEY (`zone_id`) REFERENCES `zone` (`id`)
 );
 
+--
+-- A trip log for bike/user.
+-- The full cost for the trip
+-- is calculated dynamically in a
+-- view based on the three cost columns
+--
 CREATE TABLE `trip`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `user_id` INT NOT NULL,
