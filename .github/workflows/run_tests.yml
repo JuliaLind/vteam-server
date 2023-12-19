@@ -39,12 +39,12 @@ jobs:
 
     - name: Set up test database
       run: |
-        mysql -h mariadb -u${{ secrets.DB_USER }} -p${{ secrets.DB_ROOT_PASSWORD }} < ./mariadb/setup-test-local.sql
+        mysql -h 127.0.0.1 -u${{ secrets.DB_USER }} -p${{ secrets.DB_ROOT_PASSWORD }} < ./mariadb/setup-test-local.sql
 
     - name: Run tests
       env:
         DB_HOST: ${{ secrets.DB_SERVICE_NAME }}
-        DB_TEST_HOST: mariadb
+        DB_TEST_HOST: 127.0.0.1
         DB_DATABASE: ${{ secrets.DB_NAME }}
         TEST_DATABASE: ${{ secrets.TEST_DB_NAME }}
         DB_USER: ${{ secrets.DB_USER }}
