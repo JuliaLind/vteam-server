@@ -21,7 +21,7 @@ jobs:
         ports:
           - 3306:3306
         volumes:
-          - ./path/to/my.cnf:/etc/mysql/my.cnf
+          - ./my.cnf:/etc/mysql/my.cnf
         # options: >-
           #--health-cmd "mysqladmin ping -h localhost -uroot -proot"
           #--health-interval 10s
