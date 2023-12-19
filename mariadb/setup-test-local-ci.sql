@@ -4,10 +4,8 @@ USE `test`;
 
 source ./mariadb/sql/ddl.sql;
 source ./mariadb/sql/insert-test-local-ci.sql;
-source ./mariadb/sql/functions.sql;
 source ./mariadb/sql/view.sql;
-
-source ./mariadb/sql/functions2.sql;
+source ./mariadb/sql/functions.sql;
 source ./mariadb/sql/sp_payment.sql;
 source ./mariadb/sql/sp_user.sql;
 source ./mariadb/sql/sp_emp.sql;
