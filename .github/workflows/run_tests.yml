@@ -16,14 +16,12 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
           MYSQL_DATABASE: test
-          MYSQL_ALLOW_EMPTY_PASSWORD: 1
-          MYSQL_LOCAL_INFILE: 1
         ports:
           - 3306:3306
         #volumes:
           #- ./my.cnf:/etc/mysql/my.cnf
         options: >-
-          --health-cmd "mysqladmin ping -h 127.0.0.1 -u${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }}"
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -udbadm  -pP@ssw0rd"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
