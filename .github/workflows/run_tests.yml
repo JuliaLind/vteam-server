@@ -25,7 +25,7 @@ jobs:
           #--health-retries 5
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Setup Node.js
       uses: actions/setup-node@v3
@@ -39,7 +39,7 @@ jobs:
 
     - name: Set up test database
       run: |
-        mysql -h 127.0.0.1 -u root -p${{ secrets.DB_ROOT_PASSWORD }} < ./mariadb/sql/setup-test-local.sql
+        mysql -h localhost -u${{ secrets.DB_NAME }} -p${{ secrets.DB_ROOT_PASSWORD }} < ./mariadb/setup-test-local.sql
 
     - name: Run tests
       env:
