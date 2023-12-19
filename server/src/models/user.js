@@ -6,6 +6,21 @@ const jwtSecret = String(process.env.JWT_SECRET);
 
 const user = {
     /**
+     * Uses github access token to get user's email info
+     * @param {String} githubToken 
+     * @returns {String} user's email
+     */
+    extractEmail: async function(githubToken) {
+        const emailResponse = await fetch('https://api.github.com/user/emails', {
+            headers: { Authorization: `Bearer ${githubToken}` }
+        });
+
+        // the email data contains the user's emailaddressess and whether they are verified etc.
+        const emailData = await emailResponse.json();
+
+        return emailData.find((email) => email.primary === true).email
+    },
+    /**
      * Extracts id from token and adds to body as userId
      * @param {express.Request} req 
      * @param {express.Response} res 
