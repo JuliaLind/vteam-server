@@ -1,0 +1,51 @@
+name: Run tests
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mariadb:
+        image: mariadb:latest
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+          MYSQL_DATABASE: test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost -uroot -p${{ secrets.DB_ROOT_PASSWORD }}"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Set up test database
+      run: |
+        mysql -h 127.0.0.1 -u root -p${{ secrets.DB_ROOT_PASSWORD }} < ./mariadb/sql/setup-test-local.sql
+
+    - name: Run tests
+      env:
+        DB_HOST: ${{ secrets.DB_SERVICE_NAME }}
+        DB_TEST_HOST: localhost
+        DB_DATABASE: ${{ secrets.DB_NAME }}
+        TEST_DATABASE: ${{ secrets.TEST_DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      run: npm test
