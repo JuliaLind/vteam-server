@@ -22,11 +22,11 @@ jobs:
           - 3306:3306
         #volumes:
           #- ./my.cnf:/etc/mysql/my.cnf
-        #options: >-
-          #--health-cmd "mysqladmin ping -h localhost -uroot -proot"
-          #--health-interval 10s
-          #--health-timeout 5s
-          #--health-retries 5
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost -uroot -proot"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     - uses: actions/checkout@v3
