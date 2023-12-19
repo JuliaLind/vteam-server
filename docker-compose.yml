@@ -1,42 +1,45 @@
 version: "3"
 services:
   mariadb-bikes:
-    image: "mariadb:latest"
+    image: "mariadb:10.11.6"
     container_name: "mariadb-bikes"
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: bikes
     volumes:
-      - "./mariadb/:/docker-entrypoint-initdb.d/"
+      - "./mariadb/:/mariadb/"
+      - "./mariadb/docker/:/docker-entrypoint-initdb.d/"
+      # - "./my.cnf:/etc/mysql/my.cnf"
     ports:
       - "3306:3306"
     healthcheck:
-      test: ["CMD", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
-      start_period: 10s
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${DB_USER}", "-p${DB_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 5
     restart: "always"
-    command: "--init-file /docker-entrypoint-initdb.d/setup-bikes.sql"
+    # command: "--init-file /docker-entrypoint-initdb.d/setup-bikes-docker.sql"
 
   mariadb-test:
-    image: "mariadb:latest"
+    image: "mariadb:10.11.6"
     container_name: "mariadb-test"
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: test
+      MYSQLD_LOCAL_INFILE: "1"
     volumes:
-      - "./mariadb/:/docker-entrypoint-initdb.d/"
+      - "./mariadb/:/mariadb/"
+      - "./mariadb/docker/:/docker-entrypoint-initdb.d/"
+      # - "./my.cnf:/etc/mysql/my.cnf"
     ports:
       - "3307:3306"
     healthcheck:
-      test: ["CMD", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized"]
-      start_period: 10s
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${DB_USER}", "-p${DB_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 5
     restart: "always"
-    command: "--init-file /docker-entrypoint-initdb.d/setup-test.sql"
+    # command: "--init-file /docker-entrypoint-initdb.d/setup-test-docker.sql"
 
   server:
     build:
@@ -67,8 +70,10 @@ services:
     ports:
       - "1337:1337"
     depends_on:
-      - mariadb-bikes
-      - mariadb-test
+      mariadb-bikes:
+        condition: service_healthy
+      mariadb-test:
+        condition: service_healthy
     restart: "always"
 
 
