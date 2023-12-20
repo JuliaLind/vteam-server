@@ -61,4 +61,12 @@ describe('clientManager', () => {
         clientManager.broadcastToBikes(bikeId, message);
         sinon.assert.calledWith(mockRes.write, `data: ${JSON.stringify(message)}\n\n`);
     });
+
+    it('should broadcast a message to all bikes', () => {
+        const bikeId = 123;
+        clientManager.addBike(bikeId, mockRes);
+        const message = { test: 'message' };
+        clientManager.broadcastToBikes(-1, message);
+        sinon.assert.calledWith(mockRes.write, `data: ${JSON.stringify(message)}\n\n`);
+    });
 });

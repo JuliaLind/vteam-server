@@ -17,6 +17,8 @@ const clientManager = {
     /**
      * Adds a new client to the clients array.
      * @param {express.Response} client - The client to add.
+     *
+     * @returns {void}
      */
     addClient(client) {
         this.clients.push(client);
@@ -25,6 +27,8 @@ const clientManager = {
     /**
      * Removes a client from the clients array.
      * @param {express.Response} client - The client to remove.
+     *
+     * @returns {void}
      */
     removeClient(client) {
         this.clients = this.clients.filter(c => c !== client);
@@ -34,6 +38,8 @@ const clientManager = {
      * Initializes a new bike entry in the cache.
      * @param {Number} bikeId - The bike ID.
      * @param {express.Response} res - The bike connection response to add.
+     *
+     * @returns {void}
      */
     addBike(bikeId, res) {
         this.cachedBikeData[bikeId] = {
@@ -44,6 +50,8 @@ const clientManager = {
     /**
      * Removes a bike's res key (and value) from the cache object
      * @param {Number} bikeId - Id of the bike for which to set res to null
+     *
+     * @returns {void}
      */
     removeBike(bikeId) {
         this.cachedBikeData[bikeId].res = null
@@ -52,6 +60,8 @@ const clientManager = {
     /**
      * Broadcasts a message to all clients.
      * @param {Object} message - The message to broadcast.
+     *
+     * @returns {void}
      */
     broadcastToClients(message) {
         message = JSON.stringify(message)
@@ -63,23 +73,20 @@ const clientManager = {
      * Broadcasts a message to a specific bike.
      * @param {Number} bikeId - The ID of the bike to which the message should be broadcast.
      * @param {Object} message - The message to broadcast.
+     *
+     * @returns {void}
      */
     broadcastToBikes(bikeId, message) {
-        const bike = this.cachedBikeData[bikeId];
         message = JSON.stringify(message)
 
-        // If statements can be changed to something better.
-        if (bike && bike.res) {
-            bike.res.write(`data: ${message}\n\n`);
+        if (bikeId === -1) {
+            Object.values(this.cachedBikeData).forEach(bike => {
+                bike.res?.write(`data: ${message}\n\n`);
+            });
+            return;
         }
 
-        if (bikeId === -1) {
-            for (const bike of Object.values(this.cachedBikeData)) {
-                if (bike.res) {
-                    bike.res.write(`data: ${message}\n\n`);
-                }
-            }
-        }
+        this.cachedBikeData[bikeId]?.res?.write(`data: ${message}\n\n`);
     }
 };
 
