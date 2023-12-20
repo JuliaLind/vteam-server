@@ -102,7 +102,7 @@ const user = {
         const email = this.extractEmail(req.body.token)
         let payload;
         try {
-            payload = await this.newUser(email, req.body.cardnr, req.body.cardtype);
+            payload = await this.insertIntoDB(email, req.body.cardnr, req.body.cardtype);
         } catch (err) {
             return next(err);
         }

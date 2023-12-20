@@ -107,6 +107,40 @@ describe('user model', () => {
         extractEmailStub.restore();
 
     });
+    it('tests register method, ok', async () => {
+        const req = {
+            body: {
+                token: 'validToken',
+                cardnr: "1234 5678 9101 1121",
+                cardtype: 3
+            }
+        };
+        const res = { json: sinon.stub().returns() }; // <-- fix here
+        const next = sinon.spy();
+        const expectedEmail = 'new_user@email.com';
+        const extractEmailStub = sinon.stub(userModel, 'extractEmail').returns(expectedEmail);
+    
+        const expectedPayload = {
+            id: sinon.match.number,
+            email: 'new_user@email.com'
+        };
+        const expectedResult = {
+            data: {
+                type: "success",
+                message: "User logged in",
+                user: expectedPayload,
+                token: sinon.match.string
+            }
+        };
+    
+        await userModel.register(req, res, next);
+    
+        expect(extractEmailStub).to.have.been.calledOnce;
+        expect(next).to.not.have.been.called;
+        expect(res.json).to.have.been.calledOnceWithExactly(expectedResult);
+        extractEmailStub.restore();
+
+    });
     it('registers new user in database', async () => {
         let user = await userModel.insertIntoDB(
             "testuser@email.com",
@@ -443,7 +477,7 @@ describe('user model', () => {
         expect(user).to.be.an.undefined;
     });
 
-        it('gets a user from DB (used in login), email not ok)', async () => {
+    it('gets a user from DB (used in login), email not ok)', async () => {
         let user;
         try {
             await userModel.getFromDB("julia@bth.se");
