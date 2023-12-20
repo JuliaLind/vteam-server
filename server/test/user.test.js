@@ -3,10 +3,14 @@
 import chai from 'chai';
 import sinon from 'sinon';
 chai.should();
-const expect = chai.expect;
+
 import { db } from "../src/models/db.js";
 import userModel from "../src/models/user.js";
 import { users } from './dummy-data/users.js';
+// import fetch from 'node-fetch';
+import sinonChai from 'sinon-chai';
+chai.use(sinonChai);
+const expect = chai.expect;
 
 import jwt from 'jsonwebtoken';
 const jwtSecret = process.env.JWT_SECRET;
@@ -44,6 +48,64 @@ describe('user model', () => {
     });
     afterEach(() => {
         sinon.restore();
+    });
+    it('tests login method, ok', async () => {
+        const req = { body: { token: 'validToken' } };
+        const res = { json: sinon.stub() };
+        const expectedEmail = 'existing@user.com';
+        const expectedPayload = {};
+        const extractEmailStub = sinon.stub(userModel, 'extractEmail').returns(expectedEmail);
+        const getFromDBStub = sinon.stub(userModel, 'getFromDB').resolves(expectedPayload);
+
+        await userModel.login(req, res, sinon.stub());
+
+        expect(extractEmailStub).to.have.been.calledOnce;
+        expect(getFromDBStub).to.have.been.calledOnceWith(expectedEmail);
+
+        const expectedResult = {
+            data: {
+            type: "success",
+            message: "User logged in",
+            user: expectedPayload,
+            token: sinon.match.string
+            }
+        };
+        expect(res.json).to.have.been.calledOnceWithExactly(expectedResult);
+
+        extractEmailStub.restore();
+        getFromDBStub.restore();
+    });
+    it('tests login method, not ok, email is not in db', async () => {
+        const req = { body: { token: 'validToken' } };
+        const res = { json: sinon.stub() };
+        const next = sinon.spy();
+        const expectedEmail = 'existing@user.com';
+        const extractEmailStub = sinon.stub(userModel, 'extractEmail').returns(expectedEmail);
+
+
+        await userModel.login(req, res, next);
+
+        expect(extractEmailStub).to.have.been.calledOnce;
+        expect(next).to.have.been.calledOnce;
+
+        extractEmailStub.restore();
+
+    });
+    it('tests register method, not ok, no email', async () => {
+        const req = { body: { token: 'validToken' } };
+        const res = { json: sinon.stub() };
+        const next = sinon.spy();
+        const expectedEmail = '';
+        const extractEmailStub = sinon.stub(userModel, 'extractEmail').returns(expectedEmail);
+
+
+        await userModel.register(req, res, next);
+
+        expect(extractEmailStub).to.have.been.calledOnce;
+        expect(next).to.have.been.calledOnce;
+
+        extractEmailStub.restore();
+
     });
     it('registers new user in database', async () => {
         let user = await userModel.insertIntoDB(
@@ -418,6 +480,8 @@ describe('user model', () => {
     // Add test for:
 
     //1. get token from github
-    // 2. register
-    // 3. login
+    // 2. register (mock all)
+    // 3. register (register to db)
+    // 4. login with actual email that is in db
+
 });

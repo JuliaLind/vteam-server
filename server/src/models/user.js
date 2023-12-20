@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { db } from "./db.js";
 import express from "express";
+// import fetch from 'node-fetch';
 
 const jwtSecret = String(process.env.JWT_SECRET);
 
@@ -8,7 +9,7 @@ const user = {
     /**
      * Uses github access token to get user's email info
      * @param {String} githubToken 
-     * @returns {String} user's email
+     * @returns {Promise<String>} user's email
      */
     extractEmail: async function(githubToken) {
         const emailResponse = await fetch('https://api.github.com/user/emails', {
@@ -55,15 +56,6 @@ const user = {
         });
     },
     /**
-     * Exchanges a github token for the
-     * user's email
-     * @param {String} githubToken 
-     */
-    extractEmail: async function(githubToken) {
-        // add logic here for extracting user email from Github
-        // await ....
-    },
-    /**
      * Inserts a new user into the
      * database (to be used in the register
      * method). Returns an object containing
@@ -108,7 +100,13 @@ const user = {
      */
     register: async function(req, res, next) {
         const email = this.extractEmail(req.body.token)
-        const payload = await this.newUser(email, req.body.cardnr, req.body.cardtype);
+        let payload;
+        try {
+            payload = await this.newUser(email, req.body.cardnr, req.body.cardtype);
+        } catch (err) {
+            return next(err);
+        }
+
         const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: "24h" });
         return res.json({
             data: {
@@ -130,8 +128,13 @@ const user = {
      */
     login: async function(req, res, next) {
         const email = this.extractEmail(req.body.token)
-        const payload = await this.getFromDB(email);
-;
+        let payload;
+        try {
+            payload = await this.getFromDB(email);
+        } catch(err) {
+            return next(err);
+        }
+
         const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: "24h" });
 
         return res.json({
