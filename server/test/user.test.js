@@ -115,7 +115,7 @@ describe('user model', () => {
                 cardtype: 3
             }
         };
-        const res = { json: sinon.stub().returns() }; // <-- fix here
+        const res = { json: sinon.stub() };
         const next = sinon.spy();
         const expectedEmail = 'new_user@email.com';
         const extractEmailStub = sinon.stub(userModel, 'extractEmail').returns(expectedEmail);
