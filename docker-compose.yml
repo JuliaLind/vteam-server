@@ -9,7 +9,6 @@ services:
     volumes:
       - "./mariadb/:/mariadb/"
       - "./mariadb/docker/:/docker-entrypoint-initdb.d/"
-      # - "./my.cnf:/etc/mysql/my.cnf"
     ports:
       - "3306:3306"
     healthcheck:
@@ -18,7 +17,6 @@ services:
       timeout: 5s
       retries: 5
     restart: "always"
-    # command: "--init-file /docker-entrypoint-initdb.d/setup-bikes-docker.sql"
 
   mariadb-test:
     image: "mariadb:10.11.6"
@@ -30,7 +28,6 @@ services:
     volumes:
       - "./mariadb/:/mariadb/"
       - "./mariadb/docker/:/docker-entrypoint-initdb.d/"
-      # - "./my.cnf:/etc/mysql/my.cnf"
     ports:
       - "3307:3306"
     healthcheck:
@@ -39,7 +36,6 @@ services:
       timeout: 5s
       retries: 5
     restart: "always"
-    # command: "--init-file /docker-entrypoint-initdb.d/setup-test-docker.sql"
 
   server:
     build:
@@ -75,15 +71,3 @@ services:
       mariadb-test:
         condition: service_healthy
     restart: "always"
-
-
-
-
-  # server:
-  #   build:
-  #       context: . # Path needs to be changed when directory structure changes
-  #       dockerfile: Dockerfile # Not necessary as long as dockerfile is named Dockerfile
-  #   container_name: "vteam-server"
-  #   volumes: # Add potential volumes
-  #   ports: # Add ports in- and outside of container
-  #   restart: "always"
