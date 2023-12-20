@@ -12,21 +12,19 @@ jobs:
 
     services:
       mariadb:
-        image: mariadb:latest
+        image: mariadb:10.11.6
         env:
           MYSQL_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
           MYSQL_DATABASE: test
-          MYSQL_ALLOW_EMPTY_PASSWORD: 1
-          MYSQL_LOCAL_INFILE: 1
         ports:
           - 3306:3306
         #volumes:
           #- ./my.cnf:/etc/mysql/my.cnf
-        #options: >-
-          #--health-cmd "mysqladmin ping -h localhost -uroot -proot"
-          #--health-interval 10s
-          #--health-timeout 5s
-          #--health-retries 5
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -uroot  -proot"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     - uses: actions/checkout@v3
