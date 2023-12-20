@@ -7,7 +7,6 @@ chai.should();
 import { db } from "../src/models/db.js";
 import userModel from "../src/models/user.js";
 import { users } from './dummy-data/users.js';
-// import fetch from 'node-fetch';
 import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 const expect = chai.expect;
@@ -18,15 +17,19 @@ const jwtSecret = process.env.JWT_SECRET;
 
 describe('user model', () => {
 
-    // // ok token
-    // const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: '24h' });
-    // // expired token
-    // const expiredPayload = {
-    //     ...payload,
-    //     iat: Math.floor(Date.now() / 1000) - 3600,
-    //     exp: Math.floor(Date.now() / 1000) - 1800
-    // };
-    // const expiredToken = jwt.sign(expiredPayload, jwtSecret);
+    // ok token
+    const payload = {
+        id: users[0].id,
+        email: users[0].email
+    }
+    const okToken = jwt.sign(payload, jwtSecret, { expiresIn: '24h' });
+    // expired token
+    const expiredPayload = {
+        ...payload,
+        iat: Math.floor(Date.now() / 1000) - 3600,
+        exp: Math.floor(Date.now() / 1000) - 1800
+    };
+    const expiredToken = jwt.sign(expiredPayload, jwtSecret);
     beforeEach(async () => {
         const conn = await db.pool.getConnection();
 
@@ -48,6 +51,56 @@ describe('user model', () => {
     });
     afterEach(() => {
         sinon.restore();
+    });
+    it('checkToken, expire token, not ok', () => {
+        const req = {
+            headers: {
+                "x-access-token": expiredToken,
+            },
+            body: {}
+        };
+        const res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.stub()
+        };
+        const next = sinon.spy();
+
+        userModel.checkToken(req, res, next);
+
+        expect(res.status).to.have.been.calledOnceWith(401);
+        expect(res.json).to.have.been.calledOnceWith({
+            errors: {
+                status: 401,
+                source: 'authorization',
+                title: 'Failed authentication',
+                detail: 'jwt expired'
+            }
+        });
+
+
+        expect(next.notCalled).to.be.true;
+    });
+    it('checkToken, ok', () => {
+        const req = {
+            headers: {
+                "x-access-token": okToken,
+            },
+            body: {}
+        };
+        const res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.stub()
+        };
+        const next = sinon.spy();
+
+        userModel.checkToken(req, res, next);
+
+
+        expect(req.body.userId).to.equal(users[0].id);
+
+        expect(next).to.have.been.calledOnce;
+        expect(res.status.notCalled).to.be.true;
+        expect(res.json.notCalled).to.be.true;
     });
     it('tests login method, ok', async () => {
         const req = { body: { token: 'validToken' } };
