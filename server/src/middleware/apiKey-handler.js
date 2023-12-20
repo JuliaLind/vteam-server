@@ -29,7 +29,7 @@ async function apiKeyHandler(req, res, next) {
         });
     }
 
-    next();
+    return next();
 }
 
 export default apiKeyHandler;

@@ -19,7 +19,7 @@ function errorHandler(err, req, res, next) {
 
     const statusCode = 500;
 
-    res.status(statusCode).json({
+    return res.status(statusCode).json({
         errors: {
             message: err.message,
             code: statusCode
