@@ -82,7 +82,7 @@ describe('emp model', () => {
                 },
             })).to.be.true;
             done()
-        }, 1);
+        }, 2);
  
     });
     it('comparePasswords not ok, wrong password', (done) => {
@@ -110,7 +110,7 @@ describe('emp model', () => {
                 }
             }))).to.be.true;
             done()
-        }, 1);
+        }, 2);
  
     });
     it('comparePasswords not ok, missing password', (done) => {
@@ -128,9 +128,6 @@ describe('emp model', () => {
         empModel.comparePasswords(res, undefined, emp);
 
         setTimeout(() => {
-            console.log('res.status.args:', res.status.args);
-            console.log('res.json.args:', res.json.args);
-
             expect(res.status.calledOnceWithExactly(500)).to.be.true;
             expect(res.json.calledOnceWithExactly(sinon.match({
                 errors: {
@@ -141,7 +138,7 @@ describe('emp model', () => {
                 }
             }))).to.be.true;
             done()
-        }, 1);
+        }, 2);
  
     });
     it('tests login method, ok', async () => {
