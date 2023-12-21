@@ -113,7 +113,7 @@ const emp = {
         const username = req.body.username;
         const password = req.body.password;
 
-        const emp = await this.getOneFromDB(username);
+        const emp = await this.getOneFromDb(username);
 
         // om användarnamn saknas kommer
         // databasen lyfta ett error

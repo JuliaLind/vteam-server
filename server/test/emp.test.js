@@ -56,6 +56,39 @@ describe('emp model', () => {
     afterEach(() => {
         sinon.restore();
     });
+    it('tests login method, ok', async () => {
+        const empData = {
+            id: 1,
+            username: username,
+            hash: hash,
+            role: 'admin'
+        };
+
+
+        const getOneFromDbSpy = sinon.spy(empModel, 'getOneFromDb');
+
+        const req = {
+            body: {
+                username: username,
+                password: password
+            }
+        };
+
+        const res = {};
+        const comparePasswordsStub = sinon.stub(empModel, 'comparePasswords').returns(true);
+
+        await empModel.login(req, res);
+
+        expect(getOneFromDbSpy).to.have.been.calledOnceWith(username);
+        expect(comparePasswordsStub).to.have.been.calledOnceWith(
+            res,
+            password,
+            sinon.match(empData)
+        );
+
+        getOneFromDbSpy.restore();
+        comparePasswordsStub.restore();
+    });
     it('extracting active employee with existing username, should return employee object', async () => {
         const emp = await empModel.getOneFromDb(username)
 
@@ -106,12 +139,8 @@ describe('emp model', () => {
         const res = {};
         res.status = sinon.stub().returnsThis();
         res.json = sinon.stub();
-        const next = sinon.spy(); // Spy on the next function
-    
-        // Call the route handler with the fake objects
+        const next = sinon.spy();
         empModel.checkAdminAcc(req, res, next);
-    
-        // Assertions using Sinon and Chai
 
         expect(req.body.emp).to.deep.equal(payload);
         expect(next.called).to.be.true;
@@ -127,12 +156,8 @@ describe('emp model', () => {
         const res = {};
         res.status = sinon.stub().returnsThis();
         res.json = sinon.stub();
-        const next = sinon.spy(); // Spy on the next function
-    
-        // Call the route handler with the fake objects
+        const next = sinon.spy();
         empModel.checkToken(req, res, next, ["admin"]);
-    
-        // Assertions using Sinon and Chai
 
         expect(res.status.calledOnceWith(500)).to.be.true;
         expect(res.json.calledOnceWithExactly({
