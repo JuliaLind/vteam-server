@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import { db } from "./db.js";
 import express from "express";
-// import fetch from 'node-fetch';
 
 const jwtSecret = String(process.env.JWT_SECRET);
 
@@ -102,7 +101,7 @@ const user = {
         const email = this.extractEmail(req.body.token)
         let payload;
         try {
-            payload = await this.newUser(email, req.body.cardnr, req.body.cardtype);
+            payload = await this.insertIntoDB(email, req.body.cardnr, req.body.cardtype);
         } catch (err) {
             return next(err);
         }

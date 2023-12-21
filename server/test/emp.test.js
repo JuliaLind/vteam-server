@@ -56,6 +56,124 @@ describe('emp model', () => {
     afterEach(() => {
         sinon.restore();
     });
+    it('comparePasswords ok', (done) => {
+        const res = {};
+        const emp = {
+            id: 1,
+            username: username,
+            hash: hash,
+            role: "admin"
+        }
+        res.status = sinon.stub().returnsThis();
+        res.json = sinon.stub();
+
+        empModel.comparePasswords(res, password, emp);
+
+        setTimeout(() => {
+            expect(res.json.calledOnceWithExactly({
+                data: {
+                    type: "success",
+                    message: "User logged in",
+                    user: sinon.match({
+                        id: 1,
+                        role: "admin"
+                    }),
+                    token: sinon.match.string
+                },
+            })).to.be.true;
+            done()
+        }, 2);
+ 
+    });
+    it('comparePasswords not ok, wrong password', (done) => {
+        const res = {};
+        const emp = {
+            id: 1,
+            username: username,
+            hash: hash,
+            role: "admin"
+        }
+
+        res.status = sinon.stub().returnsThis();
+        res.json = sinon.stub();
+
+        empModel.comparePasswords(res, "wrongpassword", emp);
+
+        setTimeout(() => {
+            expect(res.status.calledOnceWithExactly(401)).to.be.true;
+            expect(res.json.calledOnceWithExactly(sinon.match({
+                errors: {
+                    status: 401,
+                    source: "/login",
+                    title: "Wrong password",
+                    detail: "Password is incorrect."
+                }
+            }))).to.be.true;
+            done()
+        }, 2);
+ 
+    });
+    it('comparePasswords not ok, missing password', (done) => {
+        const res = {};
+        const emp = {
+            id: 1,
+            username: username,
+            hash: hash,
+            role: "admin"
+        }
+
+        res.status = sinon.stub().returnsThis();
+        res.json = sinon.stub();
+
+        empModel.comparePasswords(res, undefined, emp);
+
+        setTimeout(() => {
+            expect(res.status.calledOnceWithExactly(500)).to.be.true;
+            expect(res.json.calledOnceWithExactly(sinon.match({
+                errors: {
+                    status: 500,
+                    source: "/login",
+                    title: "bcrypt error",
+                    detail: "bcrypt error"
+                }
+            }))).to.be.true;
+            done()
+        }, 2);
+ 
+    });
+    it('tests login method, ok', async () => {
+        const empData = {
+            id: 1,
+            username: username,
+            hash: hash,
+            role: 'admin'
+        };
+
+
+        const getOneFromDbSpy = sinon.spy(empModel, 'getOneFromDb');
+
+        const req = {
+            body: {
+                username: username,
+                password: password
+            }
+        };
+
+        const res = {};
+        const comparePasswordsStub = sinon.stub(empModel, 'comparePasswords').returns(true);
+
+        await empModel.login(req, res);
+
+        expect(getOneFromDbSpy).to.have.been.calledOnceWith(username);
+        expect(comparePasswordsStub).to.have.been.calledOnceWith(
+            res,
+            password,
+            sinon.match(empData)
+        );
+
+        getOneFromDbSpy.restore();
+        comparePasswordsStub.restore();
+    });
     it('extracting active employee with existing username, should return employee object', async () => {
         const emp = await empModel.getOneFromDb(username)
 
@@ -106,12 +224,8 @@ describe('emp model', () => {
         const res = {};
         res.status = sinon.stub().returnsThis();
         res.json = sinon.stub();
-        const next = sinon.spy(); // Spy on the next function
-    
-        // Call the route handler with the fake objects
+        const next = sinon.spy();
         empModel.checkAdminAcc(req, res, next);
-    
-        // Assertions using Sinon and Chai
 
         expect(req.body.emp).to.deep.equal(payload);
         expect(next.called).to.be.true;
@@ -127,12 +241,8 @@ describe('emp model', () => {
         const res = {};
         res.status = sinon.stub().returnsThis();
         res.json = sinon.stub();
-        const next = sinon.spy(); // Spy on the next function
-    
-        // Call the route handler with the fake objects
+        const next = sinon.spy();
         empModel.checkToken(req, res, next, ["admin"]);
-    
-        // Assertions using Sinon and Chai
 
         expect(res.status.calledOnceWith(500)).to.be.true;
         expect(res.json.calledOnceWithExactly({
@@ -232,14 +342,4 @@ describe('emp model', () => {
         expect(next.called).to.be.false;
     });
 
-
-    // Add test for:
-
-    // 1. comparePasswords
-    // - correct
-    // - incorrect
-    // 2. login
-    // - correct password
-    // - incorrect password
-    // - nonexisting user
 });

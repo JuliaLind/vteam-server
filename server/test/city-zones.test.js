@@ -101,6 +101,37 @@ describe('city model part 2', () => {
         expect(all).to.not.deep.include(removed2);
     });
 
+    it("get bikeZones, no forbidden zones in city", async () => {
+        let conn = await db.pool.getConnection();
+
+        let sql = `
+        DELETE FROM bike;
+        INSERT INTO bike VALUES(?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?),
+        (?, ?, ?, ?, ?, ?);
+        `;
+
+        let args = [];
+
+        for (const bike of bikes) {
+            args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active]);
+        }
+        await conn.query(sql, args);
+        if (conn) {
+            conn.end();
+        }
+        // actual from DB
+        let bikeZones= await cityModel.bikeZones(5);
+
+        // full info for bike incl zones and city data
+        let krlstBikeData = {
+            city_id: 'KRLST',
+            speed_limit: 20,
+            geometry: JSON.parse('{"coordinates":[[[13.47149547448899,59.42351123209056],[13.456139461258317,59.391963177284964],[13.451778033439552,59.39200430085171],[13.44677046816551,59.384806917023184],[13.440874480138433,59.382462300672216],[13.440066808320239,59.378842217063664],[13.454456522130954,59.380328251521235],[13.455008306024695,59.36965203880712],[13.467422408811956,59.36650276077691],[13.494998873756174,59.36442529328434],[13.507088902154152,59.365665484682864],[13.523968303469587,59.37399632204409],[13.52574083207719,59.3818176237298],[13.533639138847576,59.382155209356654],[13.534091678684263,59.38606010110604],[13.536217812335906,59.39324870125964],[13.559517808257965,59.39553946494996],[13.577249711278029,59.39791779076822],[13.581380532138837,59.40027031518147],[13.587038018373278,59.40555671831828],[13.588242258016493,59.410293995014825],[13.572259059764633,59.415872537155764],[13.541913231360382,59.4200739221034],[13.47149547448899,59.42351123209056]]],"type":"Polygon"}'),
+            zones: []
+        };
+        expect(bikeZones).to.deep.equal(krlstBikeData);
+    });
     it("Should return all active zones in the bike's city + city data", async () => {
         let conn = await db.pool.getConnection();
 
@@ -183,7 +214,7 @@ describe('city model part 2', () => {
         expect(bikeZones).to.deep.equal(gbgBikeData);
         expect(bikeZones.zones).to.not.deep.include(removed);
     });
-    it("Should return city data inl empty zones array if no limited zones in the city", async () => {
+    it("Should return city data incl empty zones array if no limited zones in the city", async () => {
         let conn = await db.pool.getConnection();
 
         let sql = `
