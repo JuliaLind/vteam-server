@@ -56,6 +56,94 @@ describe('emp model', () => {
     afterEach(() => {
         sinon.restore();
     });
+    it('comparePasswords ok', (done) => {
+        const res = {};
+        const emp = {
+            id: 1,
+            username: username,
+            hash: hash,
+            role: "admin"
+        }
+        res.status = sinon.stub().returnsThis();
+        res.json = sinon.stub();
+
+        empModel.comparePasswords(res, password, emp);
+
+        setTimeout(() => {
+            expect(res.json.calledOnceWithExactly({
+                data: {
+                    type: "success",
+                    message: "User logged in",
+                    user: sinon.match({
+                        id: 1,
+                        role: "admin"
+                    }),
+                    token: sinon.match.string
+                },
+            })).to.be.true;
+            done()
+        }, 1);
+ 
+    });
+    it('comparePasswords not ok, wrong password', (done) => {
+        const res = {};
+        const emp = {
+            id: 1,
+            username: username,
+            hash: hash,
+            role: "admin"
+        }
+
+        res.status = sinon.stub().returnsThis();
+        res.json = sinon.stub();
+
+        empModel.comparePasswords(res, "wrongpassword", emp);
+
+        setTimeout(() => {
+            expect(res.status.calledOnceWithExactly(401)).to.be.true;
+            expect(res.json.calledOnceWithExactly(sinon.match({
+                errors: {
+                    status: 401,
+                    source: "/login",
+                    title: "Wrong password",
+                    detail: "Password is incorrect."
+                }
+            }))).to.be.true;
+            done()
+        }, 1);
+ 
+    });
+    it('comparePasswords not ok, missing password', (done) => {
+        const res = {};
+        const emp = {
+            id: 1,
+            username: username,
+            hash: hash,
+            role: "admin"
+        }
+
+        res.status = sinon.stub().returnsThis();
+        res.json = sinon.stub();
+
+        empModel.comparePasswords(res, undefined, emp);
+
+        setTimeout(() => {
+            console.log('res.status.args:', res.status.args);
+            console.log('res.json.args:', res.json.args);
+
+            expect(res.status.calledOnceWithExactly(500)).to.be.true;
+            expect(res.json.calledOnceWithExactly(sinon.match({
+                errors: {
+                    status: 500,
+                    source: "/login",
+                    title: "bcrypt error",
+                    detail: "bcrypt error"
+                }
+            }))).to.be.true;
+            done()
+        }, 1);
+ 
+    });
     it('tests login method, ok', async () => {
         const empData = {
             id: 1,
@@ -257,14 +345,4 @@ describe('emp model', () => {
         expect(next.called).to.be.false;
     });
 
-
-    // Add test for:
-
-    // 1. comparePasswords
-    // - correct
-    // - incorrect
-    // 2. login
-    // - correct password
-    // - incorrect password
-    // - nonexisting user
 });
