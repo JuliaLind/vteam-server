@@ -60,67 +60,20 @@ const user = {
      * method). Returns an object containing
      * the id and the email of the user
      * @param {String} email 
-     * @param {String} cardnr 
-     * @param {Number} cardtype 
      * @returns {Promise<Object>}
      */
-    insertIntoDB: async function(email, cardnr, cardtype) {
+    db: async function(email) {
 
-        const result = await db.queryWithArgs(`CALL new_user(?, ?, ?);`, [email, cardnr, cardtype]);
+        const result = await db.queryWithArgs(`CALL user_login(?);`, [email]);
 
         return result[0][0];
     },
+    // },
     /**
-     * Gets user details from db.
-     * Returns an object containing the
-     * users id and email (to be used in the
-     * login method). Throws an error if
-     * the user has been deactivated
-     * @param {String} email 
-     * @returns {Promise<Object>}
-     */
-    getFromDB: async function(email) {
-
-        const result = await db.queryWithArgs(`CALL user_login(?);`, [email]);
-        const user = result[0][0];
-        if (user === undefined) {
-            throw new Error("The user does not exist");
-        }
-        return user;
-
-    },
-    /**
-     * Registers a new user
+     * Logs in user. If user does not have
+     * an account, registers the user
      * Body should contain Github Token,
      * Card nr as string and card type as int
-     * @param {express.Request} req
-     * @param {express.Response} res
-     * @param {express.NextFunction} next
-     */
-    register: async function(req, res, next) {
-        const email = this.extractEmail(req.body.token)
-        let payload;
-        try {
-            payload = await this.insertIntoDB(email, req.body.cardnr, req.body.cardtype);
-        } catch (err) {
-            return next(err);
-        }
-
-        const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: "24h" });
-        return res.json({
-            data: {
-                type: "success",
-                message: "User logged in",
-                user: payload,
-                token: jwtToken
-            }
-        });
-    },
-    /**
-     * Body should contain Github Token.
-     * Logins the user and returns a token.
-     * The tokens payload contains the user's
-     * id and email
      * @param {express.Request} req
      * @param {express.Response} res
      * @param {express.NextFunction} next
@@ -129,13 +82,12 @@ const user = {
         const email = this.extractEmail(req.body.token)
         let payload;
         try {
-            payload = await this.getFromDB(email);
-        } catch(err) {
+            payload = await this.db(email);
+        } catch (err) {
             return next(err);
         }
 
         const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: "24h" });
-
         return res.json({
             data: {
                 type: "success",
