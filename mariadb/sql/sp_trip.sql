@@ -24,6 +24,17 @@ BEGIN
     DECLARE bikeid INT;
     DECLARE userid INT;
 
+    -- ensure that a new trip cannot be
+    -- started before user registers a payment
+    -- card
+    SET @check := (SELECT
+    card_nr FROM user_card
+    WHERE user_id = u_id);
+    IF (@check IS NULL) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'No payment card registered';
+    END IF;
+
     --
     -- Cannot rent a bike that is not available
     -- or deactivated
@@ -230,8 +241,6 @@ BEGIN
         `v_trip`
     WHERE
         `user_id` = u_id
-    ORDER BY
-        id DESC
     ;
 END
 ;;
@@ -245,8 +254,6 @@ BEGIN
         *
     FROM
         `v_trip`
-    ORDER BY
-        id DESC
     ;
 END
 ;;
@@ -266,8 +273,6 @@ BEGIN
         *
     FROM
         `v_trip`
-    ORDER BY
-        id DESC
     LIMIT a_limit
     OFFSET a_offset
     ;
@@ -291,7 +296,6 @@ BEGIN
         `v_trip`
     WHERE
         `user_id` = u_id
-    ORDER BY id DESC
     LIMIT a_limit
     OFFSET a_offset
     ;

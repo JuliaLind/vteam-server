@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS `city`;
 DROP TABLE IF EXISTS `price`;
 DROP TABLE IF EXISTS `employee`;
 DROP TABLE IF EXISTS `payment`;
+DROP TABLE IF EXISTS `user_card`;
 DROP TABLE IF EXISTS `user`;
 DROP TABLE IF EXISTS `card`;
 DROP TABLE IF EXISTS `third_party`;
@@ -60,14 +61,24 @@ CREATE TABLE `card` (
 CREATE TABLE `user`(
     `id` INT NOT NULL AUTO_INCREMENT,
     `email` VARCHAR(100) NOT NULL,
-    `card_nr` VARCHAR(100) NOT NULL,
-    `card_type` INT NOT NULL,
     `balance` DECIMAL(7,2) NOT NULL DEFAULT 0.00,
     `active` BOOLEAN NOT NULL DEFAULT TRUE,
 
     PRIMARY KEY (`id`),
-    UNIQUE KEY `email` (`email`),
-    FOREIGN KEY (`card_type`) REFERENCES `card` (`id`)
+    UNIQUE KEY `email` (`email`)
+);
+
+--
+-- Users' cards
+--
+CREATE TABLE `user_card`(
+    `user_id` INT NOT NULL,
+    `card_nr` VARCHAR(100) NOT NULL,
+    `card_type` INT NOT NULL,
+
+    PRIMARY KEY (`user_id`),
+    FOREIGN KEY (`card_type`) REFERENCES `card` (`id`),
+    FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 );
 
 --

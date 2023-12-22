@@ -1,8 +1,9 @@
-DROP VIEW IF EXISTS v_user;
+-- DROP VIEW IF EXISTS v_user;
 DROP VIEW IF EXISTS v_zone_loc;
 DROP VIEW IF EXISTS v_all_zone_loc;
 DROP VIEW IF EXISTS v_trip;
 DROP VIEW IF EXISTS v_bike;
+DROP VIEW IF EXISTS v_user_card;
 
 --
 -- View contains all zones and all
@@ -54,6 +55,7 @@ SELECT
     (start_cost + var_cost + park_cost) AS total_cost
     FROM
         `trip`
+    ORDER BY start_time DESC
 ;
 
 --
@@ -76,18 +78,27 @@ LEFT JOIN `status`
 ON status_id = status.id
 ;
 
---
--- The fields that
--- are selected together
--- in several stored procedures
---
-CREATE VIEW v_user AS
+CREATE VIEW v_user_card AS
 SELECT
-    `id`,
-    `email`,
-    `balance`,
-    `active`
-FROM
-    `user`
-;
+    user_id,
+    card_nr,
+    card_type,
+    (SELECT `name` FROM `card` WHERE id = card_type) AS card_type_descr
+    FROM user_card;
+
+
+-- --
+-- -- The fields that
+-- -- are selected together
+-- -- in several stored procedures
+-- --
+-- CREATE VIEW v_user AS
+-- SELECT
+--     `id`,
+--     `email`,
+--     `balance`,
+--     `active`
+-- FROM
+--     `user`
+-- ;
 
