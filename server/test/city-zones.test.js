@@ -6,10 +6,14 @@ const expect = chai.expect;
 import { db } from "../src/models/db.js";
 import cityModel from "../src/models/city.js";
 let zones;
-import { bikes } from './dummy-data/bikes.js'
+// import { bikes } from './dummy-data/bikes.js'
 
-import { insertZones } from './helper.js'
-
+import { insertZones, insertData } from './helper.js'
+let users;
+let cards;
+let payments;
+let bikes;
+let trips;
 
 
 
@@ -26,10 +30,13 @@ describe('city model part 2', () => {
             conn.end();
         }
         zones = await insertZones();
+        [users, cards, payments, bikes, trips] = await insertData();
     });
     afterEach(async () => {
         const conn = await db.pool.getConnection()
         let sql = `
+        DELETE FROM trip;
+        DELETE FROM bike;
         DELETE FROM zone_loc_removed;
         DELETE FROM zone_loc;`;
 
@@ -102,26 +109,27 @@ describe('city model part 2', () => {
     });
 
     it("get bikeZones, no forbidden zones in city", async () => {
-        let conn = await db.pool.getConnection();
+        // let conn = await db.pool.getConnection();
 
-        let sql = `
-        DELETE FROM bike;
-        INSERT INTO bike VALUES(?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?);
-        `;
+        // let sql = `
+        // DELETE FROM trip;
+        // DELETE FROM bike;
+        // INSERT INTO bike VALUES(?, ?, ?, ?, ?, ?),
+        // (?, ?, ?, ?, ?, ?),
+        // (?, ?, ?, ?, ?, ?);
+        // `;
 
-        let args = [];
+        // let args = [];
 
-        for (const bike of bikes) {
-            args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active]);
-        }
-        await conn.query(sql, args);
-        if (conn) {
-            conn.end();
-        }
+        // for (const bike of bikes) {
+        //     args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active]);
+        // }
+        // await conn.query(sql, args);
+        // if (conn) {
+        //     conn.end();
+        // }
         // actual from DB
-        let bikeZones= await cityModel.bikeZones(5);
+        let bikeZones= await cityModel.bikeZones(bikes[1].id);
 
         // full info for bike incl zones and city data
         let krlstBikeData = {
@@ -133,24 +141,24 @@ describe('city model part 2', () => {
         expect(bikeZones).to.deep.equal(krlstBikeData);
     });
     it("Should return all active zones in the bike's city + city data", async () => {
-        let conn = await db.pool.getConnection();
+        // let conn = await db.pool.getConnection();
 
-        let sql = `
-        DELETE FROM bike;
-        INSERT INTO bike VALUES(?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?);
-        `;
+        // let sql = `
+        // DELETE FROM bike;
+        // INSERT INTO bike VALUES(?, ?, ?, ?, ?, ?),
+        // (?, ?, ?, ?, ?, ?),
+        // (?, ?, ?, ?, ?, ?);
+        // `;
 
-        let args = [];
+        // let args = [];
 
-        for (const bike of bikes) {
-            args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active]);
-        }
-        await conn.query(sql, args);
-        if (conn) {
-            conn.end();
-        }
+        // for (const bike of bikes) {
+        //     args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active]);
+        // }
+        // await conn.query(sql, args);
+        // if (conn) {
+        //     conn.end();
+        // }
         // limited zones in GBG
         let gbgZones = zones.filter(zone => zone.city_id === "GBG" && zone.speed_limit !== undefined)
         let expZones = gbgZones.map((zone) => {
@@ -161,7 +169,7 @@ describe('city model part 2', () => {
             }
         })
         // actual from DB
-        let bikeZones= await cityModel.bikeZones(6);
+        let bikeZones= await cityModel.bikeZones(bikes[2].id);
 
         // full info for bike incl zones and city data
         let gbgBikeData = {
@@ -193,11 +201,11 @@ describe('city model part 2', () => {
         // it is not selected after deactivation
 
 
-        conn = await db.pool.getConnection()
-        sql = `
+        const conn = await db.pool.getConnection()
+        const sql = `
         INSERT INTO zone_loc_removed(zone_loc_id)
         VALUES(?);`;
-        args = [removed.id];
+        const args = [removed.id];
         await conn.query(sql, args);
         if (conn) {
             conn.end();
@@ -209,33 +217,33 @@ describe('city model part 2', () => {
         }
         expect(bikeZones.zones).to.deep.include(removed);
 
-        bikeZones = await cityModel.bikeZones(6);
+        bikeZones = await cityModel.bikeZones(bikes[2].id);
         expect(bikeZones.zones.length).to.equal(1);
         expect(bikeZones).to.deep.equal(gbgBikeData);
         expect(bikeZones.zones).to.not.deep.include(removed);
     });
     it("Should return city data incl empty zones array if no limited zones in the city", async () => {
-        let conn = await db.pool.getConnection();
+        // let conn = await db.pool.getConnection();
 
-        let sql = `
-        DELETE FROM bike;
-        INSERT INTO bike VALUES(?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?),
-        (?, ?, ?, ?, ?, ?);
-        `;
+        // let sql = `
+        // DELETE FROM bike;
+        // INSERT INTO bike VALUES(?, ?, ?, ?, ?, ?),
+        // (?, ?, ?, ?, ?, ?),
+        // (?, ?, ?, ?, ?, ?);
+        // `;
 
-        let args = [];
+        // let args = [];
 
-        for (const bike of bikes) {
-            args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active]);
-        }
-        await conn.query(sql, args);
-        if (conn) {
-            conn.end();
-        }
+        // for (const bike of bikes) {
+        //     args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active]);
+        // }
+        // await conn.query(sql, args);
+        // if (conn) {
+        //     conn.end();
+        // }
 
         // bikeZones when there are no limited zones in a city
-        let bikeZones= await cityModel.bikeZones(5);
+        let bikeZones= await cityModel.bikeZones(bikes[1].id);
         expect(bikeZones).to.deep.equal({
             city_id: 'KRLST',
             speed_limit: 20,

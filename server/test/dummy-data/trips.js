@@ -134,7 +134,7 @@ export const trips = [
     {
         id: 11,
         user_id: 6,
-        bike_id: 4,
+        bike_id: 5,
         start_time: new Date("2023-10-10 12:28:45"),
         end_time: new Date("2023-10-10 12:34:34"),
         start_pos: [18.07221,59.3089],
@@ -173,7 +173,7 @@ export const trips = [
     {
         id: 14,
         user_id: 5,
-        bike_id: 4,
+        bike_id: 5,
         start_time: new Date("2023-10-14 10:51:45"),
         end_time: new Date("2023-10-14 10:58:34"),
         start_pos: [13.51017,59.3762],
