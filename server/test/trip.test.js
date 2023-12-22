@@ -879,6 +879,8 @@ describe('trip model', () => {
         expect(myTrip).to.be.an.undefined;
         const trips = await tripModel.userTrips(userid);
         expect(trips.length).to.equal(0);
+        const check = await bikeModel.isRented(bikeid);
+        expect(check).to.be.false;
     });
 
     it('ending trip twice will not change the values', async () => {
