@@ -156,141 +156,6 @@ describe('user model', () => {
         dbStub.restore();
 
     });
-    // it('tests register method, not ok, no email', async () => {
-    //     const req = { body: { token: 'validToken' } };
-    //     const res = { json: sinon.stub() };
-    //     const next = sinon.spy();
-    //     const expectedEmail = '';
-    //     const extractEmailStub = sinon.stub(userModel, 'extractEmail').returns(expectedEmail);
-
-
-    //     await userModel.register(req, res, next);
-
-    //     expect(extractEmailStub).to.have.been.calledOnce;
-    //     expect(next).to.have.been.calledOnce;
-
-    //     extractEmailStub.restore();
-
-    // });
-    // it('tests register method, ok', async () => {
-    //     const req = {
-    //         body: {
-    //             token: 'validToken',
-    //             cardnr: "1234 5678 9101 1121",
-    //             cardtype: 3
-    //         }
-    //     };
-    //     const res = { json: sinon.stub() };
-    //     const next = sinon.spy();
-    //     const expectedEmail = 'new_user@email.com';
-    //     const extractEmailStub = sinon.stub(userModel, 'extractEmail').returns(expectedEmail);
-    
-    //     const expectedPayload = {
-    //         id: sinon.match.number,
-    //         email: 'new_user@email.com'
-    //     };
-    //     const expectedResult = {
-    //         data: {
-    //             type: "success",
-    //             message: "User logged in",
-    //             user: expectedPayload,
-    //             token: sinon.match.string
-    //         }
-    //     };
-    
-    //     await userModel.register(req, res, next);
-    
-    //     expect(extractEmailStub).to.have.been.calledOnce;
-    //     expect(next).to.not.have.been.called;
-    //     expect(res.json).to.have.been.calledOnceWithExactly(expectedResult);
-    //     extractEmailStub.restore();
-
-    // });
-    // it('registers new user in database', async () => {
-    //     let user = await userModel.db(
-    //         "testuser@email.com",
-    //         "1234 5678 9123 4567",
-    //         3
-    //     )
-
-    //     expect(Object.keys(user).length).to.equal(2);
-    //     expect(user.email).to.equal("testuser@email.com");
-    //     expect(user.id).to.be.a('number');
-
-    //     const searchRes = await userModel.search("testuser@email.com");
-    //     user = searchRes[0];
-    //     expect(Object.keys(user).length).to.equal(4);
-    //     expect(user.email).to.equal("testuser@email.com");
-    //     expect(user.id).to.be.a('number');
-    //     expect(user.balance).to.equal(0.00);
-    //     expect(user.active).to.be.true;
-    // });
-    // it('registers new user in database, email missing', async () => {
-    //     try {
-    //         // try passing undefined instead of email
-    //         await userModel.db(
-    //             undefined,
-    //             "1234 5678 9123 4567",
-    //             3
-    //         )
-    //         throw new Error('Expected SqlError (email column cannot be null)');
-    //     } catch (error) {
-    //         expect(error.sqlState).to.equal('23000');
-    //         expect(error.message).to.include("Column 'email' cannot be null");
-    //     }
-
-    //     const users = await userModel.all();
-    //     expect(users).to.deep.equal([
-    //         {
-    //             id: 4,
-    //             email: "jdoniso4@alibaba.com",
-    //             balance: 261.93,
-    //             active: true,
-    //         },
-    //         {
-    //             id: 5,
-    //             email: "bcroft7@qq.com",
-    //             balance: -372.87,
-    //             active: false,
-    //         },
-    //         {
-    //             id: 6,
-    //             email: "afolonind@statcounter.com",
-    //             balance: -128.53,
-    //             active: true,
-    //         },
-    //         {
-    //             id: 7,
-    //             email: "another_one@user.com",
-    //             balance: -1200.31,
-    //             active: false,
-    //         }
-    //     ]);
-    // });
-
-    // it('registers new user in database, cardnr missing', async () => {
-    //     try {
-    //         // try passing undefined instead of email
-    //         await userModel.db(
-    //             "the@newuser.com",
-    //             undefined,
-    //             3
-    //         )
-    //         throw new Error('Expected SqlError (card_nr column cannot be null)');
-    //     } catch (error) {
-    //         expect(error.sqlState).to.equal('23000');
-    //         expect(error.message).to.include("Column 'card_nr' cannot be null");
-    //     }
-    //     try {
-    //         // make sure the user has not been registered
-    //         await userModel.search("the@newuser.com");
-
-    //         throw new Error('Expected SqlError (No users matched the search-criteria)');
-    //     } catch (error) {
-    //         expect(error.sqlState).to.equal('45000');
-    //         expect(error.message).to.include("No users matched the search-criteria");
-    //     }
-    // });
     it('get all users', async () => {
         const users = await userModel.all()
         expect(users).to.deep.equal([
@@ -523,27 +388,32 @@ describe('user model', () => {
     it('tests db method (used in login), email ok but inactive)', async () => {
         let user;
         try {
-            user = await userModel.db("bcroft7@qq.com");
-            console.log("user:",user);
+            user = await userModel.db("bcroft7@qq.com");d
             throw new Error("Expected Error (User is deactivated)");
         } catch (error) {
             expect(error.message).to.include("User is deactivated");
         }
         expect(user).to.be.an.undefined;
     });
+    it('tests login method, email ok but inactive', async () => {
+        const extractEmailStub = sinon.stub(userModel, 'extractEmail').returns('bcroft7@qq.com');
+        const nextMock = sinon.spy();
 
-    // it('gets a user from DB (used in login), email not ok)', async () => {
-    //     let user;
-    //     try {
-    //         await userModel.db("julia@bth.se");
-    //         throw new Error("Expected Error (The user does not exist)");
-    //     } catch (error) {
-    //         expect(error.message).to.include("The user does not exist");
-    //     }
-    //     expect(user).to.be.an.undefined;
-    // });
+        const req = {
+            body: {
+                token: 'ghToken'
+            }
+        };
 
+        const res = {
+            json: sinon.stub()
+        };
+        await userModel.login(req, res, nextMock);
 
+        sinon.assert.calledOnceWithExactly(extractEmailStub, 'ghToken');
+        sinon.assert.calledOnce(nextMock);
+        extractEmailStub.restore();
+    });
     it('update user email, email missing', async () => {
 
         let updated;
@@ -570,8 +440,7 @@ describe('user model', () => {
     // Add test for:
 
     //1. get token from github
-    // 2. login with to deactivated account
-    // 3. login with previously not registered account
+
 
 
 });
