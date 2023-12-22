@@ -109,7 +109,7 @@ const emp = {
      *
      * @returns {Promise<Object>} JSON object
      */
-    login: async function login(req, res) {
+    login: async function (req, res) {
         const username = req.body.username;
         const password = req.body.password;
 
@@ -121,8 +121,37 @@ const emp = {
 
         return this.comparePasswords(res, password, emp);
     },
+
+    checkPassword: function(res, result, emp) {
+        if (result) {
+            const payload = {
+                id: emp.id,
+                role: emp.role
+            };
+            const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: "24h" });
+
+            return res.json({
+                data: {
+                    type: "success",
+                    message: "User logged in",
+                    user: payload,
+                    token: jwtToken
+                }
+            });
+        }
+
+        return res.status(401).json({
+            errors: {
+                status: 401,
+                source: "/login",
+                title: "Wrong password",
+                detail: "Password is incorrect."
+            }
+        });
+    },
     /**
-     * @description Function that compares passwords
+     * @description Function that compares password to the hash
+     * stored in db
      *
      * @param {express.Response} res Response object
      * @param {String} password Password
@@ -130,45 +159,20 @@ const emp = {
      *
      * @returns {Object} JSON object
      */
-    comparePasswords: function comparePasswords(res, password, emp) {
-        bcrypt.compare(password, emp.hash, (err, result) => {
-            if (err) {
-                return res.status(500).json({
-                    errors: {
-                        status: 500,
-                        source: "/login",
-                        title: "bcrypt error",
-                        detail: "bcrypt error"
-                    }
-                });
-            }
-
-            if (result) {
-                const payload = {
-                    id: emp.id,
-                    role: emp.role 
-                };
-                const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: "24h" });
-
-                return res.json({
-                    data: {
-                        type: "success",
-                        message: "User logged in",
-                        user: payload,
-                        token: jwtToken
-                    }
-                });
-            }
-
-            return res.status(401).json({
+    comparePasswords: async function (res, password, emp) {
+        try {
+            const result = await bcrypt.compare(password, emp.hash);
+            return this.checkPassword(res, result, emp);
+        } catch (error) {
+            return res.status(500).json({
                 errors: {
-                    status: 401,
+                    status: 500,
                     source: "/login",
-                    title: "Wrong password",
-                    detail: "Password is incorrect."
+                    title: "bcrypt error",
+                    detail: "bcrypt error"
                 }
             });
-        });
+        }
     }
 };
 
