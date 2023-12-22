@@ -108,12 +108,12 @@ describe('user model', () => {
         const expectedEmail = 'existing@user.com';
         const expectedPayload = {};
         const extractEmailStub = sinon.stub(userModel, 'extractEmail').returns(expectedEmail);
-        const getFromDBStub = sinon.stub(userModel, 'getFromDB').resolves(expectedPayload);
+        const dbStub = sinon.stub(userModel, 'db').resolves(expectedPayload);
 
         await userModel.login(req, res, sinon.stub());
 
         expect(extractEmailStub).to.have.been.calledOnce;
-        expect(getFromDBStub).to.have.been.calledOnceWith(expectedEmail);
+        expect(dbStub).to.have.been.calledOnceWith(expectedEmail);
 
         const expectedResult = {
             data: {
@@ -126,7 +126,7 @@ describe('user model', () => {
         expect(res.json).to.have.been.calledOnceWithExactly(expectedResult);
 
         extractEmailStub.restore();
-        getFromDBStub.restore();
+        dbStub.restore();
     });
     it('tests login method, email is not in db, ok', async () => {
         const req = { body: { token: 'validToken' } };
@@ -135,12 +135,12 @@ describe('user model', () => {
         const expectedEmail = 'existing@user.com';
         const expectedPayload = {};
         const extractEmailStub = sinon.stub(userModel, 'extractEmail').returns(expectedEmail);
-        const getFromDBStub = sinon.stub(userModel, 'getFromDB').resolves(expectedPayload);
+        const dbStub = sinon.stub(userModel, 'db').resolves(expectedPayload);
 
         await userModel.login(req, res, sinon.stub());
 
         expect(extractEmailStub).to.have.been.calledOnce;
-        expect(getFromDBStub).to.have.been.calledOnceWith(expectedEmail);
+        expect(dbStub).to.have.been.calledOnceWith(expectedEmail);
 
         const expectedResult = {
             data: {
@@ -153,7 +153,7 @@ describe('user model', () => {
         expect(res.json).to.have.been.calledOnceWithExactly(expectedResult);
 
         extractEmailStub.restore();
-        getFromDBStub.restore();
+        dbStub.restore();
 
     });
     // it('tests register method, not ok, no email', async () => {
@@ -524,9 +524,10 @@ describe('user model', () => {
         let user;
         try {
             user = await userModel.db("bcroft7@qq.com");
-            throw new Error("Expected Error (The user is deactivated)");
+            console.log("user:",user);
+            throw new Error("Expected Error (User is deactivated)");
         } catch (error) {
-            expect(error.message).to.include("The user is deactivated");
+            expect(error.message).to.include("User is deactivated");
         }
         expect(user).to.be.an.undefined;
     });
@@ -534,7 +535,7 @@ describe('user model', () => {
     // it('gets a user from DB (used in login), email not ok)', async () => {
     //     let user;
     //     try {
-    //         await userModel.getFromDB("julia@bth.se");
+    //         await userModel.db("julia@bth.se");
     //         throw new Error("Expected Error (The user does not exist)");
     //     } catch (error) {
     //         expect(error.message).to.include("The user does not exist");

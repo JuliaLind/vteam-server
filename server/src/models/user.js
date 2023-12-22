@@ -68,7 +68,6 @@ const user = {
 
         return result[0][0];
     },
-    // },
     /**
      * Logs in user. If user does not have
      * an account, registers the user
