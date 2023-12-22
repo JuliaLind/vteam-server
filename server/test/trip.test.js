@@ -849,6 +849,38 @@ describe('trip model', () => {
             total_cost: null
         });
     });
+
+    it('start a trip, not ok - no card registered', async () => {
+        const conn = await db.pool.getConnection();
+        let sql = `
+        INSERT INTO user(email)
+             VALUES(?);
+        SELECT MAX(id) AS last_id FROM user;`
+
+        let args = ["user_with@no.card"];
+
+        const data = await conn.query(sql, args);
+        const userid = data[0].last_id;
+
+        if (conn) {
+            conn.end();
+        }
+
+        const bikeid = bikes[2].id
+
+        let myTrip;
+        try {
+            myTrip = await tripModel.start(userid, bikeid);;
+            throw new Error(`Expected SqlError (No payment card registered)`);
+        } catch (error) {
+            expect(error.sqlState).to.equal('45000');
+            expect(error.message).to.include(`No payment card registered`);
+        }
+        expect(myTrip).to.be.an.undefined;
+        const trips = await tripModel.userTrips(userid);
+        expect(trips.length).to.equal(0);
+    });
+
     it('ending trip twice will not change the values', async () => {
         const userid = users[0].id
         const bikeid = bikes[2].id

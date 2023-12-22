@@ -67,6 +67,26 @@ describe('card model', () => {
             card_type_descr: "Mastercard"
         });
     });
+    it('try to update card details to empty string, should not work', async () => {
+        let cardDetails;
+        const emptyString = "   ";
+        try {
+            // try invalid card type
+            cardDetails = await cardModel.updUserDetails(users[2].id, emptyString, 2);
+            throw new Error("Expected Error (invalid cardnr)");
+        } catch (error) {
+            expect(error.message).to.include("invalid cardnr");
+        }
+
+        cardDetails = await cardModel.userDetails(users[2].id);
+
+        expect(cardDetails).to.not.deep.equal({
+            card_nr: emptyString,
+            card_type: 2,
+            card_type_descr: sinon.match.string
+        });
+        expect(cardDetails).to.deep.equal(cards[2]);
+    });
     it('Will not update card details if invalid card type', async () => {
         let cardDetails;
         try {
@@ -92,10 +112,9 @@ describe('card model', () => {
         try {
             // try no cardnr
             cardDetails = await cardModel.updUserDetails(users[3].id, undefined, 2);
-            throw new Error("Expected SqlError (Column 'card_nr' cannot be null)");
+            throw new Error("Expected Error (invalid cardnr)");
         } catch (error) {
-            expect(error.sqlState).to.equal('23000');
-            expect(error.message).to.include("Column 'card_nr' cannot be null");
+            expect(error.message).to.include("invalid cardnr");
         }
 
         cardDetails = await cardModel.userDetails(users[3].id);
