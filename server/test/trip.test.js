@@ -167,7 +167,7 @@ describe('trip model', () => {
         }
         expect(trip).to.be.an.undefined;
         const trips = await tripModel.userTrips(userid);
-        expect(trips.length).to.equal(0);
+        expect(trips.length).to.equal(7);
         const isRented = await bikeModel.isRented(bikeid);
         expect(isRented).to.be.false;
     });
@@ -341,7 +341,7 @@ describe('trip model', () => {
         }
 
 
-        isRented = await bikeModel.isRented(6);
+        isRented = await bikeModel.isRented(bikeid);
         expect(isRented).to.be.true;
 
         myTrip = await tripModel.end(userid, myTrip.id);
@@ -547,6 +547,8 @@ describe('trip model', () => {
     });
 
     it('end a trip, start in bad parking end in park zone = low start cost and low park cost', async () => {
+        const bikeid = bikes[2].id
+        const userid = users[0].id
         let myTrip = await tripModel.start(userid, bikeid);
         const conn = await db.pool.getConnection();
         let sql = `
@@ -638,6 +640,8 @@ describe('trip model', () => {
         });
     });
     it('trip should end when bike is deactivated', async () => {
+        const bikeid = bikes[2].id
+        const userid = users[0].id
         let myTrip = await tripModel.start(userid, bikeid);
 
         const conn = await db.pool.getConnection();
@@ -831,7 +835,7 @@ describe('trip model', () => {
 
         expect(Math.abs(new Date - trips[0].start_time)/1000).to.be.lessThan(1);
         delete trips[0].start_time;
-        expect(trips.length).to.equal(1);
+        expect(trips.length).to.equal(6);
         expect(trips[0]).to.deep.equal({
             id: trips[0].id,
             user_id: userid,
