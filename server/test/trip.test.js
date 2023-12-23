@@ -930,3 +930,8 @@ describe('trip model', () => {
         });
     });
 });
+
+// lägg till tester för:
+// 1. uppdatera status med uppdatera endast status metoden under pågående resa - ska inte gå
+// 2. cykel uppdaterat på ett otillåtet sätt (testa olika kombon), ska inte gå
+// 3. cykel uppdaterar status på tillåtet sätt (testa både 1->4 och 2-> 5), ska g¨å

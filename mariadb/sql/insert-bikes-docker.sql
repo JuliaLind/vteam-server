@@ -78,7 +78,7 @@ FIELDS
 LINES
     TERMINATED BY '\n'
 IGNORE 1 LINES
-(id, card_nr, card_type)
+(user_id, card_nr, card_type)
 ;
 
 SHOW WARNINGS;

@@ -183,22 +183,20 @@ BEGIN
         ;
     END IF;
 
-    -- if status is rented update to available
-    IF (SELECT status_id
-    FROM bike WHERE id = bikeid) = 2 THEN
-        UPDATE bike
-        SET status_id = 1
-        WHERE id = bikeid;
+    SET @current_status := (SELECT status_id
+    FROM bike WHERE id = bikeid);
+
+    -- if status is rented default is to update to available
+    SET @new_status := 1;
+    -- if status is 'rented maintenance required' update
+    -- to 'maintenance required'
+    IF @current_status = 5 THEN
+        SET @new_status := 4;
     END IF;
 
-    -- if status is rented maintenance required update
-    -- to maintenance required
-    IF (SELECT status_id
-    FROM bike WHERE id = bikeid) = 5 THEN
-        UPDATE bike
-        SET status_id = 4
-        WHERE id = bikeid;
-    END IF;
+    UPDATE bike
+    SET status_id = @new_status
+    WHERE id = bikeid;
 
     -- return all data for the trip + calculated total cost
     -- if multiple requests this procedure will not update values but return same ones
