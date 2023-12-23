@@ -182,10 +182,21 @@ BEGIN
         WHERE id = t_id
         ;
     END IF;
+
+    -- if status is rented update to available
     IF (SELECT status_id
     FROM bike WHERE id = bikeid) = 2 THEN
         UPDATE bike
         SET status_id = 1
+        WHERE id = bikeid;
+    END IF;
+
+    -- if status is rented maintenance required update
+    -- to maintenance required
+    IF (SELECT status_id
+    FROM bike WHERE id = bikeid) = 5 THEN
+        UPDATE bike
+        SET status_id = 4
         WHERE id = bikeid;
     END IF;
 

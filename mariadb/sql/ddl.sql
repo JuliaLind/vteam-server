@@ -152,7 +152,7 @@ CREATE TABLE `city`(
 --
 CREATE TABLE `status`(
     `id` INT NOT NULL AUTO_INCREMENT,
-    `descr` VARCHAR(20),
+    `descr` VARCHAR(30),
 
     PRIMARY KEY (`id`)
 );

@@ -53,7 +53,7 @@ describe('bike model', () => {
     it("update bike to invalid values should not work", async () => {
         try {
             // try invalid status
-            await bikeModel.updateBike(5, 5, 0.6, [18.999,59.999]);
+            await bikeModel.updateBike(5, 6, 0.6, [18.999,59.999]);
             throw new Error('Expected SqlError (foreign key constraint violation)');
         } catch (error) {
             expect(error.sqlState).to.equal('23000');
@@ -92,7 +92,7 @@ describe('bike model', () => {
         });
         try {
             // try invalid charge range too high
-            await bikeModel.updateBike(5, 5, -0.1, [18.999,59.999]);
+            await bikeModel.updateBike(5, 1, -0.1, [18.999,59.999]);
 
             throw new Error('Expected a custom out of range error of charge perc');
         } catch (error) {
@@ -308,8 +308,8 @@ describe('bike model', () => {
 
     it("should not be able to update to non-existsent status", async () => {
         try {
-            // there are only statuses 1-4
-            await bikeModel.updStatus(5, 5);
+            // there are only statuses 1-5
+            await bikeModel.updStatus(5, 6);
 
             throw new Error('Expected SqlError (foreign key constraint violation)');
             } catch (error) {
@@ -376,6 +376,10 @@ describe('bike model', () => {
             {
                 "id": 4,
                 "descr": "maintenance required"
+            },
+            {
+                "descr": "rented maintenance required",
+                "id": 5
             }
         ]);
     });

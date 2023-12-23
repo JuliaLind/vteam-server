@@ -288,7 +288,7 @@ describe('trip model', () => {
         expect(bikeStatus[0].status_id).to.equal(1);
     });
 
-    it('test that maintenance required status_id is not overwritten when trip is ended', async () => {
+    it('test that rented maintenance required is changed to maintenance required status_id when trip is ended', async () => {
         const bikeid = bikes[2].id
         const userid = users[1].id
         let myTrip = await tripModel.start(userid, bikeid);
@@ -333,7 +333,7 @@ describe('trip model', () => {
         WHERE id = ?;`
 
         // new status_id 4 maintenance required
-        args = [4, bikeid];
+        args = [5, bikeid];
 
         await conn.query(sql, args);
         if (conn) {
