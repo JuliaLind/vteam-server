@@ -50,15 +50,8 @@ describe('bike model', () => {
 
     });
 
-    it("update bike to invalid values should not work", async () => {
-        try {
-            // try invalid status
-            await bikeModel.updateBike(5, 5, 0.6, [18.999,59.999]);
-            throw new Error('Expected SqlError (foreign key constraint violation)');
-        } catch (error) {
-            expect(error.sqlState).to.equal('23000');
-            expect(error.message).to.include('foreign key constraint');
-        }
+    it("bike cannot update charge perc to outside range", async () => {
+        await bikeModel.updateBike(5, 1, 0.6, [18.999,59.999]);
         let bike = await bikeModel.getOne(5)
 
         expect(bike).to.deep.equal({
@@ -66,13 +59,13 @@ describe('bike model', () => {
             city_id: "KRLST",
             status_id: 1,
             status_descr: "available",
-            charge_perc: 0.70,
-            coords: [11.95454,57.7244],
+            charge_perc: 0.60,
+            coords: [18.999,59.999],
             active: false,
         });
         try {
             // try invalid charge range too high
-            await bikeModel.updateBike(5, 1, 1.1, [18.999,59.999]);
+            await bikeModel.updateBike(5, 1, 1.1, [16.999,35.999]);
 
             throw new Error('Expected a custom out of range error of charge perc');
         } catch (error) {
@@ -86,13 +79,13 @@ describe('bike model', () => {
             city_id: "KRLST",
             status_id: 1,
             status_descr: "available",
-            charge_perc: 0.70,
-            coords: [11.95454,57.7244],
+            charge_perc: 0.60,
+            coords: [18.999,59.999],
             active: false,
         });
         try {
             // try invalid charge range too high
-            await bikeModel.updateBike(5, 5, -0.1, [18.999,59.999]);
+            await bikeModel.updateBike(5, 1, -0.1, [11.95454,57.7244]);
 
             throw new Error('Expected a custom out of range error of charge perc');
         } catch (error) {
@@ -106,8 +99,8 @@ describe('bike model', () => {
             city_id: "KRLST",
             status_id: 1,
             status_descr: "available",
-            charge_perc: 0.70,
-            coords: [11.95454,57.7244],
+            charge_perc: 0.60,
+            coords: [18.999,59.999],
             active: false,
         });
     });
@@ -305,19 +298,6 @@ describe('bike model', () => {
             active: false,
         });
     });
-
-    it("should not be able to update to non-existsent status", async () => {
-        try {
-            // there are only statuses 1-4
-            await bikeModel.updStatus(5, 5);
-
-            throw new Error('Expected SqlError (foreign key constraint violation)');
-            } catch (error) {
-                expect(error.sqlState).to.equal('23000');
-                expect(error.message).to.include('foreign key constraint');
-        }
-    });
-
     
     it("updates a bike's city to a valid city", async () => {
         let bike = await bikeModel.updCity(5, "GBG")
@@ -376,7 +356,16 @@ describe('bike model', () => {
             {
                 "id": 4,
                 "descr": "maintenance required"
+            },
+            {
+                "descr": "rented maintenance required",
+                "id": 5
             }
         ]);
     });
 });
+
+// 1. add test that updStatus method 
+// can only use method to update statuses to 1, 3 and 4
+// 2. add test that updateBike status can only update from
+// 1 -> 4 and 2 -> 5

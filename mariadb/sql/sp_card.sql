@@ -27,13 +27,11 @@ BEGIN
     SELECT
         card_nr,
         card_type,
-        card.name AS card_type_descr
+        card_type_descr
     FROM
-        `user`
-    JOIN `card`
-    ON user.card_type = card.id
+        `v_user_card`
     WHERE
-        user.id = u_id
+        user_id = u_id
     ;
 END
 ;;
@@ -50,12 +48,12 @@ CREATE PROCEDURE upd_user_card(
     c_type INT
 )
 BEGIN
-    UPDATE `user`
-    SET
+    INSERT INTO `user_card`
+    VALUES(u_id, c_nr, c_type)
+    ON DUPLICATE KEY
+    UPDATE
         card_nr = c_nr,
         card_type = c_type
-    WHERE
-        user.id = u_id
     ;
 
     CALL user_card(u_id);

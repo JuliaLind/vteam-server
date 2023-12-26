@@ -65,7 +65,21 @@ FIELDS
 LINES
     TERMINATED BY '\n'
 IGNORE 1 LINES
-(id, email, card_nr, card_type, balance)
+(id, email, balance)
+;
+
+SHOW WARNINGS;
+
+LOAD DATA LOCAL INFILE './csv/user_card.csv'
+INTO TABLE `user_card`
+CHARSET utf8
+FIELDS
+    TERMINATED BY ','
+    ENCLOSED BY '"'
+LINES
+    TERMINATED BY '\n'
+IGNORE 1 LINES
+(user_id, card_nr, card_type)
 ;
 
 SHOW WARNINGS;

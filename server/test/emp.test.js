@@ -56,7 +56,7 @@ describe('emp model', () => {
     afterEach(() => {
         sinon.restore();
     });
-    it('comparePasswords ok', (done) => {
+    it('checkPassword ok', async () => {
         const res = {};
         const emp = {
             id: 1,
@@ -67,25 +67,69 @@ describe('emp model', () => {
         res.status = sinon.stub().returnsThis();
         res.json = sinon.stub();
 
-        empModel.comparePasswords(res, password, emp);
+        await empModel.checkPassword(res, true, emp);
 
-        setTimeout(() => {
-            expect(res.json.calledOnceWithExactly({
-                data: {
-                    type: "success",
-                    message: "User logged in",
-                    user: sinon.match({
-                        id: 1,
-                        role: "admin"
-                    }),
-                    token: sinon.match.string
-                },
-            })).to.be.true;
-            done()
-        }, 2);
+
+        expect(res.json.calledOnceWithExactly({
+            data: {
+                type: "success",
+                message: "User logged in",
+                user: sinon.match({
+                    id: 1,
+                    role: "admin"
+                }),
+                token: sinon.match.string
+            },
+        })).to.be.true;
+
+    });
+    it('checkPassword not ok, wrong password', async () => {
+        const res = {};
+        const emp = {
+            id: 1,
+            username: username,
+            hash: hash,
+            role: "admin"
+        }
+
+        res.status = sinon.stub().returnsThis();
+        res.json = sinon.stub();
+
+        await empModel.checkPassword(res, false, emp);
+
+        expect(res.status.calledOnceWithExactly(401)).to.be.true;
+        expect(res.json.calledOnceWithExactly(sinon.match({
+            errors: {
+                status: 401,
+                source: "/login",
+                title: "Wrong password",
+                detail: "Password is incorrect."
+            }
+        }))).to.be.true;
+    });
+    it('comparePasswords ok', async () => {
+        const res = {};
+        const emp = {
+            id: 1,
+            username: username,
+            hash: hash,
+            role: "admin"
+        }
+        res.status = sinon.stub().returnsThis();
+        res.json = sinon.stub();
+
+        const bcryptCompareStub = sinon.stub(bcrypt, 'compare').resolves(true);
+        const checkPasswordSpy = sinon.spy(empModel, 'checkPassword');
+
+        await empModel.comparePasswords(res, "correctpassword", emp);
+
+        sinon.assert.calledOnceWithExactly(checkPasswordSpy, res, true, emp);
+
+        bcrypt.compare.restore();
+        checkPasswordSpy.restore()
  
     });
-    it('comparePasswords not ok, wrong password', (done) => {
+    it('comparePasswords not ok, wrong password', async () => {
         const res = {};
         const emp = {
             id: 1,
@@ -96,21 +140,16 @@ describe('emp model', () => {
 
         res.status = sinon.stub().returnsThis();
         res.json = sinon.stub();
+        const bcryptCompareStub = sinon.stub(bcrypt, 'compare').resolves(false);
+        const checkPasswordSpy = sinon.spy(empModel, 'checkPassword');
 
-        empModel.comparePasswords(res, "wrongpassword", emp);
+        await empModel.comparePasswords(res, "wrongpassword", emp);
 
-        setTimeout(() => {
-            expect(res.status.calledOnceWithExactly(401)).to.be.true;
-            expect(res.json.calledOnceWithExactly(sinon.match({
-                errors: {
-                    status: 401,
-                    source: "/login",
-                    title: "Wrong password",
-                    detail: "Password is incorrect."
-                }
-            }))).to.be.true;
-            done()
-        }, 2);
+        sinon.assert.calledOnceWithExactly(checkPasswordSpy, res, false, emp);
+        sinon.assert.calledOnceWithExactly(bcryptCompareStub, "wrongpassword", emp.hash);
+
+        bcrypt.compare.restore();
+        checkPasswordSpy.restore()
  
     });
     it('comparePasswords not ok, missing password', (done) => {

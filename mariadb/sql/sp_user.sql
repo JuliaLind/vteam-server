@@ -3,46 +3,38 @@ DROP PROCEDURE IF EXISTS all_users;
 DROP PROCEDURE IF EXISTS all_users_pag;
 DROP PROCEDURE IF EXISTS upd_user_status;
 DROP PROCEDURE IF EXISTS upd_user_email;
-DROP PROCEDURE IF EXISTS new_user;
 DROP PROCEDURE IF EXISTS user_login;
 
 
 DELIMITER ;;
 
 --
--- Inserts new user into the database.
--- parameters are email, cardnumber and
--- card type (id).
+-- Inserts new user into the database if
+-- email is not already registered
+-- 
 -- "Returns" the id and the email of the user
---
-CREATE PROCEDURE new_user(
-    u_email VARCHAR(100),
-    c_nr VARCHAR(100),
-    c_type INT
-)
-BEGIN
-    INSERT INTO `user` (email, card_nr, card_type)
-    VALUES(u_email, c_nr, c_type);
-
-    SELECT id, email
-    FROM `user`
-    WHERE email = u_email;
-END
-;;
-
---
--- Takes user's email as parameter
--- and if the user is active returns
--- the user's id and email.
+-- if the user has not been deactivated,
+-- otherwise throws error
 --
 CREATE PROCEDURE user_login(
     u_email VARCHAR(100)
 )
 BEGIN
-    SELECT id, email
-    FROM `user`
-    WHERE email = u_email
-    AND `active` = TRUE;
+    DECLARE user_id INT;
+    DECLARE is_active BOOLEAN;
+
+    INSERT IGNORE INTO `user` (email)
+    VALUES(u_email);
+
+    SELECT id, active INTO user_id, is_active FROM user WHERE email = u_email;
+
+    -- throw an error if user is deactivated
+    IF is_active = FALSE THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'User is deactivated';
+    END IF;
+
+    SELECT user_id AS id, u_email AS email;
 END
 ;;
 
@@ -67,7 +59,7 @@ BEGIN
     SELECT
         *
     FROM
-        `v_user`
+        `user`
     WHERE `id` = u_id
     ;
 END
@@ -91,7 +83,7 @@ BEGIN
     SELECT
         *
     FROM
-        `v_user`
+        `user`
     WHERE `id` = u_id
     ;
 END
@@ -122,7 +114,7 @@ BEGIN
     SELECT
         *
     FROM
-        `v_user`
+        `user`
     WHERE `id` LIKE a_what
     OR `email` LIKE a_what
     ;
@@ -137,7 +129,7 @@ CREATE PROCEDURE all_users()
 BEGIN
     SELECT
         *
-    FROM `v_user`
+    FROM `user`
     ;
 END
 ;;
@@ -156,7 +148,7 @@ BEGIN
     SELECT
         *
     FROM
-        `v_user`
+        `user`
     LIMIT a_limit
     OFFSET a_offset
     ;

@@ -7,10 +7,13 @@ const expect = chai.expect;
 import { db } from "../src/models/db.js";
 import bikeModel from "../src/models/bike.js";
 import tripModel from "../src/models/trip.js";
-import { bikes } from './dummy-data/bikes.js';
-import { users } from './dummy-data/users.js';
 import { zones, points } from './dummy-data/zones.js';
-
+import { insertData } from './helper.js';
+let users;
+let cards;
+let payments;
+let bikes;
+let trips;
 
 
 describe('trip model', () => {
@@ -20,17 +23,6 @@ describe('trip model', () => {
         let sql = `
         DELETE FROM zone_loc_removed;
         DELETE FROM zone_loc;
-        DELETE FROM trip;
-        DELETE FROM user;
-        INSERT INTO user VALUES(?, ?, ?, ?, ?, ?),
-            (?, ?, ?, ?, ?, ?),
-            (?, ?, ?, ?, ?, ?),
-            (?, ?, ?, ?, ?, ?);
-        DELETE FROM bike;
-        INSERT INTO bike
-        VALUES(?, ?, ?, ?, ?, ?),
-            (?, ?, ?, ?, ?, ?),
-            (?, ?, ?, ?, ?, ?);
         INSERT INTO zone_loc
         VALUES(?, ?, ?, ?, ?),
             (?, ?, ?, ?, ?),
@@ -43,12 +35,6 @@ describe('trip model', () => {
 
         let args = [];
 
-        for (const user of users) {
-            args = args.concat([user.id, user.email, user.card, user.card_type, user.balance, user.active]);
-        }
-        for (const bike of bikes) {
-            args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active]);
-        }
         for (const zone of zones) {
             args = args.concat([zone.id, zone.zone_id, zone.city_id, zone.date_from, JSON.stringify(zone.geometry)]);
         }
@@ -57,6 +43,7 @@ describe('trip model', () => {
         if (conn) {
             conn.end();
         }
+        [users, cards, payments, bikes, trips] = await insertData();
     });
     after(async () => {
         const conn = await db.pool.getConnection();
@@ -70,27 +57,29 @@ describe('trip model', () => {
         }
     })
     it('starts a trip, ok', async () => {
-        const trip = await tripModel.start(4, 6);
+        const userid = users[0].id;
+        const bikeid = bikes[2].id;
+        const trip = await tripModel.start(userid, bikeid);
         expect(Math.abs(new Date - trip.start_time)/1000).to.be.lessThan(1);
-        const isRented = await bikeModel.isRented(6);
+        const isRented = await bikeModel.isRented(bikeid);
         expect(isRented).to.be.true;
         delete trip.start_time;
         expect(trip).to.deep.equal({
             id: trip.id,
-            user_id: 4,
-            bike_id: 6,
+            user_id: userid,
+            bike_id: bikeid,
             start_pos: [11.9721,57.70229],
         })
 
 
-        const trips = await tripModel.userTrips(4);
+        const trips = await tripModel.userTrips(userid);
         expect(trips.length).to.equal(1);
         expect(Math.abs(new Date - trips[0].start_time)/1000).to.be.lessThan(1);
         delete trips[0].start_time;
         expect(trips[0]).to.deep.equal({
             id: trip.id,
-            user_id: 4,
-            bike_id: 6,
+            user_id: userid,
+            bike_id: bikeid,
             start_pos: [11.9721,57.70229],
             end_time: null,
             end_pos: null,
@@ -113,35 +102,38 @@ describe('trip model', () => {
     it('cannot start a trip because bike inactive', async () => {
 
         let trip;
+        const bikeid = bikes[1].id;
+        let userid = users[0].id;
         try {
             // bike 5 has active = false
-            trip = await tripModel.start(4, 5);
-            throw new Error('Expected SqlError (Cannot rent bike 5)');
+            trip = await tripModel.start(userid, bikeid);
+            throw new Error(`Expected SqlError (Cannot rent bike ${bikeid})`);
         } catch (error) {
             expect(error.sqlState).to.equal('45000');
-            expect(error.message).to.include('Cannot rent bike 5');
+            expect(error.message).to.include(`Cannot rent bike ${bikeid}`);
         }
         expect(trip).to.be.an.undefined;
-        const trips = await tripModel.userTrips(4);
+        const trips = await tripModel.userTrips(userid);
         expect(trips.length).to.equal(0);
-        const isRented = await bikeModel.isRented(5);
+        const isRented = await bikeModel.isRented(bikeid);
         expect(isRented).to.be.false;
     });
     it('cannot start a trip because bike has status "maintenance required"', async () => {
 
         let trip;
+        const userid = users[2].id;
+        const bikeid = bikes[0].id
         try {
-            // bike 5 has active = false
-            trip = await tripModel.start(6, 4);
-            throw new Error('Expected SqlError (Cannot rent bike 4)');
+            trip = await tripModel.start(userid, bikeid);
+            throw new Error(`Expected SqlError (Cannot rent bike ${bikeid})`);
         } catch (error) {
             expect(error.sqlState).to.equal('45000');
-            expect(error.message).to.include('Cannot rent bike 4');
+            expect(error.message).to.include(`Cannot rent bike ${bikeid}`);
         }
         expect(trip).to.be.an.undefined;
-        const trips = await tripModel.userTrips(6);
-        expect(trips.length).to.equal(0);
-        const isRented = await bikeModel.isRented(4);
+        const trips = await tripModel.userTrips(userid);
+        expect(trips.length).to.equal(7);
+        const isRented = await bikeModel.isRented(bikeid);
         expect(isRented).to.be.false;
     });
 
@@ -154,10 +146,12 @@ describe('trip model', () => {
         WHERE id = ?;
         ;`
 
+        const bikeid = bikes[0].id
+        const userid = users[2].id
         // backdate starttime of the trip and start position to charge zone
         let startTime = new Date();
         startTime.setMinutes(startTime.getMinutes() - 49)
-        let args = [3, 4];
+        let args = [3, bikeid];
         await conn.query(sql, args);
         if (conn) {
             conn.end();
@@ -165,36 +159,36 @@ describe('trip model', () => {
 
         let trip;
         try {
-            // bike 5 has active = false
-            trip = await tripModel.start(6, 4);
-            throw new Error('Expected SqlError (Cannot rent bike 4)');
+            trip = await tripModel.start(userid, bikeid);
+            throw new Error(`Expected SqlError (Cannot rent bike ${bikeid})`);
         } catch (error) {
             expect(error.sqlState).to.equal('45000');
-            expect(error.message).to.include('Cannot rent bike 4');
+            expect(error.message).to.include(`Cannot rent bike ${bikeid}`);
         }
         expect(trip).to.be.an.undefined;
-        const trips = await tripModel.userTrips(6);
-        expect(trips.length).to.equal(0);
-        const isRented = await bikeModel.isRented(4);
+        const trips = await tripModel.userTrips(userid);
+        expect(trips.length).to.equal(7);
+        const isRented = await bikeModel.isRented(bikeid);
         expect(isRented).to.be.false;
     });
 
     it('cannot start a trip again because bike has status "rented", same error even if user same', async () => {
-
-        await tripModel.start(4, 6);
+        const bikeid = bikes[2].id
+        const userid = users[0].id
+        await tripModel.start(userid, bikeid);
         let secondTrip;
         try {
             // bike 5 has status rented
-            secondTrip = await tripModel.start(4, 6);
-            throw new Error('Expected SqlError (Cannot rent bike 6)');
+            secondTrip = await tripModel.start(userid, bikeid);
+            throw new Error(`Expected SqlError (Cannot rent bike ${bikeid})`);
         } catch (error) {
             expect(error.sqlState).to.equal('45000');
-            expect(error.message).to.include('Cannot rent bike 6');
+            expect(error.message).to.include(`Cannot rent bike ${bikeid}`);
         }
-        const isRented = await bikeModel.isRented(6);
+        const isRented = await bikeModel.isRented(bikeid);
         expect(isRented).to.be.true;
         expect(secondTrip).to.be.an.undefined;
-        const trips = await tripModel.userTrips(4);
+        const trips = await tripModel.userTrips(userid);
         expect(trips.length).to.equal(1);
         expect(Math.abs(new Date - trips[0].start_time)/1000).to.be.lessThan(1);
         delete trips[0].start_time;
@@ -202,8 +196,8 @@ describe('trip model', () => {
         // check that no changes were done to the trip initiated by first user
         expect(trips[0]).to.deep.equal({
             id: trips[0].id,
-            user_id: 4,
-            bike_id: 6,
+            user_id: userid,
+            bike_id: bikeid,
             start_pos: [11.9721,57.70229],
             end_time: null,
             end_pos: null,
@@ -216,7 +210,9 @@ describe('trip model', () => {
     });
 
     it('end a trip, start in charge and end in bad parking = high start cost, high park cost', async () => {
-        let myTrip = await tripModel.start(5, 6);
+        const bikeid = bikes[2].id
+        const userid = users[1].id
+        let myTrip = await tripModel.start(userid, bikeid);
         let conn = await db.pool.getConnection();
 
         let sql = `
@@ -239,7 +235,7 @@ describe('trip model', () => {
         WHERE id = ?
         ;`;
 
-        args = [6];
+        args = [bikeid];
         let bikeStatus = await conn.query(sql, args);
 
 
@@ -248,9 +244,9 @@ describe('trip model', () => {
         }
 
         expect(bikeStatus[0].status_id).to.equal(2);
-        let isRented = await bikeModel.isRented(6);
+        let isRented = await bikeModel.isRented(bikeid);
         expect(isRented).to.be.true;
-        myTrip = await tripModel.end(5, myTrip.id);
+        myTrip = await tripModel.end(userid, myTrip.id);
 
         expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
         expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
@@ -259,14 +255,14 @@ describe('trip model', () => {
         delete myTrip.end_time;
         delete myTrip.start_time;
 
-        isRented = await bikeModel.isRented(6);
+        isRented = await bikeModel.isRented(bikeid);
         expect(isRented).to.be.false;
         // high startcost and high park cost,
         // because start in park zone and end in free parking
         expect(myTrip).to.deep.equal({
             id: myTrip.id,
-            user_id: 5,
-            bike_id: 6,
+            user_id: userid,
+            bike_id: bikeid,
             start_pos: points.ok_charge,
             end_pos: [11.9721,57.70229],
             start_cost: 10.00,
@@ -283,7 +279,7 @@ describe('trip model', () => {
         WHERE id = ?
         ;`;
 
-        args = [6];
+        args = [bikeid];
 
         bikeStatus = await conn.query(sql, args);
         if (conn) {
@@ -292,8 +288,10 @@ describe('trip model', () => {
         expect(bikeStatus[0].status_id).to.equal(1);
     });
 
-    it('test that maintenance required status_id is not overwritten when trip is ended', async () => {
-        let myTrip = await tripModel.start(5, 6);
+    it('test that rented maintenance required is changed to maintenance required status_id when trip is ended', async () => {
+        const bikeid = bikes[2].id
+        const userid = users[1].id
+        let myTrip = await tripModel.start(userid, bikeid);
         let conn = await db.pool.getConnection();
 
         let sql = `
@@ -316,7 +314,7 @@ describe('trip model', () => {
         WHERE id = ?
         ;`;
 
-        args = [6];
+        args = [bikeid];
         let bikeStatus = await conn.query(sql, args);
 
 
@@ -325,7 +323,7 @@ describe('trip model', () => {
         }
 
         expect(bikeStatus[0].status_id).to.equal(2);
-        let isRented = await bikeModel.isRented(6);
+        let isRented = await bikeModel.isRented(bikeid);
         expect(isRented).to.be.true;
 
         conn = await db.pool.getConnection();
@@ -335,7 +333,7 @@ describe('trip model', () => {
         WHERE id = ?;`
 
         // new status_id 4 maintenance required
-        args = [4, 6];
+        args = [5, bikeid];
 
         await conn.query(sql, args);
         if (conn) {
@@ -343,10 +341,10 @@ describe('trip model', () => {
         }
 
 
-        isRented = await bikeModel.isRented(6);
+        isRented = await bikeModel.isRented(bikeid);
         expect(isRented).to.be.true;
 
-        myTrip = await tripModel.end(5, myTrip.id);
+        myTrip = await tripModel.end(userid, myTrip.id);
 
         expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
         expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
@@ -361,8 +359,8 @@ describe('trip model', () => {
         // because start in park zone and end in free parking
         expect(myTrip).to.deep.equal({
             id: myTrip.id,
-            user_id: 5,
-            bike_id: 6,
+            user_id: userid,
+            bike_id: bikeid,
             start_pos: points.ok_charge,
             end_pos: [11.9721,57.70229],
             start_cost: 10.00,
@@ -379,7 +377,7 @@ describe('trip model', () => {
         WHERE id = ?
         ;`;
 
-        args = [6];
+        args = [bikeid];
 
         bikeStatus = await conn.query(sql, args);
         if (conn) {
@@ -388,6 +386,8 @@ describe('trip model', () => {
         expect(bikeStatus[0].status_id).to.equal(4);
     });
     it('end a trip, start in park zone and end in park zone = high start cost and low park cost', async () => {
+        const bikeid = bikes[2].id
+        const userid = users[0].id
         let conn = await db.pool.getConnection();
 
         let sql = `
@@ -396,13 +396,13 @@ describe('trip model', () => {
         WHERE id = ?;`
 
 
-        let args = [JSON.stringify(points.ok_park), 6];
+        let args = [JSON.stringify(points.ok_park), bikeid];
         await conn.query(sql, args);
         if (conn) {
             conn.end();
         }
 
-        let myTrip = await tripModel.start(4, 6);
+        let myTrip = await tripModel.start(userid, bikeid);
         conn = await db.pool.getConnection();
         sql = `
         UPDATE trip
@@ -422,13 +422,13 @@ describe('trip model', () => {
             conn.end();
         }
 
-        let isRented = await bikeModel.isRented(6);
+        let isRented = await bikeModel.isRented(bikeid);
         expect(isRented).to.be.true;
-        myTrip = await tripModel.end(4, myTrip.id);
+        myTrip = await tripModel.end(userid, myTrip.id);
         expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
         expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
 
-        isRented = await bikeModel.isRented(6);
+        isRented = await bikeModel.isRented(bikeid);
         expect(isRented).to.be.false;
         delete myTrip.end_time;
         delete myTrip.start_time;
@@ -438,8 +438,8 @@ describe('trip model', () => {
         // because end in fee parking
         expect(myTrip).to.deep.equal({
             id: myTrip.id,
-            user_id: 4,
-            bike_id: 6,
+            user_id: userid,
+            bike_id: bikeid,
             start_pos: points.ok_park,
             end_pos: points.ok_park,
             start_cost: 10.00,
@@ -449,8 +449,10 @@ describe('trip model', () => {
         });
     });
 
-    it('end a trip, duplicate request should not work', async () => {
-        let myTrip = await tripModel.start(4, 6);
+    it('end a trip, high startcost and high park cost', async () => {
+        const bikeid = bikes[2].id
+        const userid = users[0].id
+        let myTrip = await tripModel.start(userid, bikeid);
         let conn = await db.pool.getConnection();
         let sql = `
         UPDATE trip
@@ -469,13 +471,13 @@ describe('trip model', () => {
             conn.end();
         }
 
-        let isRented = await bikeModel.isRented(6);
+        let isRented = await bikeModel.isRented(bikeid);
         expect(isRented).to.be.true;
-        myTrip = await tripModel.end(4, myTrip.id);
+        myTrip = await tripModel.end(userid, myTrip.id);
         expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
         expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
 
-        isRented = await bikeModel.isRented(6);
+        isRented = await bikeModel.isRented(bikeid);
         expect(isRented).to.be.false;
         delete myTrip.end_time;
         delete myTrip.start_time;
@@ -485,8 +487,8 @@ describe('trip model', () => {
         // because end in fee parking
         expect(myTrip).to.deep.equal({
             id: myTrip.id,
-            user_id: 4,
-            bike_id: 6,
+            user_id: userid,
+            bike_id: bikeid,
             start_pos: [11.9721,57.70229],
             end_pos: [11.9721,57.70229],
             start_cost: 10.00,
@@ -497,9 +499,11 @@ describe('trip model', () => {
     });
 
     it('end a trip, start in bad parking end in charge zone = low start cost and low park cost', async () => {
+        const bikeid = bikes[2].id
+        const userid = users[0].id
         const conn = await db.pool.getConnection();
 
-        let myTrip = await tripModel.start(4, 6);
+        let myTrip = await tripModel.start(userid, bikeid);
         let sql = `
         UPDATE trip
         SET start_time = ?
@@ -511,14 +515,14 @@ describe('trip model', () => {
         // backdate starttime of the trip and start position to charge zone
         let startTime = new Date();
         startTime.setMinutes(startTime.getMinutes() - 33)
-        let args = [startTime, myTrip.id, JSON.stringify(points.ok_charge), 6];
+        let args = [startTime, myTrip.id, JSON.stringify(points.ok_charge), bikeid];
 
         await conn.query(sql, args);
         if (conn) {
             conn.end();
         }
 
-        myTrip = await tripModel.end(4, myTrip.id);
+        myTrip = await tripModel.end(userid, myTrip.id);
         expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
         expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
 
@@ -531,8 +535,8 @@ describe('trip model', () => {
         // because end in charge zone
         expect(myTrip).to.deep.equal({
             id: myTrip.id,
-            user_id: 4,
-            bike_id: 6,
+            user_id: userid,
+            bike_id: bikeid,
             start_pos: [11.9721,57.70229],
             end_pos: points.ok_charge,
             start_cost: 5.00,
@@ -543,7 +547,9 @@ describe('trip model', () => {
     });
 
     it('end a trip, start in bad parking end in park zone = low start cost and low park cost', async () => {
-        let myTrip = await tripModel.start(4, 6);
+        const bikeid = bikes[2].id
+        const userid = users[0].id
+        let myTrip = await tripModel.start(userid, bikeid);
         const conn = await db.pool.getConnection();
         let sql = `
         UPDATE trip
@@ -556,14 +562,14 @@ describe('trip model', () => {
         // backdate starttime of the trip and start position to park zone
         let startTime = new Date();
         startTime.setMinutes(startTime.getMinutes() - 28)
-        let args = [startTime, myTrip.id, JSON.stringify(points.ok_park), 6];
+        let args = [startTime, myTrip.id, JSON.stringify(points.ok_park), bikeid];
 
         await conn.query(sql, args);
         if (conn) {
             conn.end();
         }
 
-        myTrip = await tripModel.end(4, myTrip.id);
+        myTrip = await tripModel.end(userid, myTrip.id);
         expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
         expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
 
@@ -576,8 +582,8 @@ describe('trip model', () => {
         // because end in charge zone
         expect(myTrip).to.deep.equal({
             id: myTrip.id,
-            user_id: 4,
-            bike_id: 6,
+            user_id: userid,
+            bike_id: bikeid,
             start_pos: [11.9721,57.70229],
             end_pos: points.ok_park,
             start_cost: 5.00,
@@ -588,7 +594,9 @@ describe('trip model', () => {
     });
 
     it('end a trip, start in bad parking end in bad parking = high start cost and high park cost', async () => {
-        let myTrip = await tripModel.start(4, 6);
+        const bikeid = bikes[2].id
+        const userid = users[0].id
+        let myTrip = await tripModel.start(userid, bikeid);
 
         const conn = await db.pool.getConnection();
         let sql = `
@@ -606,7 +614,7 @@ describe('trip model', () => {
             conn.end();
         }
 
-        myTrip = await tripModel.end(4, myTrip.id);
+        myTrip = await tripModel.end(userid, myTrip.id);
         expect(Math.abs(new Date - myTrip.end_time)/1000).to.be.lessThan(1);
         expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
         expect(Math.abs(startTime - myTrip.start_time)/1000).to.be.lessThan(1);
@@ -621,8 +629,8 @@ describe('trip model', () => {
         // because end in fee parking
         expect(myTrip).to.deep.equal({
             id: myTrip.id,
-            user_id: 4,
-            bike_id: 6,
+            user_id: userid,
+            bike_id: bikeid,
             start_pos: [11.9721,57.70229],
             end_pos: [11.9721,57.70229],
             start_cost: 10.00,
@@ -632,7 +640,9 @@ describe('trip model', () => {
         });
     });
     it('trip should end when bike is deactivated', async () => {
-        let myTrip = await tripModel.start(4, 6);
+        const bikeid = bikes[2].id
+        const userid = users[0].id
+        let myTrip = await tripModel.start(userid, bikeid);
 
         const conn = await db.pool.getConnection();
         let sql = `
@@ -650,7 +660,7 @@ describe('trip model', () => {
             conn.end();
         }
 
-        let data = await bikeModel.deactivate(6);
+        let data = await bikeModel.deactivate(bikeid);
         let bike = data.bike;
         myTrip = data.trip;
 
@@ -662,8 +672,8 @@ describe('trip model', () => {
 
         expect(myTrip).to.deep.equal({
             id: myTrip.id,
-            user_id: 4,
-            bike_id: 6,
+            user_id: userid,
+            bike_id: bikeid,
             start_pos: [ 11.9721,57.70229 ],
             end_pos: [ 11.9721,57.70229 ],
             start_cost: 10.00,
@@ -674,7 +684,7 @@ describe('trip model', () => {
 
         expect(bike).to.deep.equal(
             {
-                id: 6,
+                id: bikeid,
                 city_id: "GBG",
                 status_id: 1,
                 status_descr: "available",
@@ -686,7 +696,9 @@ describe('trip model', () => {
     });
 
     it('trip should end when charge_perc is at 3%', async () => {
-        let myTrip = await tripModel.start(4, 6);
+        const bikeid = bikes[2].id
+        const userid = users[0].id
+        let myTrip = await tripModel.start(userid, bikeid);
 
         const conn = await db.pool.getConnection();
         let sql = `
@@ -704,7 +716,7 @@ describe('trip model', () => {
             conn.end();
         }
 
-        let endedTrip = await bikeModel.updateBike(6, 2, 0.03, [ 11.3456,57.1123 ]);
+        let endedTrip = await bikeModel.updateBike(bikeid, 2, 0.03, [ 11.3456,57.1123 ]);
 
         expect(Math.abs(startTime - endedTrip.start_time)/1000).to.be.lessThan(1);
 
@@ -713,8 +725,8 @@ describe('trip model', () => {
 
         expect(endedTrip).to.deep.equal({
             id: endedTrip.id,
-            user_id: 4,
-            bike_id: 6,
+            user_id: userid,
+            bike_id: bikeid,
             start_pos: [ 11.9721,57.70229 ],
             end_pos: [ 11.3456,57.1123 ],
             start_cost: 10.00,
@@ -724,6 +736,8 @@ describe('trip model', () => {
         });
     });
     it('trip should end when charge_perc is below 3%', async () => {
+        const bikeid = bikes[2].id
+        const userid = users[0].id
         const conn = await db.pool.getConnection();
         let sql = `
         UPDATE bike
@@ -731,15 +745,15 @@ describe('trip model', () => {
         WHERE id = ?
         ;`
 
-        let args = [0.04, 6];
+        let args = [0.04, bikeid];
 
         await conn.query(sql, args);
         if (conn) {
             conn.end();
         }
-        await tripModel.start(4, 6);
+        await tripModel.start(userid, bikeid);
 
-        let endedTrip = await bikeModel.updateBike(6, 2, 0.02, [ 11.3456,57.1123 ]);
+        let endedTrip = await bikeModel.updateBike(bikeid, 2, 0.02, [ 11.3456,57.1123 ]);
 
         expect(Math.abs(new Date() - endedTrip.end_time)/1000).to.be.lessThan(1);
 
@@ -748,8 +762,8 @@ describe('trip model', () => {
 
         expect(endedTrip).to.deep.equal({
             id: endedTrip.id,
-            user_id: 4,
-            bike_id: 6,
+            user_id: userid,
+            bike_id: bikeid,
             start_pos: [ 11.9721,57.70229 ],
             end_pos: [ 11.3456,57.1123 ],
             start_cost: 10.00,
@@ -760,10 +774,11 @@ describe('trip model', () => {
     });
 
     it('trip should not end when charge_perc is above 3%', async () => {
+        const bikeid = bikes[2].id
+        const userid = users[0].id
+        let myTrip = await tripModel.start(userid, bikeid);
 
-        let myTrip = await tripModel.start(4, 6);
-
-        let endedTrip = await bikeModel.updateBike(6, 2, 0.04, [ 11.3456,57.1123 ]);
+        let endedTrip = await bikeModel.updateBike(bikeid, 2, 0.04, [ 11.3456,57.1123 ]);
 
         expect(endedTrip).to.be.undefined;
 
@@ -789,8 +804,8 @@ describe('trip model', () => {
 
         expect(myTrip).to.deep.equal({
             id: myTrip.id,
-            user_id: 4,
-            bike_id: 6,
+            user_id: userid,
+            bike_id: bikeid,
             end_time: null,
             start_pos: JSON.stringify([11.9721,57.70229]),
             end_pos: null,
@@ -802,27 +817,29 @@ describe('trip model', () => {
     });
     it('end a trip, not ok - different user', async () => {
 
-        let myTrip = await tripModel.start(5, 6);
+        const bikeid = bikes[2].id
+        const userid = users[1].id
+        const userid2 = users[0].id
+        let myTrip = await tripModel.start(userid, bikeid);
         let secondTrip
         try {
-            // bike 5 has status rented
-            secondTrip = await tripModel.start(4, 6);
-            throw new Error('Expected SqlError (No trip with id ', myTrip.id, ' found for user 5)');
+            secondTrip = await tripModel.start(userid2, bikeid);
+            throw new Error(`Expected SqlError (Cannot rent bike ${bikeid})`);
         } catch (error) {
             expect(error.sqlState).to.equal('45000');
-            expect(error.message).to.include('Cannot rent bike 6');
+            expect(error.message).to.include(`Cannot rent bike ${bikeid}`);
         }
         expect(secondTrip).to.be.an.undefined;
         // check that the trip has not been ended
-        let trips = await tripModel.userTrips(5);
+        let trips = await tripModel.userTrips(userid);
 
         expect(Math.abs(new Date - trips[0].start_time)/1000).to.be.lessThan(1);
         delete trips[0].start_time;
-        expect(trips.length).to.equal(1);
+        expect(trips.length).to.equal(6);
         expect(trips[0]).to.deep.equal({
             id: trips[0].id,
-            user_id: 5,
-            bike_id: 6,
+            user_id: userid,
+            bike_id: bikeid,
             start_pos: [11.9721,57.70229],
             end_time: null,
             end_pos: null,
@@ -832,9 +849,45 @@ describe('trip model', () => {
             total_cost: null
         });
     });
+
+    it('start a trip, not ok - no card registered', async () => {
+        const conn = await db.pool.getConnection();
+        let sql = `
+        INSERT INTO user(email)
+             VALUES(?);
+        SELECT MAX(id) AS last_id FROM user;`
+
+        let args = ["user_with@no.card"];
+
+        const data = await conn.query(sql, args);
+        const userid = data[0].last_id;
+
+        if (conn) {
+            conn.end();
+        }
+
+        const bikeid = bikes[2].id
+
+        let myTrip;
+        try {
+            myTrip = await tripModel.start(userid, bikeid);;
+            throw new Error(`Expected SqlError (No payment card registered)`);
+        } catch (error) {
+            expect(error.sqlState).to.equal('45000');
+            expect(error.message).to.include(`No payment card registered`);
+        }
+        expect(myTrip).to.be.an.undefined;
+        const trips = await tripModel.userTrips(userid);
+        expect(trips.length).to.equal(0);
+        const check = await bikeModel.isRented(bikeid);
+        expect(check).to.be.false;
+    });
+
     it('ending trip twice will not change the values', async () => {
-        let myTrip = await tripModel.start(4, 6);
-        await tripModel.end(4, myTrip.id);
+        const userid = users[0].id
+        const bikeid = bikes[2].id
+        let myTrip = await tripModel.start(userid, bikeid);
+        await tripModel.end(userid, myTrip.id);
 
         const conn = await db.pool.getConnection();
         let sql = `
@@ -856,7 +909,7 @@ describe('trip model', () => {
             conn.end();
         }
 
-        const latest = await tripModel.end(4, myTrip.id);
+        const latest = await tripModel.end(userid, myTrip.id);
 
         expect(Math.abs(startTime - latest.start_time)/1000).to.be.lessThan(1);
         expect(Math.abs(endTime - latest.end_time)/1000).to.be.lessThan(1);
@@ -866,8 +919,8 @@ describe('trip model', () => {
 
         expect(latest).to.deep.equal({
             id: myTrip.id,
-            user_id: 4,
-            bike_id: 6,
+            user_id: userid,
+            bike_id: bikeid,
             start_pos: [ 11.9721,57.70229 ],
             end_pos: [ 11.9721,57.70229 ],
             start_cost: 10.00,
@@ -877,3 +930,8 @@ describe('trip model', () => {
         });
     });
 });
+
+// lägg till tester för:
+// 1. uppdatera status med uppdatera endast status metoden under pågående resa - ska inte gå
+// 2. cykel uppdaterat på ett otillåtet sätt (testa olika kombon), ska inte gå
+// 3. cykel uppdaterar status på tillåtet sätt (testa både 1->4 och 2-> 5), ska g¨å

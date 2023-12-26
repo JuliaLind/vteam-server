@@ -18,7 +18,7 @@ BEGIN
     FROM
         `payment`
     ORDER BY
-        `id` DESC
+        `date` DESC
     ;
 END
 ;;
@@ -38,7 +38,7 @@ BEGIN
     WHERE
         `user_id` = u_id
     ORDER BY
-        `id` DESC
+        `date` DESC
     ;
 END
 ;;
@@ -64,7 +64,7 @@ BEGIN
     WHERE
         `user_id` = u_id
     ORDER BY
-        `id` DESC
+        `date` DESC
     LIMIT a_limit
     OFFSET a_offset
     ;
@@ -90,7 +90,7 @@ BEGIN
     FROM
         `payment`
     ORDER BY
-        `id` DESC
+        `date` DESC
     LIMIT a_limit
     OFFSET a_offset
     ;
@@ -110,9 +110,12 @@ END
 CREATE PROCEDURE invoice()
 BEGIN
     DECLARE cursor_id INT;
-    DECLARE cursor_card VARCHAR(100);
     DECLARE cursor_balance DECIMAL(7,2);
+    DECLARE error_occurred BOOLEAN DEFAULT FALSE;
     DECLARE done BOOLEAN DEFAULT FALSE;
+
+
+    -- START TRANSACTION;
 
     -- select all users with negative balances
     -- including inactive as those too may have
@@ -121,13 +124,21 @@ BEGIN
     DECLARE cursor_i CURSOR FOR
     SELECT
         id,
-        card_nr,
         balance
     FROM
         `user`
     WHERE
         balance < 0
     ;
+
+    -- Declare handler outside the loop
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- an error could be thrown from extract_ref
+        -- function if the user has not registered a card
+        INSERT INTO error_log(message) VALUES(CONCAT('Payment could not be processed for user: ', cursor_id, ', card number missing - ', SQLERRM()));
+        SET error_occurred = TRUE; -- Set the error flag
+    END;
 
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
@@ -136,24 +147,37 @@ BEGIN
 
     OPEN cursor_i;
     read_loop: LOOP
+        SET error_occurred = FALSE;
         -- split each row into variables
-        FETCH cursor_i INTO cursor_id, cursor_card, cursor_balance;
+        FETCH cursor_i INTO cursor_id, cursor_balance;
         IF done THEN
             LEAVE read_loop;
         END IF;
 
         -- payment will be the full negative balance on the account
         SET @payment := 0 - cursor_balance;
-        SET @count = @count + 1;
-        SET @amount = @amount + @payment;
+
 
         -- add into payment table
         INSERT INTO payment(user_id, ref, amount)
         VALUES(
             cursor_id,
-            CONCAT("AUTO ", extract_ref(cursor_card)),
+            CONCAT("AUTO ", extract_ref(cursor_id)),
             @payment
         );
+
+        -- if a payment could not be done the user's balance
+        -- should not be updated, moves on to next user
+        IF error_occurred THEN
+            SET error_occurred = FALSE;
+            ITERATE read_loop;
+        END IF;
+
+        -- if no error happened when extracting card reference
+        -- increase the count of invoiced users
+        -- and the total invoiced amount
+        SET @count = @count + 1;
+        SET @amount = @amount + @payment;
 
         -- adjust users balance with the "payment"
         UPDATE `user`
@@ -164,6 +188,9 @@ BEGIN
         ;
     END LOOP;
     CLOSE cursor_i;
+
+    -- COMMIT;
+
     SELECT @count AS invoiced_users;
     SELECT @amount AS invoiced_amount;
 END
@@ -183,7 +210,7 @@ CREATE PROCEDURE prepay(
     p_amount DECIMAL(7,2)
 )
 BEGIN
-    SET @ref := extract_ref((SELECT card_nr FROM `user` WHERE id = u_id));
+    SET @ref := extract_ref(u_id);
 
     INSERT INTO payment(user_id, ref, amount)
     VALUES(u_id, @ref, p_amount);
@@ -202,7 +229,7 @@ BEGIN
     AND amount = p_amount
     AND ref = @ref
     ORDER BY
-        id DESC
+        `date` DESC
     LIMIT 1;
 END
 ;;

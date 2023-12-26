@@ -11,12 +11,23 @@ DELIMITER ;;
 -- card number
 --
 CREATE FUNCTION extract_ref(
-    c_nr VARCHAR(100)
+    u_id INT
 )
 RETURNS CHAR(7)
-DETERMINISTIC
+READS SQL DATA
 BEGIN
-    SET @ref := CONCAT("***", RIGHT(c_nr, 4));
+    SET @card_nr := (
+        SELECT card_nr
+        FROM user_card
+        WHERE user_id = u_id
+    );
+
+    IF @card_nr IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot make payment, no card provided';
+    END IF;
+
+    SET @ref := CONCAT("***", RIGHT(@card_nr, 4));
     RETURN @ref;
 END
 ;;

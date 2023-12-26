@@ -41,19 +41,28 @@ END
 -- The parameters are bike's id
 -- and the new status id.
 -- "Returns" the bikes most recent data
+-- This procedure is to be used by admin.
+-- status will not change during an ongoing trip.
+-- Admin is not allowed to manually change to
+-- status rented or rented maintenance required
 --
 CREATE PROCEDURE upd_bike_status(
     b_id INT,
     s_id INT
 )
 BEGIN
-    UPDATE
-        `bike`
-    SET
-        status_id = s_id
-    WHERE
-        id = b_id
-    ;
+    SET @current_status := (SELECT status_id
+    FROM `bike` WHERE id = b_id);
+
+    IF @current_status NOT IN (2, 5) AND s_id IN (1, 3, 4) THEN
+        UPDATE
+            `bike`
+        SET
+            status_id = s_id
+        WHERE
+            id = b_id
+        ;
+    END IF;
 
     SELECT * FROM v_bike
     WHERE id = b_id;
@@ -210,8 +219,25 @@ CREATE PROCEDURE update_bike(
     b_coords VARCHAR(100)
 )
 BEGIN
-    SET @old_charge := (SELECT
-    charge_perc FROM bike WHERE id = b_id);
+    DECLARE old_charge DECIMAL(3,2);
+    DECLARE current_status INT;
+
+    SELECT status_id, charge_perc
+    INTO current_status, old_charge
+    FROM
+        `bike`
+    WHERE
+        id = b_id;
+
+    SET @new_status := current_status;
+
+    -- bike is only allowed to change it's status from
+    -- available to maintenance required, and from rented to
+    -- rented maintenance required
+    IF (b_status = 4 AND current_status = 1) OR (b_status = 5 AND current_status = 2) THEN
+        SET @new_status = b_status;
+    END IF;
+
     -- check NEW first because it will happen
     -- fewer times that charge percentage is less or equal
     -- to 3% than that the percentage is higher than 3%
@@ -222,7 +248,7 @@ BEGIN
     UPDATE
         `bike`
     SET
-        status_id = b_status,
+        status_id = @new_status,
         charge_perc = b_charge,
         coords = b_coords
     WHERE id = b_id
@@ -230,7 +256,7 @@ BEGIN
     -- there is no risk that a trip starts at exactly 3% because
     -- the bike will get status maintenance required
     -- at a much higher percentage
-    IF b_charge <= 0.03 AND @old_charge > 0.03 THEN
+    IF b_charge <= 0.03 AND old_charge > 0.03 THEN
         CALL end_ongoing_trip(b_id);
     END IF;
 END
