@@ -1,5 +1,6 @@
 import express from "express";
 import empModel from "../../src/models/emp.js";
+import userModel from "../../src/models/user.js";
 
 const router = express.Router();
 
@@ -25,8 +26,8 @@ router.post("/admin", async (req, res, next) => {
  *
  * @returns {void}
  */
-router.post("/user", async (req, res) => {
-    // code here for logging in a user through authModel
+router.post("/user", async (req, res, next) => {
+    await userModel.login(req, res, next);
 });
 
 export default router;
