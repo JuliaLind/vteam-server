@@ -34,7 +34,7 @@ const emp = {
      * @param {express.NextFunction} next 
      */
     checkAdminAcc: function(req, res, next) {
-        this.checkToken(req, res, next, ["admin"]);
+        emp.checkToken(req, res, next, ["admin"]);
     },
     /**
      * Checks if a token is valid

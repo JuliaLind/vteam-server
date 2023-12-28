@@ -3,6 +3,16 @@ import chaiHttp from 'chai-http';
 import sinon from 'sinon';
 import app from '../../../app.js';
 import tripModel from '../../../src/models/trip.js';
+import jwt from 'jsonwebtoken';
+
+const jwtSecret = process.env.JWT_SECRET;
+const payload = {
+    id: 1,
+    role: "admin"
+};
+
+// ok token
+const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: '24h' });
 
 const { expect } = chai;
 chai.use(chaiHttp);
@@ -25,7 +35,10 @@ describe('/v1/admin/trips routes', () => {
     });
 
     it('should get trips for one user', async () => {
-        const res = await chai.request(app).get('/v1/admin/trips').send({user_id: 1});
+        const res = await chai.request(app)
+            .get('/v1/admin/trips')
+            .set('x-access-token', jwtToken)
+            .send({user_id: 1});
 
         expect(res).to.have.status(200);
         expect(userTripsStub.calledOnce).to.be.true;
@@ -36,7 +49,10 @@ describe('/v1/admin/trips routes', () => {
         const fakeError = new Error('Fake error');
         userTripsStub.withArgs(1).rejects(fakeError);
 
-        const res = await chai.request(app).get('/v1/admin/trips').send({ user_id: 1 });
+        const res = await chai.request(app)
+            .get('/v1/admin/trips')
+            .set('x-access-token', jwtToken)
+            .send({ user_id: 1 });
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -48,7 +64,10 @@ describe('/v1/admin/trips routes', () => {
     });
 
     it('should get paginated trips for one user', async () => {
-        const res = await chai.request(app).get('/v1/admin/trips/limit/1/offset/1').send({user_id: 1});
+        const res = await chai.request(app)
+            .get('/v1/admin/trips/limit/1/offset/1')
+            .set('x-access-token', jwtToken)
+            .send({user_id: 1});
 
         expect(res).to.have.status(200);
         expect(userTripsPagStub.calledOnce).to.be.true;
@@ -59,7 +78,10 @@ describe('/v1/admin/trips routes', () => {
         const fakeError = new Error('Fake error');
         userTripsPagStub.withArgs(1, 1, 1).rejects(fakeError);
 
-        const res = await chai.request(app).get('/v1/admin/trips/limit/1/offset/1').send({ user_id: 1 });
+        const res = await chai.request(app)
+            .get('/v1/admin/trips/limit/1/offset/1')
+            .set('x-access-token', jwtToken)
+            .send({ user_id: 1 });
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -71,7 +93,9 @@ describe('/v1/admin/trips routes', () => {
     });
 
     it('should get all trips', async () => {
-        const res = await chai.request(app).get('/v1/admin/trips/all');
+        const res = await chai.request(app)
+            .get('/v1/admin/trips/all')
+            .set('x-access-token', jwtToken);
 
         expect(res).to.have.status(200);
         expect(allTripsStub.calledOnce).to.be.true;
@@ -82,7 +106,9 @@ describe('/v1/admin/trips routes', () => {
         const fakeError = new Error('Fake error');
         allTripsStub.withArgs().rejects(fakeError);
 
-        const res = await chai.request(app).get('/v1/admin/trips/all');
+        const res = await chai.request(app)
+            .get('/v1/admin/trips/all')
+            .set('x-access-token', jwtToken);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
