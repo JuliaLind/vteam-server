@@ -5,6 +5,16 @@ import app from '../../../app.js';
 import userModel from '../../../src/models/user.js';
 import paymentModel from '../../../src/models/payment.js';
 import { afterEach, beforeEach } from 'mocha';
+import jwt from 'jsonwebtoken';
+
+const jwtSecret = process.env.JWT_SECRET;
+const payload = {
+    id: 1,
+    role: "admin"
+};
+
+// ok token
+const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: '24h' });
 
 const { expect } = chai;
 chai.use(chaiHttp);
@@ -31,7 +41,9 @@ describe('/v1/admin/users routes', () => {
     });
 
     it('should get all users', async () => {
-        const res = await chai.request(app).get('/v1/admin/users');
+        const res = await chai.request(app)
+            .get('/v1/admin/users')
+            .set('x-access-token', jwtToken);
 
         expect(res).to.have.status(200);
         expect(allUsersStub.calledOnce).to.be.true;
@@ -42,7 +54,9 @@ describe('/v1/admin/users routes', () => {
         const fakeError = new Error('Fake error');
         allUsersStub.withArgs().rejects(fakeError);
 
-        const res = await chai.request(app).get('/v1/admin/users');
+        const res = await chai.request(app)
+            .get('/v1/admin/users')
+            .set('x-access-token', jwtToken);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -54,7 +68,9 @@ describe('/v1/admin/users routes', () => {
     });
 
     it('should get all users paginated', async () => {
-        const res = await chai.request(app).get('/v1/admin/users/limit/1/offset/1');
+        const res = await chai.request(app)
+            .get('/v1/admin/users/limit/1/offset/1')
+            .set('x-access-token', jwtToken);
 
         expect(res).to.have.status(200);
         expect(allUsersPagStub.calledOnce).to.be.true;
@@ -65,7 +81,9 @@ describe('/v1/admin/users routes', () => {
         const fakeError = new Error('Fake error');
         allUsersPagStub.withArgs(1, 1).rejects(fakeError);
 
-        const res = await chai.request(app).get('/v1/admin/users/limit/1/offset/1');
+        const res = await chai.request(app)
+            .get('/v1/admin/users/limit/1/offset/1')
+            .set('x-access-token', jwtToken);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -79,7 +97,9 @@ describe('/v1/admin/users routes', () => {
     it('should get users through search', async () => {
         const fakeUserData = { user_id: 1 };
         userSearchStub.withArgs("1").resolves(fakeUserData);
-        const res = await chai.request(app).get('/v1/admin/users/search/1');
+        const res = await chai.request(app)
+            .get('/v1/admin/users/search/1')
+            .set('x-access-token', jwtToken);
 
         expect(res).to.have.status(200);
         expect(userSearchStub.calledOnce).to.be.true;
@@ -90,7 +110,9 @@ describe('/v1/admin/users routes', () => {
         const fakeError = new Error('Fake error');
         userSearchStub.withArgs("1").rejects(fakeError);
 
-        const res = await chai.request(app).get('/v1/admin/users/search/1');
+        const res = await chai.request(app)
+            .get('/v1/admin/users/search/1')
+            .set('x-access-token', jwtToken);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -104,7 +126,9 @@ describe('/v1/admin/users routes', () => {
     it('should get one user', async () => {
         const fakeUserData = [{user_id: 1}];
         userSearchStub.withArgs(1).resolves(fakeUserData);
-        const res = await chai.request(app).get('/v1/admin/users/1');
+        const res = await chai.request(app)
+            .get('/v1/admin/users/1')
+            .set('x-access-token', jwtToken);
 
         expect(res).to.have.status(200);
         expect(userSearchStub.calledWith(1)).to.be.true;
@@ -113,7 +137,9 @@ describe('/v1/admin/users routes', () => {
     it('should adjust user balance', async () => {
         const fakeUserData = { user_id: 1 };
         userInvoiceStub.withArgs().resolves(fakeUserData);
-        const res = await chai.request(app).put('/v1/admin/users/invoice');
+        const res = await chai.request(app)
+            .put('/v1/admin/users/invoice')
+            .set('x-access-token', jwtToken);
 
         expect(res).to.have.status(200);
         expect(userInvoiceStub.calledOnce).to.be.true;
@@ -124,7 +150,9 @@ describe('/v1/admin/users routes', () => {
         const fakeError = new Error('Fake error');
         userInvoiceStub.withArgs().rejects(fakeError);
 
-        const res = await chai.request(app).put('/v1/admin/users/invoice');
+        const res = await chai.request(app)
+            .put('/v1/admin/users/invoice')
+            .set('x-access-token', jwtToken);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -138,7 +166,10 @@ describe('/v1/admin/users routes', () => {
     it('should update user status', async () => {
         const fakeUserData = { user_id: 1 };
         updateStatusStub.withArgs(1, true).resolves(fakeUserData);
-        const res = await chai.request(app).put('/v1/admin/users/1/status').send({active: true});
+        const res = await chai.request(app)
+            .put('/v1/admin/users/1/status')
+            .send({active: true})
+            .set('x-access-token', jwtToken);
 
         expect(res).to.have.status(200);
         expect(updateStatusStub.calledOnce).to.be.true;
@@ -149,7 +180,10 @@ describe('/v1/admin/users routes', () => {
         const fakeError = new Error('Fake error');
         updateStatusStub.withArgs().rejects(fakeError);
 
-        const res = await chai.request(app).put('/v1/admin/users/1/status').send({active: true});
+        const res = await chai.request(app)
+            .put('/v1/admin/users/1/status')
+            .set('x-access-token', jwtToken)
+            .send({active: true});
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -163,7 +197,10 @@ describe('/v1/admin/users routes', () => {
     it('should update user email', async () => {
         const fakeUserData = { user_id: 1 };
         updateEmailStub.withArgs(1, "john@example.com").resolves(fakeUserData);
-        const res = await chai.request(app).put('/v1/admin/users/1/email').send({email: "john@example.com"});
+        const res = await chai.request(app)
+            .put('/v1/admin/users/1/email')
+            .set('x-access-token', jwtToken)
+            .send({email: "john@example.com"});
 
         expect(res).to.have.status(200);
         expect(updateEmailStub.calledOnce).to.be.true;
@@ -174,7 +211,10 @@ describe('/v1/admin/users routes', () => {
         const fakeError = new Error('Fake error');
         updateEmailStub.withArgs(1, "john@example.com").rejects(fakeError);
 
-        const res = await chai.request(app).put('/v1/admin/users/1/email').send({email: "john@example.com"});
+        const res = await chai.request(app)
+            .put('/v1/admin/users/1/email')
+            .set('x-access-token', jwtToken)
+            .send({email: "john@example.com"});
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -200,6 +240,7 @@ describe('/v1/admin/users/:id - getting one user', () => {
     it('should handle errors correctly', (done) => {
         chai.request(app)
             .get('/v1/admin/users/1')
+            .set('x-access-token', jwtToken)
             .end((err, res) => {
                 expect(userSearchStub).to.throw(err);
                 expect(res).to.have.status(500);

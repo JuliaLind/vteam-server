@@ -4,6 +4,17 @@ import sinon from 'sinon';
 import app from '../../../app.js';
 import tripModel from '../../../src/models/trip.js';
 import clientManager from '../../../src/utils/clientManager.js';
+import { users } from '../../dummy-data/users.js';
+import jwt from 'jsonwebtoken';
+
+const jwtSecret = process.env.JWT_SECRET;
+// ok token
+// console.log(users[0].id)
+const payload = {
+    id: users[0].id,
+    email: users[0].email
+}
+const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: '24h' });
 
 const { expect } = chai;
 chai.use(chaiHttp);
@@ -25,9 +36,14 @@ describe('/v1/user/bikes routes', () => {
 
     it('should start trip', async () => {
         const fakeTripData = { trip_id: 1 };
-        startTripStub.withArgs(1, 1).resolves(fakeTripData);
+        startTripStub.withArgs(4, 1).resolves(fakeTripData);
 
-        const res = await chai.request(app).post('/v1/user/bikes/rent/1').send({userId: 1});
+        const res = await chai.request(app)
+            .post('/v1/user/bikes/rent/1')
+            .set('x-access-token', jwtToken)
+            .send({userId: 4});
+        
+        // console.log(res);
 
         expect(res).to.have.status(200);
         expect(startTripStub.calledOnce).to.be.true;
@@ -40,9 +56,12 @@ describe('/v1/user/bikes routes', () => {
 
     it('should handle errors when trying to start trip', async () => {
         const fakeError = new Error('Fake error');
-        startTripStub.withArgs(1, 1).rejects(fakeError);
+        startTripStub.withArgs(4, 1).rejects(fakeError);
 
-        const res = await chai.request(app).post('/v1/user/bikes/rent/1').send({userId: 1});
+        const res = await chai.request(app)
+            .post('/v1/user/bikes/rent/1')
+            .set('x-access-token', jwtToken)
+            .send({userId: 4});
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -55,9 +74,12 @@ describe('/v1/user/bikes routes', () => {
 
     it('should end trip', async () => {
         const fakeTripData = { bike_id: 1 };
-        endTripStub.withArgs(1, 1).resolves(fakeTripData);
+        endTripStub.withArgs(4, 1).resolves(fakeTripData);
 
-        const res = await chai.request(app).put('/v1/user/bikes/return/1').send({userId: 1});
+        const res = await chai.request(app)
+            .put('/v1/user/bikes/return/1')
+            .set('x-access-token', jwtToken)
+            .send({userId: 4});
 
         expect(res).to.have.status(200);
         expect(endTripStub.calledOnce).to.be.true;
@@ -70,9 +92,12 @@ describe('/v1/user/bikes routes', () => {
 
     it('should handle errors when trying to end trip', async () => {
         const fakeError = new Error('Fake error');
-        endTripStub.withArgs(1, 1).rejects(fakeError);
+        endTripStub.withArgs(4, 1).rejects(fakeError);
 
-        const res = await chai.request(app).put('/v1/user/bikes/return/1').send({userId: 1});
+        const res = await chai.request(app)
+        .put('/v1/user/bikes/return/1')
+        .set('x-access-token', jwtToken)
+        .send({userId: 4});
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({

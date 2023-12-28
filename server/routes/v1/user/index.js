@@ -1,4 +1,5 @@
 import express from "express";
+import userModel from "../../../src/models/user.js";
 
 import bikesRouter from "./bikes.js";
 import cardRouter from "./card.js";
@@ -8,6 +9,8 @@ import transactionsRouter from "./transactions.js";
 import tripsRouter from "./trips.js";
 
 const router = express.Router();
+
+router.use("/", userModel.checkToken);
 
 router.use("/bikes", bikesRouter);
 router.use("/card", cardRouter);
