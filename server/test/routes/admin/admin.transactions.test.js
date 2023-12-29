@@ -36,7 +36,7 @@ describe('/v1/admin/transactions routes', () => {
 
     it('should get transactions for one user', async () => {
         const res = await chai.request(app)
-            .get('/v1/admin/transactions')
+            .post('/v1/admin/transactions')
             .set('x-access-token', jwtToken)
             .send({user_id: 1});
 
@@ -50,7 +50,7 @@ describe('/v1/admin/transactions routes', () => {
         userPaymentsStub.withArgs(1).rejects(fakeError);
 
         const res = await chai.request(app)
-            .get('/v1/admin/transactions')
+            .post('/v1/admin/transactions')
             .set('x-access-token', jwtToken)
             .send({ user_id: 1 });
 
@@ -65,7 +65,7 @@ describe('/v1/admin/transactions routes', () => {
 
     it('should get paginated transactions for one user', async () => {
         const res = await chai.request(app)
-            .get('/v1/admin/transactions/limit/1/offset/1')
+            .post('/v1/admin/transactions/limit/1/offset/1')
             .set('x-access-token', jwtToken)
             .send({user_id: 1});
 
@@ -79,7 +79,7 @@ describe('/v1/admin/transactions routes', () => {
         userPaymentsPagStub.withArgs(1, 1, 1).rejects(fakeError);
 
         const res = await chai.request(app)
-            .get('/v1/admin/transactions/limit/1/offset/1')
+            .post('/v1/admin/transactions/limit/1/offset/1')
             .set('x-access-token', jwtToken)
             .send({ user_id: 1 });
 
