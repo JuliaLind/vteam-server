@@ -23,6 +23,8 @@ describe('user model', () => {
         email: users[0].email
     }
     const okToken = jwt.sign(payload, jwtSecret, { expiresIn: '24h' });
+    console.log(payload.id)
+    console.log(okToken);
     // expired token
     const expiredPayload = {
         ...payload,
@@ -96,7 +98,7 @@ describe('user model', () => {
         userModel.checkToken(req, res, next);
 
 
-        expect(req.body.userId).to.equal(users[0].id);
+        expect(req.body.user_id).to.equal(users[0].id);
 
         expect(next).to.have.been.calledOnce;
         expect(res.status.notCalled).to.be.true;
