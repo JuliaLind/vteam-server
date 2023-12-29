@@ -21,17 +21,20 @@ describe('/v1/admin/transactions routes', () => {
     let userPaymentsStub;
     let userPaymentsPagStub;
     let allPaymentsStub;
+    let allPaymentsPagStub;
 
     before(() => {
         userPaymentsStub = sinon.stub(paymentModel, 'userPayments');
         userPaymentsPagStub = sinon.stub(paymentModel, 'userPaymentsPag');
         allPaymentsStub = sinon.stub(paymentModel, 'allPayments');
+        allPaymentsPagStub = sinon.stub(paymentModel, 'allPaymentsPag');
     });
 
     after(() => {
         userPaymentsStub.restore();
         userPaymentsPagStub.restore();
         allPaymentsStub.restore();
+        allPaymentsPagStub.restore();
     });
 
     it('should get transactions for one user', async () => {
@@ -108,6 +111,33 @@ describe('/v1/admin/transactions routes', () => {
 
         const res = await chai.request(app)
             .get('/v1/admin/transactions/all')
+            .set('x-access-token', jwtToken);
+
+        expect(res).to.have.status(500);
+        expect(res.body).to.deep.equal({
+            errors: {
+                code: 500,
+                message: "Fake error"
+            }
+        });
+    });
+
+    it('should get all transactions paginated', async () => {
+        const res = await chai.request(app)
+            .get('/v1/admin/transactions/all/limit/1/offset/1')
+            .set('x-access-token', jwtToken);
+
+        expect(res).to.have.status(200);
+        expect(allPaymentsPagStub.calledOnce).to.be.true;
+        expect(allPaymentsPagStub.calledWith()).to.be.true;
+    });
+
+    it('should handle errors when getting all transactions paginated', async () => {
+        const fakeError = new Error('Fake error');
+        allPaymentsPagStub.withArgs().rejects(fakeError);
+
+        const res = await chai.request(app)
+            .get('/v1/admin/transactions/all/limit/1/offset/1')
             .set('x-access-token', jwtToken);
 
         expect(res).to.have.status(500);
