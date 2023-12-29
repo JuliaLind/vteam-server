@@ -49,7 +49,7 @@ const user = {
                 });
             }
 
-            req.body.userId = decoded.id;
+            req.body.user_id = decoded.id;
 
             return next();
         });
