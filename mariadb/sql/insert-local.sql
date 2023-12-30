@@ -3,6 +3,18 @@
 -- to csv files compared to those used from container
 --
 
+-- note, no first line to ignore in csv file
+LOAD DATA LOCAL INFILE './csv/client_type.csv'
+INTO TABLE `client_type`
+CHARSET utf8
+FIELDS
+    TERMINATED BY '\r\n'
+    ENCLOSED BY '"'
+LINES
+    TERMINATED BY '\r\n'
+;
+
+-- note, no first line to ignore in csv file
 LOAD DATA LOCAL INFILE './csv/keys.csv'
 INTO TABLE `api_key`
 CHARSET utf8
@@ -11,8 +23,7 @@ FIELDS
     ENCLOSED BY '"'
 LINES
     TERMINATED BY '\r\n'
-IGNORE 1 LINES
-(`key`)
+(`client_type_id`,`key`)
 ;
 
 LOAD DATA LOCAL INFILE './csv/city.csv'

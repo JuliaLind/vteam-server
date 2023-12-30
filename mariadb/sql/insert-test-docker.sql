@@ -8,6 +8,29 @@
 -- are populated via js testing code
 --
 
+-- note, no first line to ignore in csv file
+LOAD DATA LOCAL INFILE './mariadb/csv/client_type.csv'
+INTO TABLE `client_type`
+CHARSET utf8
+FIELDS
+    TERMINATED BY '\r\n'
+    ENCLOSED BY '"'
+LINES
+    TERMINATED BY '\r\n'
+;
+
+-- note, no first line to ignore in csv file
+LOAD DATA LOCAL INFILE './mariadb/csv/keys.csv'
+INTO TABLE `api_key`
+CHARSET utf8
+FIELDS
+    TERMINATED BY '\r\n'
+    ENCLOSED BY '"'
+LINES
+    TERMINATED BY '\r\n'
+(`client_type_id`,`key`)
+;
+
 LOAD DATA LOCAL INFILE './mariadb/csv/city.csv'
 INTO TABLE `city`
 CHARSET utf8
