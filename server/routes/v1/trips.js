@@ -1,5 +1,5 @@
 import express from "express";
-import tripModel from "../../../src/models/trip.js";
+import tripModel from "../../src/models/trip.js";
 
 const router = express.Router();
 
@@ -12,7 +12,7 @@ const router = express.Router();
  *
  * @returns {void}
  */
-router.get("/", async (req, res, next) => {
+router.post("/", async (req, res, next) => {
     try {
         const userId = req.body.user_id;
 
@@ -33,7 +33,7 @@ router.get("/", async (req, res, next) => {
  *
  * @returns {void}
  */
-router.get("/limit/:limit/offset/:offset", async (req, res, next) => {
+router.post("/limit/:limit/offset/:offset", async (req, res, next) => {
     try {
         const userId = req.body.user_id;
         const limit = parseInt(req.params.limit);

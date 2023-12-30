@@ -34,7 +34,7 @@ describe('/v1/user/trips routes', () => {
 
     it('should get trips for one user', async () => {
         const res = await chai.request(app)
-            .get('/v1/user/trips')
+            .post('/v1/user/trips')
             .set('x-access-token', jwtToken)
             .send({user_id: 4});
 
@@ -48,7 +48,7 @@ describe('/v1/user/trips routes', () => {
         userTripsStub.withArgs(4).rejects(fakeError);
 
         const res = await chai.request(app)
-            .get('/v1/user/trips')
+            .post('/v1/user/trips')
             .set('x-access-token', jwtToken)
             .send({ user_id: 4 });
 
@@ -63,7 +63,7 @@ describe('/v1/user/trips routes', () => {
 
     it('should get paginated trips for one user', async () => {
         const res = await chai.request(app)
-            .get('/v1/user/trips/limit/1/offset/1')
+            .post('/v1/user/trips/limit/1/offset/1')
             .set('x-access-token', jwtToken)
             .send({user_id: 4});
 
@@ -77,7 +77,7 @@ describe('/v1/user/trips routes', () => {
         userTripsPagStub.withArgs(4, 1, 1).rejects(fakeError);
 
         const res = await chai.request(app)
-            .get('/v1/user/trips/limit/1/offset/1')
+            .post('/v1/user/trips/limit/1/offset/1')
             .set('x-access-token', jwtToken)
             .send({ user_id: 4 });
 

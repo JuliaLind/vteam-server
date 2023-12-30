@@ -21,17 +21,20 @@ describe('/v1/admin/trips routes', () => {
     let userTripsStub;
     let userTripsPagStub;
     let allTripsStub;
+    let allTripsPagStub;
 
     before(() => {
         userTripsStub = sinon.stub(tripModel, 'userTrips');
         userTripsPagStub = sinon.stub(tripModel, 'userTripsPag');
         allTripsStub = sinon.stub(tripModel, 'allTrips');
+        allTripsPagStub = sinon.stub(tripModel, 'allTripsPag');
     });
 
     after(() => {
         userTripsStub.restore();
         userTripsPagStub.restore();
         allTripsStub.restore();
+        allTripsPagStub.restore();
     });
 
     it('should get trips for one user', async () => {
@@ -108,6 +111,33 @@ describe('/v1/admin/trips routes', () => {
 
         const res = await chai.request(app)
             .get('/v1/admin/trips/all')
+            .set('x-access-token', jwtToken);
+
+        expect(res).to.have.status(500);
+        expect(res.body).to.deep.equal({
+            errors: {
+                code: 500,
+                message: "Fake error"
+            }
+        });
+    });
+
+    it('should get all trips paginated', async () => {
+        const res = await chai.request(app)
+            .get('/v1/admin/trips/all/limit/1/offset/1')
+            .set('x-access-token', jwtToken);
+
+        expect(res).to.have.status(200);
+        expect(allTripsPagStub.calledOnce).to.be.true;
+        expect(allTripsPagStub.calledWith()).to.be.true;
+    });
+
+    it('should handle errors when getting all trips paginated', async () => {
+        const fakeError = new Error('Fake error');
+        allTripsPagStub.withArgs().rejects(fakeError);
+
+        const res = await chai.request(app)
+            .get('/v1/admin/trips/all/limit/1/offset/1')
             .set('x-access-token', jwtToken);
 
         expect(res).to.have.status(500);
