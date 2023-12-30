@@ -6,10 +6,6 @@
     ],
     "trips": [
         {
-            "summary": {
-                "distance": 310.2,
-                "duration": 84.1
-            },
             "user": {
                 "id": 687,
                 "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Njg3LCJyb2xlIjoidXNlciIsImlhdCI6MTcwMDkzODYzNSwiZXhwIjoxNzMyNDc0NjM1fQ.3rnuk7VKiPUaNUt7I0yhdRStfcIlpV8Vk1PSXQBXpWc"
@@ -78,10 +74,6 @@
             ]
         },
         {
-            "summary": {
-                "distance": "",
-                "duration": ""
-            },
             "user": {
                 "id": 688,
                 "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Njg4LCJyb2xlIjoidXNlciIsImlhdCI6MTcwMDkzODYzNSwiZXhwIjoxNzMyNDc0NjM1fQ.uAQ4O22CSdhtL0PoHLHiVVCCCzIJFM1GFBB1DCKsvM8"
@@ -150,5 +142,5 @@
             ]
         }
     ],
-    "apiKey": "117cfdacc4856de9560352df4a01d4f4"
+    "apiKey": "ee54283c18caea5a49abd8328258d2dd"
 }
