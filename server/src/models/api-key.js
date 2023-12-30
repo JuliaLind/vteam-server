@@ -4,15 +4,16 @@ import { db } from "./db.js"
 const apiKey = {
     /**
      * An array with all active API keys
-     * @type {Array<String>}
+     * @type {Array<String,String>}
      */
-    keys: [],
+    keys: {},
 
     /**
      * Gets all active api keys from
      * DB and stores in the keys array
      */
     getActiveFromDB: async function() {
+        this.keys = {}
         const result = await db.queryNoArgs(`CALL active_api_keys();`);
 
         /**
@@ -20,9 +21,10 @@ const apiKey = {
          */
         const activeKeys = result[0];
 
-        this.keys = activeKeys.map((elem) => {
-            return elem.key;
-        })
+        for (const elem of activeKeys) {
+            this.keys[elem.key] = elem.client_type_id;
+        }
+
     },
 
     /**
@@ -31,11 +33,23 @@ const apiKey = {
      * @returns {Promise<Boolean>}
      */
     checkOne: async function(apiKey) {
-        if (this.keys.length === 0) {
+        if (Object.keys(this.keys).length === 0) {
             await this.getActiveFromDB();
         }
-        return this.keys.includes(apiKey);
+
+        return apiKey in this.keys;
     },
+    /**
+     * Checks if api key belongs to a bike.
+     * When this method is called the checkOne method
+     * will always have been called before, thus there
+     * is no need to check if this.keys is empty
+     */
+    isBikeKey(apiKey) {
+        if (this.keys[apiKey] !== "bike") {
+            throw new Error(`API key '${apiKey}' does not belong to a bike client. Method not allowed`)
+        }
+    }
 
 };
 

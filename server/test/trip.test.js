@@ -716,7 +716,7 @@ describe('trip model', () => {
             conn.end();
         }
 
-        let endedTrip = await bikeModel.updateBike(bikeid, 2, 0.03, [ 11.3456,57.1123 ]);
+        let endedTrip = await bikeModel.updateBike(bikeid, 2, 0.03, [ 11.3456,57.1123 ], "ee54283c18caea5a49abd8328258d2dd");
 
         expect(Math.abs(startTime - endedTrip.start_time)/1000).to.be.lessThan(1);
 
@@ -753,7 +753,7 @@ describe('trip model', () => {
         }
         await tripModel.start(userid, bikeid);
 
-        let endedTrip = await bikeModel.updateBike(bikeid, 2, 0.02, [ 11.3456,57.1123 ]);
+        let endedTrip = await bikeModel.updateBike(bikeid, 2, 0.02, [ 11.3456,57.1123 ], "ee54283c18caea5a49abd8328258d2dd");
 
         expect(Math.abs(new Date() - endedTrip.end_time)/1000).to.be.lessThan(1);
 
@@ -778,7 +778,7 @@ describe('trip model', () => {
         const userid = users[0].id
         let myTrip = await tripModel.start(userid, bikeid);
 
-        let endedTrip = await bikeModel.updateBike(bikeid, 2, 0.04, [ 11.3456,57.1123 ]);
+        let endedTrip = await bikeModel.updateBike(bikeid, 2, 0.04, [ 11.3456,57.1123 ], "ee54283c18caea5a49abd8328258d2dd");
 
         expect(endedTrip).to.be.undefined;
 
