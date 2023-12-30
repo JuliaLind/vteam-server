@@ -1,5 +1,6 @@
 import { db } from "./db.js"
 import tripModel from "./trip.js"
+import apiModel from "./api-key.js"
 
 
 const bike = {
@@ -192,8 +193,13 @@ const bike = {
         bikeId,
         bikeStatus,
         chargePerc,
-        bikeCoords
+        bikeCoords,
+        apiKey
     ) {
+        // this method will throw an error if the apiKey does
+        // not belong to a bike
+        apiModel.isBikeKey(apiKey);
+
         const endedTrip = await db.queryWithArgs(`CALL update_bike(?, ?, ?, ?);`, [bikeId, bikeStatus, chargePerc, JSON.stringify(bikeCoords)]);
         if (endedTrip.length > 0) {
             return tripModel.adjTypes(endedTrip[0][0]);

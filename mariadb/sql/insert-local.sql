@@ -19,7 +19,7 @@ LOAD DATA LOCAL INFILE './csv/keys.csv'
 INTO TABLE `api_key`
 CHARSET utf8
 FIELDS
-    TERMINATED BY '\r\n'
+    TERMINATED BY ','
     ENCLOSED BY '"'
 LINES
     TERMINATED BY '\r\n'

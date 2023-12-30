@@ -9,6 +9,8 @@ import cityModel from '../../src/models/city.js';
 const expect = chai.expect;
 chai.use(chaiHttp);
 
+const bikeApiKey = "ee54283c18caea5a49abd8328258d2dd";
+
 describe('/v1/bikes routes', () => {
     let addBikeStub;
     let removeBikeStub;
@@ -141,6 +143,7 @@ describe('/v1/bikes routes', () => {
     it('should update a bike', (done) => {
         chai.request(app)
             .put('/v1/bikes/1')
+            .set('x-api-key', bikeApiKey)
             .send({
                 'id': 1,
                 'status_id': 1,
@@ -152,6 +155,7 @@ describe('/v1/bikes routes', () => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(204);
                 expect(updateBikeStub.calledOnce).to.be.true;
+                expect(updateBikeStub).to.have.been.calledOnceWith(1, 1, 0.6, [12.2, 12.3], bikeApiKey);
                 console.log(res.body);
                 expect(broadcastStub.calledOnce).to.be.true;
                 done();
@@ -212,6 +216,7 @@ describe('/v1/bikes test error handling', () => {
 
     it('should handle errors when trying to update a bike', async () => {
         const res = await chai.request(app).put('/v1/bikes/1')
+            .set('x-api-key', bikeApiKey)
             .send({
                 'id': 1,
                 'status_id': 1,
@@ -225,6 +230,46 @@ describe('/v1/bikes test error handling', () => {
             errors: {
                 code: 500,
                 message: "Test error"
+            }
+        });
+    });
+
+    it('should handle errors when trying to update a bike with invalid api key', async () => {
+        const userApiKey = "5ec80c034a778b80c91c0fc02f020fa2";
+        const res = await chai.request(app).put('/v1/bikes/1')
+            .set('x-api-key', userApiKey)
+            .send({
+                'id': 1,
+                'status_id': 1,
+                'charge_perc': 0.6,
+                'coords': [12.2, 12.3],
+                'speed': 23
+            });
+
+        expect(res).to.have.status(500);
+        expect(res.body).to.deep.equal({
+            errors: {
+                code: 500,
+                message: "API key '5ec80c034a778b80c91c0fc02f020fa2' does not belong to a bike client. Method not allowed"
+            }
+        });
+    });
+
+    it('should handle errors when trying to update a bike with no api key', async () => {
+        const res = await chai.request(app).put('/v1/bikes/1')
+            .send({
+                'id': 1,
+                'status_id': 1,
+                'charge_perc': 0.6,
+                'coords': [12.2, 12.3],
+                'speed': 23
+            });
+
+        expect(res).to.have.status(500);
+        expect(res.body).to.deep.equal({
+            errors: {
+                code: 500,
+                message: "API key 'undefined' does not belong to a bike client. Method not allowed"
             }
         });
     });
