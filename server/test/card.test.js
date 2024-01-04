@@ -3,7 +3,6 @@
 import chai from 'chai';
 chai.should();
 const expect = chai.expect;
-import { db } from "../src/models/db.js";
 import cardModel from "../src/models/card.js";
 import { insertData } from './helper.js'
 import sinon from 'sinon';

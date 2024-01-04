@@ -820,7 +820,7 @@ describe('trip model', () => {
         const bikeid = bikes[2].id
         const userid = users[1].id
         const userid2 = users[0].id
-        let myTrip = await tripModel.start(userid, bikeid);
+        await tripModel.start(userid, bikeid);
         let secondTrip
         try {
             secondTrip = await tripModel.start(userid2, bikeid);

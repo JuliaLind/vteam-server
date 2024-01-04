@@ -78,7 +78,7 @@ const user = {
      * @param {express.NextFunction} next
      */
     login: async function(req, res, next) {
-        const email = this.extractEmail(req.body.token)
+        const email = await this.extractEmail(req.body.token);
         let payload;
         try {
             payload = await this.db(email);
