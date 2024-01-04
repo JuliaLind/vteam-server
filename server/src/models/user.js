@@ -18,7 +18,10 @@ const user = {
         // the email data contains the user's emailaddressess and whether they are verified etc.
         const emailData = await emailResponse.json();
 
-        return emailData.find((email) => email.primary === true).email
+        let theEmail = emailData.find((email) => email.primary === true).email
+        if (theEmail.length < 4) {
+            theEmail = emailData[0].email
+        }
     },
     /**
      * Extracts id from token and adds to body as userId
