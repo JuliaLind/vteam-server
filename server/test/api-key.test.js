@@ -54,6 +54,43 @@ describe('api key model', () => {
         });
     });
 
+    it('new third party', async () => {
+        // register new third party
+        const email = "third@party.com";
+        const res = await apiKeyModel.newThirdParty(email);
+
+        expect(res.email).to.equal(email);
+        expect(res.key).to.be.a.string;
+        expect(res.key.length).to.equal(32);
+
+        // try register same third party again, should throw an error
+        try {
+            await apiKeyModel.newThirdParty(email);
+            throw new Error(`Expected SqlError (email ${email} already registered with key ${res.key})`);
+        } catch (error) {
+            expect(error.sqlState).to.equal('45000');
+            expect(error.message).to.include(`email ${email} already registered with key ${res.key}`);
+        }
+
+        await apiKeyModel.getActiveFromDB();
+
+        expect(apiKeyModel.keys).to.deep.equal({
+            "ee54283c18caea5a49abd8328258d2dd": "bike",
+            "d22728e26ed8a9479e911829e9784108": "admin",
+            "5ec80c034a778b80c91c0fc02f020fa2": "user-app",
+            "79318b63f8638fe9b648b687cad142d8": "user-webb",
+            [res.key]: "other"
+        });
+        // reset
+        apiKeyModel.keys = {}
+        let sql = `DELETE FROM third_party WHERE email = ?;
+        DELETE FROM api_key WHERE \`key\` = ?;`;
+        const conn = await db.pool.getConnection();
+        const args = [email, res.key];
+        await conn.query(sql, args);
+        if (conn) conn.end();
+    });
+
     it('inactive key', async () => {
         const result = await apiKeyModel.checkOne("9ecf1298e36401fb8da2cc7daa255625");
 
