@@ -9,14 +9,12 @@ import bikeModel from "../src/models/bike.js";
 import tripModel from "../src/models/trip.js";
 import { zones, points } from './dummy-data/zones.js';
 import { insertData } from './helper.js';
-let users;
-let cards;
-let payments;
-let bikes;
-let trips;
 
 
 describe('trip model', () => {
+    let users;
+    let bikes;
+
     beforeEach(async () => {
         const conn = await db.pool.getConnection();
 
@@ -43,7 +41,9 @@ describe('trip model', () => {
         if (conn) {
             conn.end();
         }
-        [users, cards, payments, bikes, trips] = await insertData();
+        const res = await insertData();
+        users = res.users;
+        bikes = res.bikes;
     });
     after(async () => {
         const conn = await db.pool.getConnection();

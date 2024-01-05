@@ -3,22 +3,16 @@
 import chai from 'chai';
 chai.should();
 const expect = chai.expect;
+
 import { db } from "../src/models/db.js";
 import cityModel from "../src/models/city.js";
-let zones;
-// import { bikes } from './dummy-data/bikes.js'
-
 import { insertZones, insertData } from './helper.js'
-let users;
-let cards;
-let payments;
-let bikes;
-let trips;
-
-
 
 
 describe('city model part 2', () => {
+    let zones;
+    let bikes;
+
     beforeEach(async () => {
         const conn = await db.pool.getConnection()
         let sql = `
@@ -30,7 +24,8 @@ describe('city model part 2', () => {
             conn.end();
         }
         zones = await insertZones();
-        [users, cards, payments, bikes, trips] = await insertData();
+        const res = await insertData();
+        bikes = res.bikes;
     });
     afterEach(async () => {
         const conn = await db.pool.getConnection()

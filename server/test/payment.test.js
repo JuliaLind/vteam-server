@@ -3,21 +3,24 @@
 import chai from 'chai';
 chai.should();
 const expect = chai.expect;
+
 import { db } from "../src/models/db.js";
 import paymentModel from "../src/models/payment.js";
 import userModel from "../src/models/user.js";
 import { insertData } from './helper.js'
 
-let payments;
-// let exp;
-let users;
-let cards;
-let bikes;
-let trips;
 
 describe('payment model', () => {
+    let payments;
+    let users;
+    let cards;
+
     beforeEach(async () => {
-        [users, cards, payments, bikes, trips ] = await insertData();
+        const res = await insertData();
+
+        payments = res.payments;
+        users = res.users;
+        cards = res.cards;
 
         payments.sort((a, b) => b.date - a.date);
 

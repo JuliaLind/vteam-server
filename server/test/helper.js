@@ -125,7 +125,14 @@ export const insertData = async function () {
             await conn.end();
         }
     }
-    return [users, cards, allPaym, allBikes, allTrips];
+    // return [users, cards, allPaym, allBikes, allTrips];
+    return {
+        users: users,
+        cards: cards,
+        payments: allPaym,
+        bikes: allBikes,
+        trips: allTrips
+    };
 }
 
 export const insertZones = async function () {
