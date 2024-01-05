@@ -118,7 +118,7 @@ describe('emp model', () => {
         res.status = sinon.stub().returnsThis();
         res.json = sinon.stub();
 
-        const bcryptCompareStub = sinon.stub(bcrypt, 'compare').resolves(true);
+        sinon.stub(bcrypt, 'compare').resolves(true);
         const checkPasswordSpy = sinon.spy(empModel, 'checkPassword');
 
         await empModel.comparePasswords(res, "correctpassword", emp);

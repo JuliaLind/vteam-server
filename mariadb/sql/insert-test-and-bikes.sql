@@ -1,6 +1,4 @@
 -- To be used from docker-container.
--- Different relative paths compared to
--- the local files
 --
 -- Note that only some of the tables
 -- are pre-populated in the database.

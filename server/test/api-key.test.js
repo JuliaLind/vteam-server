@@ -1,4 +1,4 @@
-/* global it describe beforeEach */
+/* global it describe before */
 
 import chai from 'chai';
 chai.should();
