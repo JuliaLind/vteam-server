@@ -76,6 +76,23 @@ const city = {
             return this.adjTypes(zone);
         });
     },
+    /**
+     * Returns array with all charging and parking zone objects
+     * in a city. Zoneobject contains:
+     * id, zone_id (type of zone),
+     * descr, city_id, geometry and speed_limit. If a zone does
+     * no have a speed_limit it will not have the attribute
+     * @param {String} cityId 
+     * @returns {Promise<Array>} All
+     * zones in a city 
+     */
+    _chargeParkZones: async function() {
+        const result = await db.queryNoArgs(`CALL park_and_charge_zones();`);
+
+        return result[0].map((zone) => {
+            return this.adjTypes(zone);
+        });
+    },
 
     /**
      *  Returns city id, geometry and

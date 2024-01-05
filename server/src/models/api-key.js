@@ -58,12 +58,13 @@ const apiKey = {
         const allKeys = result[0].map(elem => elem.key);
 
         let newKey = hat();
+
         while (allKeys.includes(newKey)) {
             newKey = hat();
         }
 
         result = await db.queryWithArgs(`CALL new_third_party(?,?);`, [email, newKey]);
-        console.log(result);
+
 
         return result[0][0];
     }
