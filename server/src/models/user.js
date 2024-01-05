@@ -18,9 +18,9 @@ const user = {
         // the email data contains the user's emailaddressess and whether they are verified etc.
         const emailData = await emailResponse.json();
 
-        const theEmail = emailData.find((email) => email.primary && email.verified)?.email
+        const theEmail = emailData.find((email) => email.primary && email.verified)?.email;
         if (typeof theEmail !== "string" || !theEmail) {
-            throw new Error("User has no verified primary email")
+            throw new Error("User has no verified primary email");
         }
         return theEmail;
     },
