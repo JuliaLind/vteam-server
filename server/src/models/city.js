@@ -1,4 +1,6 @@
 import { db } from "./db.js"
+import bikeModel from "./bike.js";
+import geoPointInPolygon from 'geo-point-in-polygon';
 
 const city = {
     /**
@@ -77,14 +79,13 @@ const city = {
         });
     },
     /**
+     * Private method!
      * Returns array with all charging and parking zone objects
      * in a city. Zoneobject contains:
      * id, zone_id (type of zone),
      * descr, city_id, geometry and speed_limit. If a zone does
      * no have a speed_limit it will not have the attribute
-     * @param {String} cityId 
-     * @returns {Promise<Array>} All
-     * zones in a city 
+     * @returns {Promise<Array>}
      */
     _chargeParkZones: async function() {
         const result = await db.queryNoArgs(`CALL park_and_charge_zones();`);
@@ -92,6 +93,29 @@ const city = {
         return result[0].map((zone) => {
             return this.adjTypes(zone);
         });
+    },
+
+    /**
+     * Public method. 
+     * Returns array with all charging and parking zone objects
+     * in a city. Zoneobject contains:
+     * id, zone_id (type of zone),
+     * descr, city_id, geometry, array with bikes in the zone location and their count
+     * @returns {Promise<Array>}
+     */
+    chargeParkZones: async function() {
+        const zones = await this._chargeParkZones();
+        const bikes = await bikeModel.getAll();
+        const zonesExt = zones.map((zone) => {
+            const zonePolyg = zone.geometry.coordinates[0];
+            const extZone = {
+                ...zone,
+                bikes: bikes.filter(bike => geoPointInPolygon(bike.coords, zonePolyg))
+            }
+            extZone.bikeCount = extZone.bikes.length;
+            return extZone;
+        });
+        return zonesExt;
     },
 
     /**
