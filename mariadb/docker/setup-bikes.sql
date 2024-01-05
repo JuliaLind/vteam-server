@@ -4,7 +4,8 @@ USE `bikes`;
 
 
 source ./mariadb/sql/ddl.sql;
-source ./mariadb/sql/insert-bikes-docker.sql;
+source ./mariadb/sql/insert-test-and-bikes.sql;
+source ./mariadb/sql/insert-bikes.sql;
 source ./mariadb/sql/view.sql;
 source ./mariadb/sql/functions.sql;
 source ./mariadb/sql/sp_payment.sql;

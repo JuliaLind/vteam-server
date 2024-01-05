@@ -1,6 +1,10 @@
 -- To be used from docker-container.
--- Different relative paths compared to
--- the local files
+--
+-- Note that only some of the tables
+-- are pre-populated in the database.
+-- Tables that are tested for updates
+-- are populated via js testing code
+--
 
 -- note, no first line to ignore in csv file
 LOAD DATA LOCAL INFILE './mariadb/csv/client_type.csv'
@@ -38,20 +42,6 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './mariadb/csv/employee.csv'
-INTO TABLE `employee`
-CHARSET utf8
-FIELDS
-    TERMINATED BY ','
-    ENCLOSED BY '"'
-LINES
-    TERMINATED BY '\n'
-IGNORE 1 LINES
-(@id,@username,@password,@hash, @role)
-SET `id`=@id, `username`=@username, `hash`=@hash, `role`=@role
-;
-
-SHOW WARNINGS;
 
 LOAD DATA LOCAL INFILE './mariadb/csv/card.csv'
 INTO TABLE `card`
@@ -66,33 +56,6 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './mariadb/csv/user.csv'
-INTO TABLE `user`
-CHARSET utf8
-FIELDS
-    TERMINATED BY ','
-    ENCLOSED BY '"'
-LINES
-    TERMINATED BY '\n'
-IGNORE 1 LINES
-(id, email, balance)
-;
-
-SHOW WARNINGS;
-
-LOAD DATA LOCAL INFILE './mariadb/csv/user_card.csv'
-INTO TABLE `user_card`
-CHARSET utf8
-FIELDS
-    TERMINATED BY ','
-    ENCLOSED BY '"'
-LINES
-    TERMINATED BY '\n'
-IGNORE 1 LINES
-(user_id, card_nr, card_type)
-;
-
-SHOW WARNINGS;
 
 LOAD DATA LOCAL INFILE './mariadb/csv/status.csv'
 INTO TABLE `status`
@@ -107,32 +70,6 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './mariadb/csv/bike.csv'
-INTO TABLE `bike`
-CHARSET utf8
-FIELDS
-    TERMINATED BY ','
-    ENCLOSED BY '"'
-LINES
-    TERMINATED BY '\r\n'
-IGNORE 1 LINES
-(id, city_id, coords)
-;
-
-SHOW WARNINGS;
-
-LOAD DATA LOCAL INFILE './mariadb/csv/payment.csv'
-INTO TABLE `payment`
-CHARSET utf8
-FIELDS
-    TERMINATED BY ','
-    ENCLOSED BY '"'
-LINES
-    TERMINATED BY '\n'
-IGNORE 1 LINES
-;
-
-SHOW WARNINGS;
 
 
 LOAD DATA LOCAL INFILE './mariadb/csv/price.csv'
@@ -162,19 +99,6 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-LOAD DATA LOCAL INFILE './mariadb/csv/zone_loc.csv'
-INTO TABLE `zone_loc`
-CHARSET utf8
-FIELDS
-    TERMINATED BY ','
-    ENCLOSED BY "'"
-LINES
-    TERMINATED BY '\r\n'
-IGNORE 1 LINES
-(zone_id, city_id, date_from, `geometry`)
-;
-
-SHOW WARNINGS;
 
 LOAD DATA LOCAL INFILE './mariadb/csv/speed_limit.csv'
 INTO TABLE `speed_limit`
@@ -188,19 +112,3 @@ IGNORE 1 LINES
 ;
 
 SHOW WARNINGS;
-
-
-LOAD DATA LOCAL INFILE './mariadb/csv/trip.csv'
-INTO TABLE `trip`
-CHARSET utf8
-FIELDS
-    TERMINATED BY ';'
-    ENCLOSED BY '"'
-LINES
-    TERMINATED BY '\r\n'
-IGNORE 1 LINES
-;
-
-SHOW WARNINGS;
-
-
