@@ -49,7 +49,7 @@ CREATE TABLE `api_key` (
 CREATE TABLE `third_party` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `api_key_id` INT NOT NULL,
-    `email` VARCHAR(200),
+    `email` VARCHAR(200) NOT NULL,
 
     PRIMARY KEY (`id`),
     UNIQUE KEY `email` (`email`),
