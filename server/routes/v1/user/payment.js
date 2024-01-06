@@ -15,7 +15,7 @@ const router = express.Router();
 router.post("/", async (req, res, next) => {
     try {
         const amount = req.body.amount;
-        const userId = req.body.userId;
+        const userId = req.body.user_id;
 
         const receipt = await paymentModel.prepay(userId, amount);
 
