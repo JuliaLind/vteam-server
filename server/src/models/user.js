@@ -18,7 +18,11 @@ const user = {
         // the email data contains the user's emailaddressess and whether they are verified etc.
         const emailData = await emailResponse.json();
 
-        return emailData.find((email) => email.primary === true).email
+        const theEmail = emailData.find((email) => email.primary && email.verified)?.email;
+        if (typeof theEmail !== "string" || !theEmail) {
+            throw new Error("User has no verified primary email");
+        }
+        return theEmail;
     },
     /**
      * Extracts id from token and adds to body as userId
@@ -78,7 +82,7 @@ const user = {
      * @param {express.NextFunction} next
      */
     login: async function(req, res, next) {
-        const email = this.extractEmail(req.body.token)
+        const email = await this.extractEmail(req.body.token);
         let payload;
         try {
             payload = await this.db(email);

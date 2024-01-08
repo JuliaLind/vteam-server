@@ -1,17 +1,21 @@
-/* global it describe beforeEach */
+/* global it describe beforeEach before */
 
 import chai from 'chai';
 chai.should();
 const expect = chai.expect;
 import { db } from "../src/models/db.js";
 import bikeModel from "../src/models/bike.js";
-import { bikes } from './dummy-data/bikes.js'
+import { bikes } from './dummy-data/bikes.js';
+import apiModel from "../src/models/api-key.js";
 
 
 
 
 
 describe('bike model', () => {
+    before(async () => {
+        await apiModel.getActiveFromDB();
+    });
     beforeEach(async () => {
         let sql = `DELETE FROM bike;`;
         const conn = await db.pool.getConnection();
@@ -34,7 +38,8 @@ describe('bike model', () => {
             5,
             4,
             0.60,
-            [18.999,59.999]
+            [18.999,59.999],
+            "ee54283c18caea5a49abd8328258d2dd"
         );
         let bike = await bikeModel.getOne(5)
 
@@ -51,7 +56,8 @@ describe('bike model', () => {
     });
 
     it("bike cannot update charge perc to outside range", async () => {
-        await bikeModel.updateBike(5, 1, 0.6, [18.999,59.999]);
+        await bikeModel.updateBike(5, 1, 0.6, [18.999,59.999],
+            "ee54283c18caea5a49abd8328258d2dd");
         let bike = await bikeModel.getOne(5)
 
         expect(bike).to.deep.equal({
@@ -65,7 +71,8 @@ describe('bike model', () => {
         });
         try {
             // try invalid charge range too high
-            await bikeModel.updateBike(5, 1, 1.1, [16.999,35.999]);
+            await bikeModel.updateBike(5, 1, 1.1, [16.999,35.999],
+                "ee54283c18caea5a49abd8328258d2dd");
 
             throw new Error('Expected a custom out of range error of charge perc');
         } catch (error) {
@@ -85,7 +92,8 @@ describe('bike model', () => {
         });
         try {
             // try invalid charge range too high
-            await bikeModel.updateBike(5, 1, -0.1, [11.95454,57.7244]);
+            await bikeModel.updateBike(5, 1, -0.1, [11.95454,57.7244],
+                "ee54283c18caea5a49abd8328258d2dd");
 
             throw new Error('Expected a custom out of range error of charge perc');
         } catch (error) {

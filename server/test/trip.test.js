@@ -9,14 +9,12 @@ import bikeModel from "../src/models/bike.js";
 import tripModel from "../src/models/trip.js";
 import { zones, points } from './dummy-data/zones.js';
 import { insertData } from './helper.js';
-let users;
-let cards;
-let payments;
-let bikes;
-let trips;
 
 
 describe('trip model', () => {
+    let users;
+    let bikes;
+
     beforeEach(async () => {
         const conn = await db.pool.getConnection();
 
@@ -43,7 +41,9 @@ describe('trip model', () => {
         if (conn) {
             conn.end();
         }
-        [users, cards, payments, bikes, trips] = await insertData();
+        const res = await insertData();
+        users = res.users;
+        bikes = res.bikes;
     });
     after(async () => {
         const conn = await db.pool.getConnection();
@@ -716,7 +716,7 @@ describe('trip model', () => {
             conn.end();
         }
 
-        let endedTrip = await bikeModel.updateBike(bikeid, 2, 0.03, [ 11.3456,57.1123 ]);
+        let endedTrip = await bikeModel.updateBike(bikeid, 2, 0.03, [ 11.3456,57.1123 ], "ee54283c18caea5a49abd8328258d2dd");
 
         expect(Math.abs(startTime - endedTrip.start_time)/1000).to.be.lessThan(1);
 
@@ -753,7 +753,7 @@ describe('trip model', () => {
         }
         await tripModel.start(userid, bikeid);
 
-        let endedTrip = await bikeModel.updateBike(bikeid, 2, 0.02, [ 11.3456,57.1123 ]);
+        let endedTrip = await bikeModel.updateBike(bikeid, 2, 0.02, [ 11.3456,57.1123 ], "ee54283c18caea5a49abd8328258d2dd");
 
         expect(Math.abs(new Date() - endedTrip.end_time)/1000).to.be.lessThan(1);
 
@@ -778,7 +778,7 @@ describe('trip model', () => {
         const userid = users[0].id
         let myTrip = await tripModel.start(userid, bikeid);
 
-        let endedTrip = await bikeModel.updateBike(bikeid, 2, 0.04, [ 11.3456,57.1123 ]);
+        let endedTrip = await bikeModel.updateBike(bikeid, 2, 0.04, [ 11.3456,57.1123 ], "ee54283c18caea5a49abd8328258d2dd");
 
         expect(endedTrip).to.be.undefined;
 
@@ -820,7 +820,7 @@ describe('trip model', () => {
         const bikeid = bikes[2].id
         const userid = users[1].id
         const userid2 = users[0].id
-        let myTrip = await tripModel.start(userid, bikeid);
+        await tripModel.start(userid, bikeid);
         let secondTrip
         try {
             secondTrip = await tripModel.start(userid2, bikeid);

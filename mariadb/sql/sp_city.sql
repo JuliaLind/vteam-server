@@ -1,3 +1,4 @@
+DROP PROCEDURE IF EXISTS park_and_charge_zones;
 DROP PROCEDURE IF EXISTS all_cities;
 DROP PROCEDURE IF EXISTS single_city;
 DROP PROCEDURE IF EXISTS zones_in_city;
@@ -70,6 +71,20 @@ BEGIN
         *
     FROM
         `v_zone_loc`
+    ;
+END
+;;
+
+--
+-- Returns park and charge zones
+--
+CREATE PROCEDURE park_and_charge_zones()
+BEGIN
+    SELECT
+        *
+    FROM
+        `v_zone_loc`
+    WHERE zone_id IN (1, 2)
     ;
 END
 ;;

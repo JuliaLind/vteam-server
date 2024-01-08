@@ -3,23 +3,23 @@
 import chai from 'chai';
 chai.should();
 const expect = chai.expect;
-import { db } from "../src/models/db.js";
 import cardModel from "../src/models/card.js";
 import { insertData } from './helper.js'
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 
-let users;
-let cards;
-let payments;
-let bikes;
-let trips;
+
 
 
 describe('card model', () => {
+    let users;
+    let cards;
+
     beforeEach(async () => {
-        [users, cards, payments, bikes, trips] = await insertData();
+        const res = await insertData();
+        users = res.users;
+        cards = res.cards;
     });
     it('Get all cardtypes', async () => {
         const cardTypes = await cardModel.getTypes();

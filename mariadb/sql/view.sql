@@ -1,9 +1,24 @@
--- DROP VIEW IF EXISTS v_user;
+DROP VIEW IF EXISTS v_third_party;
 DROP VIEW IF EXISTS v_zone_loc;
 DROP VIEW IF EXISTS v_all_zone_loc;
 DROP VIEW IF EXISTS v_trip;
 DROP VIEW IF EXISTS v_bike;
 DROP VIEW IF EXISTS v_user_card;
+
+--
+-- View contains all third parties and their
+-- api keys
+--
+CREATE VIEW v_third_party AS
+SELECT
+    tp.email AS email,
+    ak.key AS `key`
+FROM `third_party` AS tp
+LEFT JOIN
+    `api_key` AS ak
+    ON tp.api_key_id = ak.id
+;
+
 
 --
 -- View contains all zones and all

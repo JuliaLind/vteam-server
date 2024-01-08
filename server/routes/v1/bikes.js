@@ -116,7 +116,8 @@ router.put("/:id", async (req, res, next) => {
             bikeId,
             bikeData.status_id,
             bikeData.charge_perc,
-            bikeData.coords
+            bikeData.coords,
+            req.headers['x-api-key']
         );
 
         clientManager.broadcastToClients(bikeData);

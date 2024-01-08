@@ -11,13 +11,12 @@ import { insertData } from './helper.js';
 let trips;
 let dataAdj;
 let users;
-let cards;
-let bikes;
-let payments;
 
 describe('trip model part 2', () => {
     beforeEach(async () => {
-        [users, cards, payments, bikes, trips] = await insertData();
+        const res = await insertData();
+        trips = res.trips;
+        users = res.users;
         dataAdj = trips.reverse();
     });
     after(async () => {

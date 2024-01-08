@@ -390,7 +390,7 @@ describe('user model', () => {
     it('tests db method (used in login), email ok but inactive)', async () => {
         let user;
         try {
-            user = await userModel.db("bcroft7@qq.com");d
+            user = await userModel.db("bcroft7@qq.com");
             throw new Error("Expected Error (User is deactivated)");
         } catch (error) {
             expect(error.message).to.include("User is deactivated");
@@ -437,6 +437,34 @@ describe('user model', () => {
             balance: -372.87,
             active: false,
         }]);
+    });
+
+    it('tests login method, ok, new user', async () => {
+        const req = { body: { token: 'validGithubToken' } };
+        const res = { json: sinon.stub() };
+        const newEmail = 'new@user.com';
+        const expectedPayload = {
+            id: sinon.match.number,
+            email: newEmail
+        };
+
+        const extractEmailStub = sinon.stub(userModel, 'extractEmail').returns(newEmail);
+
+        await userModel.login(req, res, sinon.stub());
+
+        expect(extractEmailStub).to.have.been.calledOnce;
+
+        const expectedResult = {
+            data: {
+            type: "success",
+            message: "User logged in",
+            user: expectedPayload,
+            token: sinon.match.string
+            }
+        };
+        expect(res.json).to.have.been.calledOnceWithExactly(expectedResult);
+
+        extractEmailStub.restore();
     });
 
     // Add test for:

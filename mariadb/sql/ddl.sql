@@ -16,18 +16,30 @@ DROP TABLE IF EXISTS `third_party`;
 DROP TABLE IF EXISTS `api_key`;
 
 --
+-- typer av klienter som nycklar kan tillhöra
+--
+CREATE TABLE `client_type` (
+    `id` VARCHAR(15),
+
+    PRIMARY KEY (`id`)
+);
+
+--
 -- alla api keys, can be trporarily
 -- inactivated by setting 'active'
 -- field to false
 --
 CREATE TABLE `api_key` (
     `id` INT NOT NULL AUTO_INCREMENT,
+    `client_type_id` VARCHAR(15),
     `key` CHAR(32) NOT NULL,
     `active` BOOLEAN DEFAULT TRUE,
     `status_updated` DATETIME DEFAULT CURRENT_TIMESTAMP,
 
+
     PRIMARY KEY (`id`),
-    UNIQUE KEY `key` (`key`)
+    UNIQUE KEY `key` (`key`),
+    FOREIGN KEY (`client_type_id`) REFERENCES `client_type` (`id`)
 );
 
 --
@@ -37,7 +49,7 @@ CREATE TABLE `api_key` (
 CREATE TABLE `third_party` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `api_key_id` INT NOT NULL,
-    `email` VARCHAR(200),
+    `email` VARCHAR(200) NOT NULL,
 
     PRIMARY KEY (`id`),
     UNIQUE KEY `email` (`email`),

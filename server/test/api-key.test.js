@@ -1,32 +1,24 @@
-/* global it describe beforeEach */
+/* global it describe before */
 
 import chai from 'chai';
 chai.should();
 const expect = chai.expect;
+
 import { db } from "../src/models/db.js";
 import apiKeyModel from "../src/models/api-key.js";
-import { keys } from './dummy-data/keys.js'
-
-
-
-
 
 describe('api key model', () => {
-    beforeEach(async () => {
-        apiKeyModel.keys = [];
-        let sql = `DELETE FROM api_key;`;
+    before(async () => {
         const conn = await db.pool.getConnection();
-        await conn.query(sql);
+        const sql = `
+        DELETE FROM api_key WHERE \`key\` = ?;
+        INSERT INTO api_key(client_type_id, \`key\`, \`active\`)
+        VALUES(?, ?, ?);`;
+        const args = ["9ecf1298e36401fb8da2cc7daa255625",
+        "other",
+        "9ecf1298e36401fb8da2cc7daa255625",
+        false];
 
-        sql = `INSERT INTO api_key VALUES(?, ?, ?, ?),
-            (?, ?, ?, ?),
-            (?, ?, ?, ?),
-            (?, ?, ?, ?);`
-        let args = [];
-
-        for (const key of keys) {
-            args = args.concat([key.id, key.key, key.active, key.status_updated])
-        }
 
         await conn.query(sql, args);
         if (conn) {
@@ -34,20 +26,69 @@ describe('api key model', () => {
         }
     });
     it('test getActiveFromDB', async () => {
-        expect(apiKeyModel.keys).to.deep.equal([]);
+        apiKeyModel.keys = {};
+        expect(apiKeyModel.keys).to.deep.equal({});
         await apiKeyModel.getActiveFromDB();
 
-        expect(apiKeyModel.keys).to.deep.equal([
-            "28f6f3b936b1640bd81114121cfae649",
-            "02311fc3c16ab94abd005e82e4ada31c",
-            "abab305362ca929f20ad5465026341a2",
-        ]);
+        expect(apiKeyModel.keys).to.deep.equal({
+            "ee54283c18caea5a49abd8328258d2dd": "bike",
+            "d22728e26ed8a9479e911829e9784108": "admin",
+            "5ec80c034a778b80c91c0fc02f020fa2": "user-app",
+            "79318b63f8638fe9b648b687cad142d8": "user-webb"
+        });
     });
 
     it('active key', async () => {
-        const result = await apiKeyModel.checkOne("02311fc3c16ab94abd005e82e4ada31c");
+        apiKeyModel.keys = {};
+
+        expect(apiKeyModel.keys).to.deep.equal({});
+        const result = await apiKeyModel.checkOne("d22728e26ed8a9479e911829e9784108");
+
 
         expect(result).to.be.true;
+        expect(apiKeyModel.keys).to.deep.equal({
+            "ee54283c18caea5a49abd8328258d2dd": "bike",
+            "d22728e26ed8a9479e911829e9784108": "admin",
+            "5ec80c034a778b80c91c0fc02f020fa2": "user-app",
+            "79318b63f8638fe9b648b687cad142d8": "user-webb"
+        });
+    });
+
+    it('new third party', async () => {
+        // register new third party
+        const email = "third@party.com";
+        const res = await apiKeyModel.newThirdParty(email);
+
+        expect(res.email).to.equal(email);
+        expect(res.key).to.be.a.string;
+        expect(res.key.length).to.equal(32);
+
+        // try register same third party again, should throw an error
+        try {
+            await apiKeyModel.newThirdParty(email);
+            throw new Error(`Expected SqlError (email ${email} already registered with key ${res.key})`);
+        } catch (error) {
+            expect(error.sqlState).to.equal('45000');
+            expect(error.message).to.include(`email ${email} already registered with key ${res.key}`);
+        }
+
+        await apiKeyModel.getActiveFromDB();
+
+        expect(apiKeyModel.keys).to.deep.equal({
+            "ee54283c18caea5a49abd8328258d2dd": "bike",
+            "d22728e26ed8a9479e911829e9784108": "admin",
+            "5ec80c034a778b80c91c0fc02f020fa2": "user-app",
+            "79318b63f8638fe9b648b687cad142d8": "user-webb",
+            [res.key]: "other"
+        });
+        // reset
+        apiKeyModel.keys = {}
+        let sql = `DELETE FROM third_party WHERE email = ?;
+        DELETE FROM api_key WHERE \`key\` = ?;`;
+        const conn = await db.pool.getConnection();
+        const args = [email, res.key];
+        await conn.query(sql, args);
+        if (conn) conn.end();
     });
 
     it('inactive key', async () => {
@@ -66,5 +107,27 @@ describe('api key model', () => {
         const result = await apiKeyModel.checkOne(undefined);
 
         expect(result).to.be.false;
+    });
+
+    it('check if key belongs to a bike ok', async () => {
+        const bikeApiKey = 'ee54283c18caea5a49abd8328258d2dd';
+
+        // check that the key is active
+        const res = await apiKeyModel.checkOne(bikeApiKey)
+        expect(res).to.be.true;
+
+        // should not throw error because key belongs to a bike
+        expect(() => apiKeyModel.isBikeKey(bikeApiKey)).to.not.throw();
+    });
+
+    it('check if api key belongs to a bike not ok', async () => {
+        const userApiKey = '5ec80c034a778b80c91c0fc02f020fa2';
+        const res = await apiKeyModel.checkOne(userApiKey)
+
+        // check that the key itself is active
+        expect(res).to.be.true;
+
+        // should throw error because the key does not belong to a bike
+        expect(() => apiKeyModel.isBikeKey(userApiKey)).to.throw(Error, `API key '${userApiKey}' does not belong to a bike client. Method not allowed`);
     });
 });

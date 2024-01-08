@@ -9,11 +9,12 @@ const router = express.Router();
  *
  * @param {express.Request} req Request object
  * @param {express.Response} res Response object
- * @param {express.NextFunction} next Next function
+ * @param {express.NextFunction} _ Next function
  *
  * @returns {void}
  */
-router.post("/admin", async (req, res, next) => {
+// eslint-disable-next-line no-unused-vars
+router.post("/admin", async (req, res, _) => {
     await empModel.login(req, res);
 });
 
