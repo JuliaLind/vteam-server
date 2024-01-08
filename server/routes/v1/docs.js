@@ -49,6 +49,7 @@ router.get('/api_key', (req, res, next) => {
  *
  * @returns {void}
  */
+// eslint-disable-next-line no-unused-vars
 router.post('/api_key/confirmation', async (req, res, next) => {
     const email = req.body.email;
 

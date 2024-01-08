@@ -1,3 +1,5 @@
+/* global it describe after before */
+
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';

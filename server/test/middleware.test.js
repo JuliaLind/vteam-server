@@ -1,3 +1,5 @@
+/* global it describe afterEach beforeEach */
+
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 // import express from 'express';

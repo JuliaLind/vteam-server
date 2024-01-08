@@ -1,3 +1,5 @@
+/* global it describe after before afterEach beforeEach */
+
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';
@@ -5,7 +7,6 @@ import app from '../../app.js';
 import clientManager from '../../src/utils/clientManager.js';
 import bikeModel from '../../src/models/bike.js';
 import cityModel from '../../src/models/city.js';
-import bike from '../../src/models/bike.js';
 
 const expect = chai.expect;
 chai.use(chaiHttp);
