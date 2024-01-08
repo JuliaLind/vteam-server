@@ -1,6 +1,7 @@
 import express from "express";
 import userModel from "../../../src/models/user.js";
 
+import balanceRouter from "./balance.js";
 import bikesRouter from "./bikes.js";
 import cardRouter from "./card.js";
 import citiesRouter from "./cities.js";
@@ -12,6 +13,7 @@ const router = express.Router();
 
 router.use("/", userModel.checkToken);
 
+router.use("/balance", balanceRouter);
 router.use("/bikes", bikesRouter);
 router.use("/card", cardRouter);
 router.use("/cities", citiesRouter);
