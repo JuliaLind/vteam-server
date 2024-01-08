@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>API Documentation</title>
+    <link rel="icon" type="image/x-icon" href="/scooter.ico">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+        <!-- Side Navbar -->
+            <nav class="bg-dark sidebar p-2" style="width: 350px;">
+                <h4 class="text-light">Content</h4>
+                <div class="sidebar-sticky">
+                <ul class="nav flex-column">
+                    <% let counter = 0; %>
+                    <% let counter2 = 0; %>
+                    <% for (const category in routesInfo) { %>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="collapse" href="#collapse<%= counter %>" role="button" aria-expanded="false" aria-controls="collapse<%= counter %>">
+                            <span style="font-size:larger"><%= category.charAt(0).toUpperCase() + category.slice(1) %></span>
+                        </a>
+                        <div class="collapse" id="collapse<%= counter %>">
+                            <ul class="nav flex-column mb-2">
+                                <% routesInfo[category].forEach(function(endpoint) { %>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#<%= endpoint.description.toLowerCase().replace(/'/g, '').replace(/\s+/g, '-') %>">
+                                        <%= endpoint.description %>
+                                    </a>
+                                </li>
+                                <% counter2++; %>
+                                <% }); %>
+                            </ul>
+                        </div>
+                    </li>
+                    <% counter++; %>
+                    <% } %>
+                </ul>
+                </div>
+            </nav>
+
+            <div class="content">
+                <!-- Main content -->
+                <main class="pt-3 px-4">
+                    <h1 id="top">API Documentation</h1>
+                    <p class="mb-4">
+                        Here you can find information about all available
+                        endpoints and how to use them.
+                    </p>
+                    <h2>API key</h2>
+                    <p>
+                        All requests to our API require an API key.
+                    </p>
+                    <a class="btn btn-primary mb-4" href="/v1/docs/api_key" role="button">Get your API key</a>
+                    <h2 class="mt-2 pt-2">Endpoints</h2>
+                    <% for (const category in routesInfo) { %>
+                    <section id="<%= category %>">
+                        <h4><%= category.charAt(0).toUpperCase() + category.slice(1) %></h4>
+                        <% routesInfo[category].forEach(function(endpoint) { %>
+                        <div
+                            class="card-header bg-dark text-white text-center text-uppercase"
+                            id="<%= endpoint.description.toLowerCase().replace(/'/g, '').replace(/\s+/g, '-') %>"
+                        >
+                            <h5><%= endpoint.description %></h5>
+                        </div>
+                        <article class="card mb-5 pt-2 px-4 rounded-0 border-secondary">
+                            <h5 class="mt-2">Endpoint</h5>
+                            <p><%="/v1/" + category + endpoint.endpoint %></p>
+
+                            <h5 class="mt-4">Request</h5>
+                            <table class="table table-bordered request-table mt-1">
+                                    <tr>
+                                        <td></td>
+                                        <td class="text-primary text-center"><strong>Key</strong></td>
+                                        <td class="text-danger text-center"><strong>Value</strong></td>
+                                    </tr>
+                                <tr>
+                                <td class="text-center align-middle text-dark" rowspan="<%= Object.keys(endpoint.request.headers).length %>"><strong>Headers</strong></td>
+                                <% let first = true; %>
+                                <% for (const header in endpoint.request.headers) { %>
+                                    <% if (first) { %>
+                                    <td><%= header %></td>
+                                    <td><%= endpoint.request.headers[header] %></td>
+                                    </tr>
+                                    <% first = false; %>
+                                <% } else { %>
+                                    <tr>
+                                    <td><%= header %></td>
+                                    <td><%= endpoint.request.headers[header] %></td>
+                                    </tr>
+                                <% } %>
+                                <% } %>
+
+                            <% if (endpoint.request.params && Object.keys(endpoint.request.params).length > 0) { %>
+                                <tr>
+                                <td class="text-center align-middle text-dark" rowspan="<%= Object.keys(endpoint.request.params).length %>"><strong>Params</strong></td>
+                                <% let first = true; %>
+                                <% for (const param in endpoint.request.params) { %>
+                                    <% if (first) { %>
+                                    <td><%= param %></td>
+                                    <td><%= endpoint.request.params[param] %></td>
+                                    </tr>
+                                    <% first = false; %>
+                                <% } else { %>
+                                    <tr>
+                                    <td><%= param %></td>
+                                    <td><%= endpoint.request.params[param] %></td>
+                                    </tr>
+                                <% } %>
+                                <% } %>
+                            <% } %>
+
+                            <% if (endpoint.request.body && Object.keys(endpoint.request.body).length > 0) { %>
+                                <tr>
+                                <td class="text-center align-middle text-dark" rowspan="<%= Object.keys(endpoint.request.body).length %>"><strong>Body</strong></td>
+                                <% let first = true; %>
+                                <% for (const bodyKey in endpoint.request.body) { %>
+                                    <% if (first) { %>
+                                    <td><%= bodyKey %></td>
+                                    <td><%= endpoint.request.body[bodyKey] %></td>
+                                    </tr>
+                                    <% first = false; %>
+                                <% } else { %>
+                                    <tr>
+                                    <td><%= bodyKey %></td>
+                                    <td><%= endpoint.request.body[bodyKey] %></td>
+                                    </tr>
+                                <% } %>
+                                <% } %>
+                            <% } %>
+                            </table>
+
+                            <h5 class="mt-3">Response</h5>
+                            <div>
+                                <p>Status: <span style="color: green;"><strong><%= endpoint.response.status %></strong></span></p>
+                            </div>
+
+                            <div class="mt-3">
+                                <% if (typeof endpoint.response.body === 'object' && endpoint.response.body !== null) { %>
+                                    <h6>Response body contains <%= endpoint.response.description.toLowerCase() %></h6>
+                                    <pre class="pre-style">
+                                        <code class="text-dark">
+                                            <p><%= JSON.stringify(endpoint.response.body, null, 4);%></p>
+                                        </code>
+                                    </pre>
+                                <% } else { %>
+                                    <p class="text-danger">No response body.</p>
+                                <% } %>
+                                <p><a class="btn btn-success" href="#top">Back to top</a></p>
+                            </div>
+
+                        </article>
+                        <% }); %>
+                    </section>
+                    <% } %>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>
