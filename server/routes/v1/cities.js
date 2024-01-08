@@ -86,4 +86,25 @@ router.get("/:id/zones", async (req, res, next) => {
     }
 });
 
+/**
+ * @description Route for getting all charge stations and
+ * park zones by city. It also returns how many and which bikes
+ * are located at each station and zone.
+ *
+ * @param {express.Request} req Request object
+ * @param {express.Response} res Response object
+ * @param {express.NextFunction} next Next function
+ *
+ * @returns {void}
+ */
+router.get("/zones/stations/bikes", async (req, res, next) => {
+    try {
+        const allZones = await cityModel.chargeParkZones();
+
+        res.status(200).json(allZones);
+    } catch (error) {
+        next(error);
+    }
+});
+
 export default router;
