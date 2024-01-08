@@ -12,9 +12,9 @@ const router = express.Router();
  *
  * @returns {void}
  */
-router.get("/", async (req, res, next) => {
+router.post("/", async (req, res, next) => {
     try {
-        const userId = req.body.userId;
+        const userId = req.body.user_id;
         const userData = await cardModel.userDetails(userId);
 
         res.status(200).json(userData);
@@ -34,7 +34,7 @@ router.get("/", async (req, res, next) => {
  */
 router.put("/", async (req, res, next) => {
     try {
-        const userId = req.body.userId;
+        const userId = req.body.user_id;
         const cardNr = req.body.card_nr;
         const cardType = req.body.card_type;
 
