@@ -1,3 +1,5 @@
+/* global it describe after before */
+
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';
@@ -5,6 +7,8 @@ import app from '../../../app.js';
 import cardModel from '../../../src/models/card.js';
 import { users } from '../../dummy-data/users.js';
 import jwt from 'jsonwebtoken';
+
+const apiKey = "79318b63f8638fe9b648b687cad142d8";
 
 const jwtSecret = process.env.JWT_SECRET;
 // ok token
@@ -41,7 +45,7 @@ describe('/v1/user/card routes', () => {
         const res = await chai.request(app)
             .post('/v1/user/card')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .send({userId: 4});
 
         expect(res).to.have.status(200);
@@ -56,7 +60,7 @@ describe('/v1/user/card routes', () => {
         const res = await chai.request(app)
             .post('/v1/user/card')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .send({userId: 4});
 
         expect(res).to.have.status(500);
@@ -78,7 +82,7 @@ describe('/v1/user/card routes', () => {
         const res = await chai.request(app)
             .put('/v1/user/card')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .send({userId: 4, card_nr: 1234, card_type: "mastercard"});
 
         expect(res).to.have.status(200);
@@ -93,7 +97,7 @@ describe('/v1/user/card routes', () => {
         const res = await chai.request(app)
             .put('/v1/user/card')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .send({userId: 4, card_nr: 1234, card_type: "mastercard"});
 
         expect(res).to.have.status(500);

@@ -1,0 +1,36 @@
+name: Run linters and prettier
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  linters_prettier:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+        
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - run: |
+        cd server
+        npm install
+
+    - run: |
+        cd server
+        npm run lint
+
+    - run: |
+        cd server
+        npm run format

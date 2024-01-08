@@ -1,3 +1,5 @@
+/* global it describe after before */
+
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';
@@ -9,6 +11,8 @@ import jwt from 'jsonwebtoken';
 
 const { expect } = chai;
 chai.use(chaiHttp);
+
+const apiKey = "d22728e26ed8a9479e911829e9784108";
 
 const jwtSecret = process.env.JWT_SECRET;
 const payload = {
@@ -54,7 +58,7 @@ describe('/v1/admin/bikes routes', () => {
         const res = await chai.request(app)
             .put('/v1/admin/bikes/1/activate')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(200);
         expect(res.body).to.deep.equal(fakeBikeData);
@@ -69,7 +73,7 @@ describe('/v1/admin/bikes routes', () => {
         const res = await chai.request(app)
             .put('/v1/admin/bikes/2/activate')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -87,7 +91,7 @@ describe('/v1/admin/bikes routes', () => {
         const res = await chai.request(app)
             .put('/v1/admin/bikes/1/deactivate')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(200);
         expect(res.body).to.deep.equal(fakeBikeData);
@@ -102,7 +106,7 @@ describe('/v1/admin/bikes routes', () => {
         const res = await chai.request(app)
             .put('/v1/admin/bikes/2/deactivate')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -120,7 +124,7 @@ describe('/v1/admin/bikes routes', () => {
         const res = await chai.request(app)
             .put('/v1/admin/bikes/1/status/1')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(200);
         expect(res.body).to.deep.equal(fakeBikeData);
@@ -135,7 +139,7 @@ describe('/v1/admin/bikes routes', () => {
         const res = await chai.request(app)
             .put('/v1/admin/bikes/1/status/2')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -153,7 +157,7 @@ describe('/v1/admin/bikes routes', () => {
         const res = await chai.request(app)
             .put('/v1/admin/bikes/1/change/city')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .send({ city_id: 3 });
 
         expect(res).to.have.status(200);
@@ -168,7 +172,7 @@ describe('/v1/admin/bikes routes', () => {
         const res = await chai.request(app)
             .put('/v1/admin/bikes/1/change/city')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .send({ city_id: 3 });
 
         expect(res).to.have.status(500);

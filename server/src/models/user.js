@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { db } from "./db.js";
+// eslint-disable-next-line no-unused-vars
 import express from "express";
 
 const jwtSecret = String(process.env.JWT_SECRET);

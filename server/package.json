@@ -8,7 +8,7 @@
         "start": "nodemon server.js",
         "lint": "eslint --fix --ignore-path .eslintignore --ext .js .",
         "format": "prettier --write ./",
-        "test": "cross-env NODE_ENV=test c8 mocha --config mocha.json --all --exit"
+        "test": "cross-env NODE_ENV=test c8 --clean --reporter=html --reporter=text --reporter=clover mocha --config mocha.json --exit"
     },
     "keywords": [],
     "author": "Julia Lind & Martin Fooladi",
@@ -39,7 +39,9 @@
         "sinon": "^17.0.1"
     },
     "nodemonConfig": {
-        "watch": ["*.*"],
+        "watch": [
+            "*.*"
+        ],
         "ext": "js,mjs,cjs,json,ejs"
     }
 }

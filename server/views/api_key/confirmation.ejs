@@ -9,15 +9,18 @@
 </head>
 <body>
 
-    <p>Requested API-key:
-        <strong>
-            <span id="api_key"><%= api_key %></span>
-        </strong>
-    </p>
+    <div class="container mt-5 bg-light p-3">
+        <h2>Confirmation</h2>
+        <p>Requested API-key:
+            <strong>
+                <span id="api_key"><%= api_key %></span>
+            </strong>
+        </p>
 
-    <p>Store the API-key somewhere safe.</p>
+        <p class="text-danger">Store the API-key somewhere safe.</p>
 
-    <p><a href="/v1/docs">API documentation</a></p>
+        <p><a class="btn btn-secondary" href="/v1/docs">Back to API documentation</a></p>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>

@@ -1,6 +1,5 @@
+// eslint-disable-next-line no-unused-vars
 import express from "express";
-
-const CACHE_LIFETIME = 30 * 1000; // 30 seconds in milliseconds
 
 /**
  * Manages client and bike connections with caching.

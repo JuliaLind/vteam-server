@@ -1,6 +1,7 @@
+/* global it describe afterEach beforeEach */
+
 import clientManager from "../src/utils/clientManager.js";
 import sinon from "sinon";
-import mocha from "mocha";
 import chai from "chai";
 const expect = chai.expect;
 

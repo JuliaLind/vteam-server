@@ -4,52 +4,57 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';
 import app from '../../../app.js';
-import clientManager from '../../../src/utils/clientManager.js';
+import userModel from "../../../src/models/user.js";
+import { users } from '../../dummy-data/users.js';
 import jwt from 'jsonwebtoken';
 
-const apiKey = "d22728e26ed8a9479e911829e9784108";
+const apiKey = "79318b63f8638fe9b648b687cad142d8";
 
 const jwtSecret = process.env.JWT_SECRET;
-const payload = {
-    id: 1,
-    role: "admin"
-};
-
 // ok token
+// console.log(users[0].id)
+const payload = {
+    id: users[0].id,
+    email: users[0].email
+}
 const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: '24h' });
 
 const { expect } = chai;
 chai.use(chaiHttp);
 
-describe('/v1/admin/simulate route', () => {
-    let broadcastStub;
+describe('/v1/user/balance route', () => {
+    let userSearchStub;
 
     before(() => {
-        broadcastStub = sinon.stub(clientManager, 'broadcastToBikes');
+        userSearchStub = sinon.stub(userModel, 'search');
     });
 
     after(() => {
-        broadcastStub.restore();
+        sinon.restore();
     });
 
-    it('should activate a bike and return the bike data', async () => {
+    it('should get user balance', async () => {
+        const balanceData = {
+            balance: 261.93
+        };
+        userSearchStub.withArgs(4).resolves(balanceData);
+
         const res = await chai.request(app)
-            .get('/v1/admin/simulate')
+            .post('/v1/user/balance')
             .set('x-access-token', jwtToken)
             .set('x-api-key', apiKey);
 
-        expect(res).to.have.status(204);
-        expect(broadcastStub.calledWith(-1, { instruction_all: 'run_simulation' })).to.be.true;
+        expect(res).to.have.status(200);
+        expect(res.body).to.deep.equal(balanceData);
+        expect(userSearchStub.calledOnce).to.be.true;
     });
 
-    it('should handle errors when trying to activate', async () => {
+    it('should handle errors when trying to get user balance', async () => {
         const fakeError = new Error('Fake error');
-        broadcastStub.withArgs(-1, { instruction_all: 'run_simulation' }).callsFake(() => {
-            throw fakeError;
-        });
+        userSearchStub.withArgs(4).rejects(fakeError);
 
         const res = await chai.request(app)
-            .get('/v1/admin/simulate')
+            .post('/v1/user/balance')
             .set('x-access-token', jwtToken)
             .set('x-api-key', apiKey);
 

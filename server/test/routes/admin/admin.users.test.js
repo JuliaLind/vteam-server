@@ -1,3 +1,5 @@
+/* global it describe */
+
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';
@@ -6,6 +8,8 @@ import userModel from '../../../src/models/user.js';
 import paymentModel from '../../../src/models/payment.js';
 import { afterEach, beforeEach } from 'mocha';
 import jwt from 'jsonwebtoken';
+
+const apiKey = "d22728e26ed8a9479e911829e9784108";
 
 const jwtSecret = process.env.JWT_SECRET;
 const payload = {
@@ -44,7 +48,7 @@ describe('/v1/admin/users routes', () => {
         const res = await chai.request(app)
             .get('/v1/admin/users')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(200);
         expect(allUsersStub.calledOnce).to.be.true;
@@ -58,7 +62,7 @@ describe('/v1/admin/users routes', () => {
         const res = await chai.request(app)
             .get('/v1/admin/users')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -73,7 +77,7 @@ describe('/v1/admin/users routes', () => {
         const res = await chai.request(app)
             .get('/v1/admin/users/limit/1/offset/1')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(200);
         expect(allUsersPagStub.calledOnce).to.be.true;
@@ -87,7 +91,7 @@ describe('/v1/admin/users routes', () => {
         const res = await chai.request(app)
             .get('/v1/admin/users/limit/1/offset/1')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -104,7 +108,7 @@ describe('/v1/admin/users routes', () => {
         const res = await chai.request(app)
             .get('/v1/admin/users/search/1')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(200);
         expect(userSearchStub.calledOnce).to.be.true;
@@ -118,7 +122,7 @@ describe('/v1/admin/users routes', () => {
         const res = await chai.request(app)
             .get('/v1/admin/users/search/1')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -135,7 +139,7 @@ describe('/v1/admin/users routes', () => {
         const res = await chai.request(app)
             .get('/v1/admin/users/1')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(200);
         expect(userSearchStub.calledWith(1)).to.be.true;
@@ -147,7 +151,7 @@ describe('/v1/admin/users routes', () => {
         const res = await chai.request(app)
             .put('/v1/admin/users/invoice')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(200);
         expect(userInvoiceStub.calledOnce).to.be.true;
@@ -161,7 +165,7 @@ describe('/v1/admin/users routes', () => {
         const res = await chai.request(app)
             .put('/v1/admin/users/invoice')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -179,7 +183,7 @@ describe('/v1/admin/users routes', () => {
             .put('/v1/admin/users/1/status')
             .send({active: true})
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(200);
         expect(updateStatusStub.calledOnce).to.be.true;
@@ -193,7 +197,7 @@ describe('/v1/admin/users routes', () => {
         const res = await chai.request(app)
             .put('/v1/admin/users/1/status')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .send({active: true});
 
         expect(res).to.have.status(500);
@@ -211,7 +215,7 @@ describe('/v1/admin/users routes', () => {
         const res = await chai.request(app)
             .put('/v1/admin/users/1/email')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .send({email: "john@example.com"});
 
         expect(res).to.have.status(200);
@@ -226,7 +230,7 @@ describe('/v1/admin/users routes', () => {
         const res = await chai.request(app)
             .put('/v1/admin/users/1/email')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .send({email: "john@example.com"});
 
         expect(res).to.have.status(500);
@@ -254,7 +258,7 @@ describe('/v1/admin/users/:id - getting one user', () => {
         chai.request(app)
             .get('/v1/admin/users/1')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .end((err, res) => {
                 expect(userSearchStub).to.throw(err);
                 expect(res).to.have.status(500);
