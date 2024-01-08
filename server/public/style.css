@@ -1,0 +1,31 @@
+.sidebar {
+    height: 100vh;
+    position: fixed;
+    width: 400px;
+    overflow-y: auto;
+    z-index: 1000
+}
+
+.sidebar .nav-link[data-toggle="collapse"] {
+    background-color: #333a40;
+    color: white;
+}
+
+.sidebar-sticky {
+
+    top: 0;
+}
+
+body {
+    padding-top: 0;
+}
+
+.content {
+    margin-left: 400px; 
+}
+
+.pre-style {
+    background-color: #f8f9fa;
+    border: solid 1px #dee2e6;
+    padding-left: 1rem;
+}

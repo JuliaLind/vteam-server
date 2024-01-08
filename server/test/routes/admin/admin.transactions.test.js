@@ -41,6 +41,7 @@ describe('/v1/admin/transactions routes', () => {
         const res = await chai.request(app)
             .post('/v1/admin/transactions')
             .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .send({user_id: 1});
 
         expect(res).to.have.status(200);
@@ -55,6 +56,7 @@ describe('/v1/admin/transactions routes', () => {
         const res = await chai.request(app)
             .post('/v1/admin/transactions')
             .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .send({ user_id: 1 });
 
         expect(res).to.have.status(500);
@@ -70,6 +72,7 @@ describe('/v1/admin/transactions routes', () => {
         const res = await chai.request(app)
             .post('/v1/admin/transactions/limit/1/offset/1')
             .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .send({user_id: 1});
 
         expect(res).to.have.status(200);
@@ -84,6 +87,7 @@ describe('/v1/admin/transactions routes', () => {
         const res = await chai.request(app)
             .post('/v1/admin/transactions/limit/1/offset/1')
             .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .send({ user_id: 1 });
 
         expect(res).to.have.status(500);
@@ -98,7 +102,8 @@ describe('/v1/admin/transactions routes', () => {
     it('should get all transactions', async () => {
         const res = await chai.request(app)
             .get('/v1/admin/transactions/all')
-            .set('x-access-token', jwtToken);
+            .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
 
         expect(res).to.have.status(200);
         expect(allPaymentsStub.calledOnce).to.be.true;
@@ -111,7 +116,8 @@ describe('/v1/admin/transactions routes', () => {
 
         const res = await chai.request(app)
             .get('/v1/admin/transactions/all')
-            .set('x-access-token', jwtToken);
+            .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -125,7 +131,8 @@ describe('/v1/admin/transactions routes', () => {
     it('should get all transactions paginated', async () => {
         const res = await chai.request(app)
             .get('/v1/admin/transactions/all/limit/1/offset/1')
-            .set('x-access-token', jwtToken);
+            .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
 
         expect(res).to.have.status(200);
         expect(allPaymentsPagStub.calledOnce).to.be.true;
@@ -138,7 +145,8 @@ describe('/v1/admin/transactions routes', () => {
 
         const res = await chai.request(app)
             .get('/v1/admin/transactions/all/limit/1/offset/1')
-            .set('x-access-token', jwtToken);
+            .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({

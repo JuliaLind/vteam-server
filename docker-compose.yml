@@ -60,6 +60,8 @@ services:
       - ./server/routes/:/server/routes/
       - ./server/test/:/server/test/
       - ./server/src/:/server/src/
+      - ./server/views/:/server/views/
+      - ./server/public/:/server/public/
       - ./server/.eslintignore:/server/.eslintignore
       - ./server/.eslintrc.json:/server/.eslintrc.json
       - ./server/.prettierignore:/server/.prettierignore

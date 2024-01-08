@@ -49,6 +49,7 @@ describe('/v1/bikes routes', () => {
         chai.request(app)
             .get('/v1/bikes/instructions')
             .set('bike_id', "1")
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(200);
@@ -65,6 +66,7 @@ describe('/v1/bikes routes', () => {
     it('should get all bike statuses', (done) => {
         chai.request(app)
             .get('/v1/bikes/status')
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(200);
@@ -77,7 +79,9 @@ describe('/v1/bikes routes', () => {
         const fakeError = new Error('Fake error');
         statusStub.withArgs().rejects(fakeError);
 
-        const res = await chai.request(app).get('/v1/bikes/status');
+        const res = await chai.request(app)
+        .get('/v1/bikes/status')
+        .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -91,6 +95,7 @@ describe('/v1/bikes routes', () => {
     it('should get all bikes', (done) => {
         chai.request(app)
             .get('/v1/bikes')
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(200);
@@ -103,7 +108,9 @@ describe('/v1/bikes routes', () => {
         const fakeError = new Error('Fake error');
         getAllBikesStub.withArgs().rejects(fakeError);
 
-        const res = await chai.request(app).get('/v1/bikes');
+        const res = await chai.request(app)
+        .get('/v1/bikes')
+        .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -117,6 +124,7 @@ describe('/v1/bikes routes', () => {
     it('should get one bike', (done) => {
         chai.request(app)
             .get('/v1/bikes/1')
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(200);
@@ -129,7 +137,9 @@ describe('/v1/bikes routes', () => {
         const fakeError = new Error('Fake error');
         getOneBikeStub.withArgs(1).rejects(fakeError);
 
-        const res = await chai.request(app).get('/v1/bikes/1');
+        const res = await chai.request(app)
+        .get('/v1/bikes/1')
+        .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -165,6 +175,7 @@ describe('/v1/bikes routes', () => {
     it('should get all zones for a bike', (done) => {
         chai.request(app)
             .get('/v1/bikes/1/zones')
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(200);
@@ -177,7 +188,9 @@ describe('/v1/bikes routes', () => {
         const fakeError = new Error('Fake error');
         getBikeZonesStub.withArgs(1).rejects(fakeError);
 
-        const res = await chai.request(app).get('/v1/bikes/1/zones');
+        const res = await chai.request(app)
+        .get('/v1/bikes/1/zones')
+        .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -207,6 +220,7 @@ describe('/v1/bikes test error handling', () => {
         chai.request(app)
             .get('/v1/bikes/instructions')
             .set('bike_id', "1")
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .end((err, res) => {
                 expect(addBikeStub).to.throw(err);
                 expect(res).to.have.status(500);
@@ -278,6 +292,7 @@ describe('/v1/bikes test error handling', () => {
         chai.request(app)
             .get('/v1/bikes/instructions')
             .set('bike_id', "[]")
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .end((err, res) => {
                 expect(res).to.have.status(400);
                 done();

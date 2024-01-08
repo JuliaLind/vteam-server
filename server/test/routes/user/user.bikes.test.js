@@ -41,7 +41,8 @@ describe('/v1/user/bikes routes', () => {
         const res = await chai.request(app)
             .post('/v1/user/bikes/rent/1')
             .set('x-access-token', jwtToken)
-            .send({userId: 4});
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .send({user_id: 4});
         
         // console.log(res);
 
@@ -61,7 +62,8 @@ describe('/v1/user/bikes routes', () => {
         const res = await chai.request(app)
             .post('/v1/user/bikes/rent/1')
             .set('x-access-token', jwtToken)
-            .send({userId: 4});
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .send({user_id: 4});
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -79,7 +81,8 @@ describe('/v1/user/bikes routes', () => {
         const res = await chai.request(app)
             .put('/v1/user/bikes/return/1')
             .set('x-access-token', jwtToken)
-            .send({userId: 4});
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .send({user_id: 4});
 
         expect(res).to.have.status(200);
         expect(endTripStub.calledOnce).to.be.true;
@@ -97,7 +100,8 @@ describe('/v1/user/bikes routes', () => {
         const res = await chai.request(app)
         .put('/v1/user/bikes/return/1')
         .set('x-access-token', jwtToken)
-        .send({userId: 4});
+        .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+        .send({user_id: 4});
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({

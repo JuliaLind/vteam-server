@@ -12,7 +12,7 @@ const router = express.Router();
  *
  * @returns {void}
  */
-router.get("/", async (req, res, next) => {
+router.post("/", async (req, res, next) => {
     try {
         const userId = req.body.user_id;
         const userData = await cardModel.userDetails(userId);

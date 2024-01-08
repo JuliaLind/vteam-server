@@ -37,7 +37,8 @@ describe('/v1/user/cities routes', () => {
 
         const res = await chai.request(app)
             .get('/v1/user/cities/1/bikes')
-            .set('x-access-token', jwtToken);
+            .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
 
         expect(res).to.have.status(200);
         expect(res.body).to.deep.equal(fakeBikeData);
@@ -50,7 +51,8 @@ describe('/v1/user/cities routes', () => {
 
         const res = await chai.request(app)
         .get('/v1/user/cities/1/bikes')
-        .set('x-access-token', jwtToken);
+        .set('x-access-token', jwtToken)
+        .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
