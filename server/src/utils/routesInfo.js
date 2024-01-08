@@ -624,6 +624,26 @@ const routesInfo = {
     ],
     user: [
         {
+            endpoint: "/balance",
+            method: "POST",
+            description: "Get user's balance",
+            request: {
+                headers: {
+                    "x-access-token": "User JWT Token",
+                    "x-api-key": "API Key",
+                },
+                params: {},
+                body: {}
+            },
+            response: {
+                status: 200,
+                description: "User balance",
+                body: {
+                    balance: 500
+                }
+            }
+        },
+        {
             endpoint: "/bikes/rent/:bikeId",
             method: "POST",
             description: "Rent a bike",
@@ -635,9 +655,7 @@ const routesInfo = {
                 params: {
                     bikeId: "Bike ID"
                 },
-                body: {
-                    user_id: "User ID"
-                }
+                body: {}
             },
             response: {
                 status: 200,
@@ -659,9 +677,7 @@ const routesInfo = {
                 params: {
                     bikeId: "Trip ID"
                 },
-                body: {
-                    user_id: "User ID"
-                }
+                body: {}
             },
             response: {
                 status: 200,
@@ -681,9 +697,7 @@ const routesInfo = {
                     "x-api-key": "API Key",
                 },
                 params: {},
-                body: {
-                    user_id: "User ID"
-                }
+                body: {}
             },
             response: {
                 status: 200,
@@ -706,7 +720,6 @@ const routesInfo = {
                 },
                 params: {},
                 body: {
-                    user_id: "User ID",
                     card_nr: "2222 3333 4444 5555",
                     card_type: 1,
                 }
@@ -765,8 +778,7 @@ const routesInfo = {
                 },
                 params: {},
                 body: {
-                    amount: "Amount to add.",
-                    user_id: "User ID"
+                    amount: "Amount to add."
                 }
             },
             response: {
@@ -792,9 +804,7 @@ const routesInfo = {
                     "x-api-key": "API Key",
                 },
                 params: {},
-                body: {
-                    user_id: "User ID"
-                }
+                body: {}
             },
             response: {
                 status: 200,
@@ -823,9 +833,7 @@ const routesInfo = {
                     limit: "Number of transactions.",
                     offset: "Starting point in data set."
                 },
-                body: {
-                    user_id: "User ID"
-                }
+                body: {}
             },
             response: {
                 status: 200,
@@ -851,9 +859,7 @@ const routesInfo = {
                     "x-api-key": "API Key",
                 },
                 params: {},
-                body: {
-                    user_id: "User ID"
-                }
+                body: {}
             },
             response: {
                 status: 200,
@@ -894,9 +900,7 @@ const routesInfo = {
                     limit: "Number of trips.",
                     offset: "Starting point in data set."
                 },
-                body: {
-                    user_id: "User ID"
-                }
+                body: {}
             },
             response: {
                 status: 200,
@@ -1823,6 +1827,72 @@ const routesInfo = {
                         },
                         "speed_limit": 0
                     },
+                ]
+            }
+        },
+        {
+            endpoint: "/zones/stations/bikes",
+            method: "GET",
+            description: "Get stations and zones with bikes located at each",
+            request: {
+                headers: {
+                    "x-api-key": "API Key",
+                },
+                params: {},
+                body: {}
+            },
+            response: {
+                status: 200,
+                description: "Array of stations and zones.",
+                body: [
+                    {
+                        "id": 13,
+                        "zone_id": 1,
+                        "descr": "parking",
+                        "city_id": "STHLM",
+                        "geometry": {
+                            "coordinates": [
+                                [
+                                    [
+                                        18.025058911360304,
+                                        59.3447479215063
+                                    ],
+                                    [
+                                        18.02523542903245,
+                                        59.3443802727858
+                                    ],
+                                    [
+                                        18.025683384254364,
+                                        59.3444719730814
+                                    ],
+                                    [
+                                        18.025287884755357,
+                                        59.3447852805283
+                                    ],
+                                    [
+                                        18.025058911360304,
+                                        59.3447479215063
+                                    ]
+                                ]
+                            ],
+                            "type": "Polygon"
+                        },
+                        "bikes": [
+                            {
+                                "id": 2,
+                                "city_id": "STHLM",
+                                "status_id": 1,
+                                "status_descr": "available",
+                                "charge_perc": 1,
+                                "coords": [
+                                    18.02549,
+                                    59.34452
+                                ],
+                                "active": true
+                            }
+                        ],
+                        "bikeCount": 1
+                    }
                 ]
             }
         },
