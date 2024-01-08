@@ -35,8 +35,8 @@ router.get('/api_key', (req, res, next) => {
     res.render("api_key/form", {
         title: "Request API Key",
         api_key_url: "/v1/docs/api_key/confirmation",
-        message: "",
-        email: ""
+        email: req.query.email,
+        error: req.query.error
     });
 });
 
@@ -50,28 +50,27 @@ router.get('/api_key', (req, res, next) => {
  * @returns {void}
  */
 router.post('/api_key/confirmation', async (req, res, next) => {
-    if (req.body.gdpr && req.body.gdpr == "gdpr") {
-        try {
-            const email = req.body.email;
-            const apiKey = await apiKeyModel.newThirdParty(email);
+    const email = req.body.email;
 
-            res.render("api_key/confirmation", {
-                title: "API key confirmation",
-                api_key: apiKey
-            });
-        } catch (error) {
-            next(error);
-        }
+    if (req.body.gdpr === undefined || req.body.gdpr !== "gdpr") {
+        res.redirect(
+            `/v1/docs/api_key?error=${encodeURIComponent('You must approve terms and conditions.')}&email=${email}`
+        );
     }
 
-    let data = {
-        title: "Request API Key",
-        api_key_url: "/v1/docs/api_key/confirmation",
-        message: "Approve the terms and conditions.",
-        email: req.body.email
-    };
+    try {
+        const apiKey = await apiKeyModel.newThirdParty(email);
 
-    res.render("api_key/form", data);
+        res.render("api_key/confirmation", {
+            title: "API key confirmation",
+            api_key: apiKey.key
+        });
+    } catch (error) {
+        res.redirect(error.sqlMessage.includes("already registered")
+            ? `/v1/docs/api_key?error=${encodeURIComponent('Can not register email. Try another one.')}`
+            : "back"
+        );
+    }
 });
 
 export default router;
