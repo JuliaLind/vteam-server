@@ -4,6 +4,8 @@ import sinon from 'sinon';
 import app from '../../app.js';
 import cityModel from '../../src/models/city.js';
 
+const apiKey = "d22728e26ed8a9479e911829e9784108";
+
 const { expect } = chai;
 chai.use(chaiHttp);
 
@@ -26,7 +28,7 @@ describe('/v1/zones route', () => {
 
         const res = await chai.request(app)
             .get('/v1/zones')
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(200);
         expect(res.body).to.deep.equal(fakeBikeData);
@@ -39,7 +41,7 @@ describe('/v1/zones route', () => {
 
         const res = await chai.request(app)
             .get('/v1/zones')
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({

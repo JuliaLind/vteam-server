@@ -6,6 +6,8 @@ import bikeModel from '../../../src/models/bike.js';
 import { users } from '../../dummy-data/users.js';
 import jwt from 'jsonwebtoken';
 
+const apiKey = "5ec80c034a778b80c91c0fc02f020fa2";
+
 const jwtSecret = process.env.JWT_SECRET;
 // ok token
 // console.log(users[0].id)
@@ -38,7 +40,7 @@ describe('/v1/user/cities routes', () => {
         const res = await chai.request(app)
             .get('/v1/user/cities/1/bikes')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(200);
         expect(res.body).to.deep.equal(fakeBikeData);
@@ -52,7 +54,7 @@ describe('/v1/user/cities routes', () => {
         const res = await chai.request(app)
         .get('/v1/user/cities/1/bikes')
         .set('x-access-token', jwtToken)
-        .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+        .set('x-api-key', apiKey);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({

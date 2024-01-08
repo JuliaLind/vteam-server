@@ -7,6 +7,8 @@ import clientManager from '../../../src/utils/clientManager.js';
 import { users } from '../../dummy-data/users.js';
 import jwt from 'jsonwebtoken';
 
+const apiKey = "5ec80c034a778b80c91c0fc02f020fa2";
+
 const jwtSecret = process.env.JWT_SECRET;
 // ok token
 // console.log(users[0].id)
@@ -41,7 +43,7 @@ describe('/v1/user/bikes routes', () => {
         const res = await chai.request(app)
             .post('/v1/user/bikes/rent/1')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .send({user_id: 4});
         
         // console.log(res);
@@ -62,7 +64,7 @@ describe('/v1/user/bikes routes', () => {
         const res = await chai.request(app)
             .post('/v1/user/bikes/rent/1')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .send({user_id: 4});
 
         expect(res).to.have.status(500);
@@ -81,7 +83,7 @@ describe('/v1/user/bikes routes', () => {
         const res = await chai.request(app)
             .put('/v1/user/bikes/return/1')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .send({user_id: 4});
 
         expect(res).to.have.status(200);
@@ -100,7 +102,7 @@ describe('/v1/user/bikes routes', () => {
         const res = await chai.request(app)
         .put('/v1/user/bikes/return/1')
         .set('x-access-token', jwtToken)
-        .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+        .set('x-api-key', apiKey)
         .send({user_id: 4});
 
         expect(res).to.have.status(500);

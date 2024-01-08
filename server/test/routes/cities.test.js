@@ -5,6 +5,8 @@ import app from '../../app.js';
 import cityModel from '../../src/models/city.js';
 import bikeModel from '../../src/models/bike.js';
 
+const apiKey = "d22728e26ed8a9479e911829e9784108";
+
 const expect = chai.expect;
 chai.use(chaiHttp);
 
@@ -13,12 +15,14 @@ describe('/v1/cities routes', () => {
     let oneCityStub;
     let allBikesCityStub;
     let allZonesCityStub;
+    let allZonesAndBikesCityStub;
 
     before(() => {
         allCitiesStub = sinon.stub(cityModel, 'all')
         oneCityStub = sinon.stub(cityModel, 'single')
         allBikesCityStub = sinon.stub(bikeModel, 'getAllInCity')
         allZonesCityStub = sinon.stub(cityModel, 'zonesInCity')
+        allZonesAndBikesCityStub = sinon.stub(cityModel, 'chargeParkZones')
     });
 
     after(() => {
@@ -26,12 +30,13 @@ describe('/v1/cities routes', () => {
         oneCityStub.restore();
         allBikesCityStub.restore();
         allZonesCityStub.restore();
+        allZonesAndBikesCityStub.restore();
     });
 
     it('should get all cities', (done) => {
         chai.request(app)
             .get('/v1/cities')
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(200);
@@ -46,7 +51,7 @@ describe('/v1/cities routes', () => {
 
         const res = await chai.request(app)
             .get('/v1/cities')
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -60,7 +65,7 @@ describe('/v1/cities routes', () => {
     it('should get one city', (done) => {
         chai.request(app)
             .get('/v1/cities/1')
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(200);
@@ -75,7 +80,7 @@ describe('/v1/cities routes', () => {
 
         const res = await chai.request(app)
             .get('/v1/cities/1')
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -89,7 +94,7 @@ describe('/v1/cities routes', () => {
     it('should get all bikes of one city', (done) => {
         chai.request(app)
             .get('/v1/cities/1/bikes')
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(200);
@@ -104,7 +109,7 @@ describe('/v1/cities routes', () => {
 
         const res = await chai.request(app)
             .get('/v1/cities/1/bikes')
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
@@ -118,7 +123,7 @@ describe('/v1/cities routes', () => {
     it('should get all zones of one city', (done) => {
         chai.request(app)
             .get('/v1/cities/1/zones')
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
+            .set('x-api-key', apiKey)
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(200);
@@ -133,7 +138,36 @@ describe('/v1/cities routes', () => {
 
         const res = await chai.request(app)
             .get('/v1/cities/1/zones')
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
+
+        expect(res).to.have.status(500);
+        expect(res.body).to.deep.equal({
+            errors: {
+                code: 500,
+                message: "Fake error"
+            }
+        });
+    });
+
+    it('should get all stations and zones with bikes', (done) => {
+        chai.request(app)
+            .get('/v1/cities/zones/stations/bikes')
+            .set('x-api-key', apiKey)
+            .end((err, res) => {
+                expect(err).to.be.null;
+                expect(res).to.have.status(200);
+                expect(allZonesAndBikesCityStub.calledOnce).be.true;
+                done();
+            });
+    });
+
+    it('should handle errors when trying to get all the above', async () => {
+        const fakeError = new Error('Fake error');
+        allZonesAndBikesCityStub.withArgs().rejects(fakeError);
+
+        const res = await chai.request(app)
+            .get('/v1/cities/zones/stations/bikes')
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({

@@ -5,6 +5,8 @@ import app from '../../../app.js';
 import clientManager from '../../../src/utils/clientManager.js';
 import jwt from 'jsonwebtoken';
 
+const apiKey = "d22728e26ed8a9479e911829e9784108";
+
 const jwtSecret = process.env.JWT_SECRET;
 const payload = {
     id: 1,
@@ -32,7 +34,7 @@ describe('/v1/admin/simulate route', () => {
         const res = await chai.request(app)
             .get('/v1/admin/simulate')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(204);
         expect(broadcastStub.calledWith(-1, { instruction_all: 'run_simulation' })).to.be.true;
@@ -47,7 +49,7 @@ describe('/v1/admin/simulate route', () => {
         const res = await chai.request(app)
             .get('/v1/admin/simulate')
             .set('x-access-token', jwtToken)
-            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
+            .set('x-api-key', apiKey);
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({
