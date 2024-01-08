@@ -1,4 +1,4 @@
-DROP PROCEDURE IF EXISTS new_other_key;
+DROP PROCEDURE IF EXISTS new_third_party;
 DROP PROCEDURE IF EXISTS active_api_keys;
 DROP PROCEDURE IF EXISTS all_keys;
 
@@ -18,9 +18,20 @@ END
 ;;
 
 --
+-- "Returns" all API keys regardless of active
+-- or inactive, to be used in method for generating new unique api key
+--
+CREATE PROCEDURE all_keys()
+BEGIN
+    SELECT `key`
+    FROM api_key;
+END
+;;
+
+--
 -- inserts new key for 3rd party
 --
-CREATE PROCEDURE new_other_key(
+CREATE PROCEDURE new_third_party(
     a_email VARCHAR(200),
     a_key CHAR(32)
 )
@@ -49,15 +60,6 @@ END
 ;;
 
 
---
--- "Returns" all API keys regardless of active
--- or inactive, to be used in method for generating new unique api key
---
-CREATE PROCEDURE all_keys()
-BEGIN
-    SELECT `key`
-    FROM api_key;
-END
-;;
+
 
 DELIMITER ;

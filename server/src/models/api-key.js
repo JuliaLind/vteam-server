@@ -1,4 +1,5 @@
-import { db } from "./db.js"
+import { db } from "./db.js";
+import hat from "hat";
 
 
 const apiKey = {
@@ -44,12 +45,30 @@ const apiKey = {
      * When this method is called the checkOne method
      * will always have been called before, thus there
      * is no need to check if this.keys is empty
+     * @param {String} apiKey
      */
-    isBikeKey(apiKey) {
+    isBikeKey: function(apiKey) {
         if (this.keys[apiKey] !== "bike") {
             throw new Error(`API key '${apiKey}' does not belong to a bike client. Method not allowed`)
         }
+    },
+
+    newThirdParty: async function(email) {
+        let result = await db.queryNoArgs(`CALL all_keys();`);
+        const allKeys = result[0].map(elem => elem.key);
+
+        let newKey = hat();
+
+        while (allKeys.includes(newKey)) {
+            newKey = hat();
+        }
+
+        result = await db.queryWithArgs(`CALL new_third_party(?,?);`, [email, newKey]);
+
+
+        return result[0][0];
     }
+
 
 };
 
