@@ -38,6 +38,7 @@ describe('/v1/user/payment route', () => {
         const res = await chai.request(app)
             .post('/v1/user/payment')
             .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .send({amount: 123, userId: 4});
 
         expect(res).to.have.status(200);
@@ -52,6 +53,7 @@ describe('/v1/user/payment route', () => {
         const res = await chai.request(app)
             .post('/v1/user/payment')
             .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .send({amount: 123, userId: 4});
 
         expect(res).to.have.status(500);

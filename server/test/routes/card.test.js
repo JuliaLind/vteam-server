@@ -24,7 +24,9 @@ describe('/v1/card routes', () => {
         }];
         cardTypeStub.withArgs().resolves(fakeBikeData);
 
-        const res = await chai.request(app).get('/v1/card/types');
+        const res = await chai.request(app)
+            .get('/v1/card/types')
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
 
         expect(res).to.have.status(200);
         expect(res.body).to.deep.equal(fakeBikeData);
@@ -35,7 +37,9 @@ describe('/v1/card routes', () => {
         const fakeError = new Error('Fake error');
         cardTypeStub.withArgs().rejects(fakeError);
 
-        const res = await chai.request(app).get('/v1/card/types');
+        const res = await chai.request(app)
+            .get('/v1/card/types')
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({

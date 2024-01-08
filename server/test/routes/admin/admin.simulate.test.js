@@ -31,7 +31,8 @@ describe('/v1/admin/simulate route', () => {
     it('should activate a bike and return the bike data', async () => {
         const res = await chai.request(app)
             .get('/v1/admin/simulate')
-            .set('x-access-token', jwtToken);
+            .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
 
         expect(res).to.have.status(204);
         expect(broadcastStub.calledWith(-1, { instruction_all: 'run_simulation' })).to.be.true;
@@ -45,7 +46,8 @@ describe('/v1/admin/simulate route', () => {
 
         const res = await chai.request(app)
             .get('/v1/admin/simulate')
-            .set('x-access-token', jwtToken);
+            .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649");
 
         expect(res).to.have.status(500);
         expect(res.body).to.deep.equal({

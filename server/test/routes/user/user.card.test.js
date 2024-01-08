@@ -39,8 +39,9 @@ describe('/v1/user/card routes', () => {
         userDetailsStub.withArgs(4).resolves(fakeUserData);
 
         const res = await chai.request(app)
-            .get('/v1/user/card')
+            .post('/v1/user/card')
             .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .send({userId: 4});
 
         expect(res).to.have.status(200);
@@ -53,8 +54,9 @@ describe('/v1/user/card routes', () => {
         userDetailsStub.withArgs(4).rejects(fakeError);
 
         const res = await chai.request(app)
-            .get('/v1/user/card')
+            .post('/v1/user/card')
             .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .send({userId: 4});
 
         expect(res).to.have.status(500);
@@ -76,6 +78,7 @@ describe('/v1/user/card routes', () => {
         const res = await chai.request(app)
             .put('/v1/user/card')
             .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .send({userId: 4, card_nr: 1234, card_type: "mastercard"});
 
         expect(res).to.have.status(200);
@@ -90,6 +93,7 @@ describe('/v1/user/card routes', () => {
         const res = await chai.request(app)
             .put('/v1/user/card')
             .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .send({userId: 4, card_nr: 1234, card_type: "mastercard"});
 
         expect(res).to.have.status(500);

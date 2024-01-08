@@ -37,6 +37,7 @@ describe('/v1/admin/feed route', () => {
         chai.request(app)
             .get('/v1/admin/feed')
             .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .end((err, res) => {
                 expect(err).to.be.null;
                 expect(res).to.have.status(200);
@@ -66,6 +67,7 @@ describe('/v1/admin/feed test error handling', () => {
         chai.request(app)
             .get('/v1/admin/feed')
             .set('x-access-token', jwtToken)
+            .set('x-api-key', "28f6f3b936b1640bd81114121cfae649")
             .end((err, res) => {
                 expect(addClientStub).to.throw(err);
                 expect(res).to.have.status(500);
