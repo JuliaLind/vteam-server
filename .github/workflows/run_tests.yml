@@ -39,7 +39,7 @@ jobs:
 
     - name: Set up test database
       run: |
-        mysql --local-infile=1 -h 127.0.0.1 -u${{ secrets.DB_USER }} -p${{ secrets.DB_ROOT_PASSWORD }} < ./mariadb/docker/setup-test.sql
+        mysql --local-infile=1 -h 127.0.0.1 -u${{ secrets.DB_USER }} -p${{ secrets.DB_ROOT_PASSWORD }} < ./mariadb/setup-test.sql
 
     - name: Run tests
       env:
