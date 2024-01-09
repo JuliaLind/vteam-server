@@ -5,8 +5,8 @@ build:
   environment:
     variables:
       DB_NAME: "bikes"
-      DB_ROOT_PASSWORD: "root"
-      DB_USER: "root"
+      DB_ROOT_PASSWORD: "P@ssw0rd"
+      DB_USER: "dbadm"
       DB_SERVICE_NAME: "127.0.0.1"
       TEST_DB_NAME: "test"
       TEST_SERVICE_NAME: "127.0.0.1"
@@ -17,8 +17,7 @@ build:
       ports:
         - 3306
       env:
-        MARIADB_ROOT_PASSWORD: "root"
-        MARIADB_DATABASE: "test"
+        MARIADB_ROOT_PASSWORD: "P@ssw0rd"
 
   nodes:
     analysis:
@@ -37,7 +36,7 @@ build:
                   sleep 1
               done
 
-              mysql --local-infile -h 127.0.0.1 --protocol=TCP -u root -proot < ../mariadb/docker/setup-test-scruti.sql
+              mysql --local-infile -h 127.0.0.1 --protocol=TCP -u${DB_USER} -p${DB_ROOT_PASSWORD} < ../mariadb/docker/setup-test-scruti.sql
 
               npm run test
             coverage:
