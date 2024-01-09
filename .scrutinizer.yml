@@ -9,6 +9,7 @@ build:
             command: |
               nvm install 20.5.1
               nvm use 20.5.1
+              cd server
               npm install
               npm run test
             coverage:
