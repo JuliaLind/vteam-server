@@ -1,0 +1,8 @@
+build:
+  tests:
+    override:
+      - 
+        command: 'cd server && npm run test'
+        coverage:
+          file: 'server/coverage/clover.xml'
+          format: 'clover'
