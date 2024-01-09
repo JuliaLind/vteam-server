@@ -7,13 +7,14 @@ build:
       DB_NAME: "bikes"
       DB_ROOT_PASSWORD: "root"
       DB_USER: "root"
-      DB_SERVICE_NAME: "127.0.0.1"
+      DB_SERVICE_NAME: "mariadb"
       TEST_DB_NAME: "test"
-      TEST_SERVICE_NAME: "127.0.0.1"
+      TEST_SERVICE_NAME: "mariadb"
       JWT_SECRET: "5d9e0b327c674d279771aed90ad876165d9e0b327c674d279771aed90ad87616"
   services:
     mariadb:
       image: mariadb:10.11.6
+      # ports: 3306:3306
       env:
         MARIADB_ROOT_PASSWORD: "root"
         MARIADB_DATABASE: "test"
