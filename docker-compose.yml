@@ -52,6 +52,7 @@ services:
       TEST_DATABASE: ${TEST_DB_NAME}
       JWT_SECRET: ${JWT_SECRET}
     volumes:
+      - ./server/coverage:/server/coverage
       - ./server/package.json:/server/package.json
       - ./server/package-lock.json:/server/package-lock.json
       - ./server/mocha.json:/server/mocha.json

@@ -34,9 +34,9 @@ describe('/v1/user/balance route', () => {
     });
 
     it('should get user balance', async () => {
-        const balanceData = {
+        const balanceData = [{
             balance: 261.93
-        };
+        }];
         userSearchStub.withArgs(4).resolves(balanceData);
 
         const res = await chai.request(app)
@@ -45,7 +45,7 @@ describe('/v1/user/balance route', () => {
             .set('x-api-key', apiKey);
 
         expect(res).to.have.status(200);
-        expect(res.body).to.deep.equal(balanceData);
+        expect(res.body).to.deep.equal(balanceData[0]);
         expect(userSearchStub.calledOnce).to.be.true;
     });
 

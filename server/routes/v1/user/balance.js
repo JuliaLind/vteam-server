@@ -16,12 +16,9 @@ router.post("/", async (req, res, next) => {
     try {
         const userId = req.body.user_id;
 
-        /**
-         * @type {Object}
-         */
         const userData = await userModel.search(userId);
 
-        const userBalance = userData.balance;
+        const userBalance = userData[0].balance;
 
         res.status(200).json({
             balance: userBalance

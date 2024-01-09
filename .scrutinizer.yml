@@ -1,0 +1,44 @@
+checks:
+  javascript: true
+
+build:
+  environment:
+    variables:
+      DB_NAME: "bikes"
+      DB_PASSWORD: "root"
+      DB_USER: "root"
+      DB_SERVICE_NAME: "127.0.0.1"
+      TEST_DATABASE: "test"
+      DB_TEST_HOST: "127.0.0.1"
+      JWT_SECRET: "5d9e0b327c674d279771aed90ad876165d9e0b327c674d279771aed90ad87616"
+  services:
+    mariadb:
+      image: mariadb:10.11.6
+      ports:
+        - 3306
+      env:
+        MARIADB_ROOT_PASSWORD: "root"
+
+  nodes:
+    analysis:
+      tests:
+        stop_on_failure: true
+        override:
+          - 
+            command: |
+              nvm install 16
+              nvm use --delete-prefix v16
+              cd server
+              npm install
+
+              echo "Waiting for MariaDB..."
+              while ! mysqladmin ping -h"$DB_SERVICE_NAME" --silent; do
+                  sleep 1
+              done
+
+              mysql --local-infile -h 127.0.0.1 --protocol=TCP -u${DB_USER} -p${DB_PASSWORD} < ../mariadb/docker/setup-test-scruti.sql
+
+              npm run test
+            coverage:
+              file: 'server/coverage/clover.xml'
+              format: 'clover'

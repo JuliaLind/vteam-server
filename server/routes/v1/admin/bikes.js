@@ -19,12 +19,12 @@ router.put("/:id/activate", async (req, res, next) => {
 
         const bikeData = await bikeModel.activate(bikeId);
 
-        const data = {
-            bike_id: bikeId,
-            instruction: "unlock_bike"
-        };
+        // const data = {
+        //     bike_id: bikeId,
+        //     instruction: "unlock_bike"
+        // };
 
-        clientManager.broadcastToBikes(bikeId, data);
+        // clientManager.broadcastToBikes(bikeId, data);
 
         res.status(200).json(bikeData);
     } catch (error) {
