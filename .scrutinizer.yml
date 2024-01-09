@@ -30,7 +30,12 @@ build:
               cd server
               npm install
 
-              mysql -h $DB_SERVICE_NAME -u $DB_USER -p$DB_ROOT_PASSWORD $DB_NAME < ../mariadb/docker/setup-test.sql
+              echo "Waiting for MariaDB..."
+              while ! mysqladmin ping -h"$DB_SERVICE_NAME" --silent; do
+                  sleep 5
+              done
+
+              mysql -h $DB_SERVICE_NAME -u $DB_USER -p$DB_ROOT_PASSWORD $TEST_DB_NAME < ../mariadb/docker/setup-test.sql
 
               npm run test
             coverage:
