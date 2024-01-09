@@ -114,9 +114,6 @@ BEGIN
     DECLARE error_occurred BOOLEAN DEFAULT FALSE;
     DECLARE done BOOLEAN DEFAULT FALSE;
 
-
-    -- START TRANSACTION;
-
     -- select all users with negative balances
     -- including inactive as those too may have
     -- unpaid trips
@@ -137,9 +134,10 @@ BEGIN
         -- an error could be thrown from extract_ref
         -- function if the user has not registered a card
         INSERT INTO error_log(message) VALUES(CONCAT('Payment could not be processed for user: ', cursor_id, ', card number missing - ', SQLERRM()));
-        SET error_occurred = TRUE; -- Set the error flag
+        SET error_occurred = TRUE;
     END;
 
+    -- second handler for when all rows have been iterated through
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
     SET @count := 0;
@@ -189,7 +187,6 @@ BEGIN
     END LOOP;
     CLOSE cursor_i;
 
-    -- COMMIT;
 
     SELECT @count AS invoiced_users;
     SELECT @amount AS invoiced_amount;

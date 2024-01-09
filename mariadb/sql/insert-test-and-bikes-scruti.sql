@@ -1,7 +1,7 @@
 -- To be used from docker-container.
 --
 -- Note that only some of the tables
--- are pre-populated in the database.
+-- are pre-populated in the test database.
 -- Tables that are tested for updates
 -- are populated via js testing code
 --
