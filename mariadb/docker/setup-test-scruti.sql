@@ -3,7 +3,7 @@ CREATE DATABASE `test`;
 USE `test`;
 
 source ../mariadb/sql/ddl.sql;
-source ../mariadb/sql/insert-test-and-bikes.sql;
+source ../mariadb/sql/insert-test-and-bikes-scruti.sql;
 source ../mariadb/sql/view.sql;
 
 source ../mariadb/sql/functions.sql;
