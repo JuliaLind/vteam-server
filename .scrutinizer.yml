@@ -7,9 +7,9 @@ build:
       DB_NAME: "bikes"
       DB_ROOT_PASSWORD: "root"
       DB_USER: "root"
-      DB_SERVICE_NAME: "mariadb"
+      DB_SERVICE_NAME: "localhost"
       TEST_DB_NAME: "test"
-      TEST_SERVICE_NAME: "mariadb"
+      TEST_SERVICE_NAME: "localhost"
       JWT_SECRET: "5d9e0b327c674d279771aed90ad876165d9e0b327c674d279771aed90ad87616"
   services:
     mariadb:
