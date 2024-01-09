@@ -1,0 +1,7 @@
+{
+  "node-option": [
+    "no-warnings",
+    "experimental-specifier-resolution=node",
+    "loader=@istanbuljs/esm-loader-hook"
+  ]
+}
