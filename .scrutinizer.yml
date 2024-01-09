@@ -19,7 +19,6 @@ build:
       env:
         MARIADB_ROOT_PASSWORD: "root"
         MARIADB_DATABASE: "test"
-        MYSQLD_LOCAL_INFILE: "1"
 
   nodes:
     analysis:
@@ -37,7 +36,7 @@ build:
                   sleep 1
               done
 
-              mysql -h $DB_SERVICE_NAME -u $DB_USER -p$DB_ROOT_PASSWORD $TEST_DB_NAME < ../mariadb/docker/setup-test.sql
+              mysql --local-infile -h 127.0.0.1 --protocol=TCP -u root -proot $TEST_DB_NAME < ../mariadb/docker/setup-test.sql
 
               npm run test
             coverage:
