@@ -14,6 +14,9 @@ build:
   services:
     mariadb:
       image: mariadb:10.11.6
+      env:
+        MARIADB_ROOT_PASSWORD: "root"
+        MARIADB_DATABASE: "test"
 
   nodes:
     analysis:
