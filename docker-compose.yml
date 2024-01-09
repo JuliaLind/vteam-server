@@ -7,8 +7,9 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: bikes
     volumes:
-      - "./mariadb/:/mariadb/"
-      - "./mariadb/docker/:/docker-entrypoint-initdb.d/"
+      - "./mariadb/csv/:/mariadb/csv/"
+      - "./mariadb/sql/:/mariadb/sql/"
+      - "./mariadb/setup-bikes.sql:/docker-entrypoint-initdb.d/setup-bikes.sql"
     ports:
       - "3306:3306"
     healthcheck:
@@ -26,8 +27,9 @@ services:
       MYSQL_DATABASE: test
       MYSQLD_LOCAL_INFILE: "1"
     volumes:
-      - "./mariadb/:/mariadb/"
-      - "./mariadb/docker/:/docker-entrypoint-initdb.d/"
+      - "./mariadb/csv/:/mariadb/csv/"
+      - "./mariadb/sql/:/mariadb/sql/"
+      - "./mariadb/setup-test.sql:/docker-entrypoint-initdb.d/setup-test.sql"
     ports:
       - "3307:3306"
     healthcheck:
