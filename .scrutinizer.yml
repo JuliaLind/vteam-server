@@ -7,9 +7,9 @@ build:
       DB_NAME: "bikes"
       DB_ROOT_PASSWORD: "root"
       DB_USER: "root"
-      DB_SERVICE_NAME: "localhost"
+      DB_SERVICE_NAME: "127.0.0.1"
       TEST_DB_NAME: "test"
-      TEST_SERVICE_NAME: "localhost"
+      TEST_SERVICE_NAME: "127.0.0.1"
       JWT_SECRET: "5d9e0b327c674d279771aed90ad876165d9e0b327c674d279771aed90ad87616"
   services:
     mariadb:
@@ -37,7 +37,7 @@ build:
                   sleep 1
               done
 
-              mysql --local-infile -h localhost --protocol=TCP -u root -proot $TEST_DB_NAME < ../mariadb/docker/setup-test-scruti.sql
+              mysql --local-infile -h 127.0.0.1 --protocol=TCP -u root -proot < ../mariadb/docker/setup-test-scruti.sql
 
               npm run test
             coverage:
