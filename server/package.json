@@ -8,9 +8,7 @@
         "start": "nodemon server.js",
         "lint": "eslint --fix --ignore-path .eslintignore --ext .js .",
         "format": "prettier --write ./",
-        "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-loader=@istanbuljs/esm-loader-hook nyc --reporter=lcov --reporter=text mocha --config mocha.json --exit",
-        "test:new": "mocha --config mocha.json --exit",
-        "test:coverage": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-loader=@istanbuljs/esm-loader-hook nyc mocha --config mocha.json --exit"
+        "test": "cross-env NODE_ENV=test NODE_OPTIONS=--experimental-loader=@istanbuljs/esm-loader-hook nyc mocha --config mocha.json --exit"
     },
     "keywords": [],
     "author": "Julia Lind & Martin Fooladi",
