@@ -11,12 +11,12 @@ build:
       TEST_DB_NAME: "test"
       TEST_SERVICE_NAME: "127.0.0.1"
       JWT_SECRET: "5d9e0b327c674d279771aed90ad876165d9e0b327c674d279771aed90ad87616"
-    services:
-      mariadb:
-        image: mariadb:10.11.6
-        environment:
-          MYSQL_ROOT_PASSWORD: "root"
-          MYSQL_DATABASE: "test"
+  services:
+    mariadb:
+      image: mariadb:10.11.6
+      environment:
+        MYSQL_ROOT_PASSWORD: "root"
+        MYSQL_DATABASE: "test"
 
   nodes:
     analysis:
