@@ -36,7 +36,7 @@ build:
                   sleep 1
               done
 
-              mysql --local-infile -h 127.0.0.1 --protocol=TCP -u${DB_USER} -p${DB_ROOT_PASSWORD} < ../mariadb/docker/setup-test-scruti.sql
+              mysql --local-infile -h 127.0.0.1 --protocol=TCP -u${DB_USER} -p${DB_PASSWORD} < ../mariadb/docker/setup-test-scruti.sql
 
               npm run test
             coverage:
