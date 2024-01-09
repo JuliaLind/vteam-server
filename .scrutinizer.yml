@@ -1,12 +1,16 @@
 checks:
   javascript: true
 build:
-  environment:
-    node: v20.5.1
-  tests:
-    override:
-      - 
-        command: 'cd server && npm install && npm run test'
-        coverage:
-          file: 'server/coverage/clover.xml'
-          format: 'clover'
+  nodes:
+    analysis:
+      tests:
+        override:
+          - 
+            command: |
+              nvm install 20.5.1
+              nvm use 20.5.1
+              npm install
+              npm run test
+            coverage:
+              file: 'server/coverage/clover.xml'
+              format: 'clover'
