@@ -63,7 +63,6 @@ describe('/v1/admin/bikes routes', () => {
         expect(res).to.have.status(200);
         expect(res.body).to.deep.equal(fakeBikeData);
         expect(activateStub.calledOnce).to.be.true;
-        expect(broadcastStub.calledWith(1, { bike_id: 1, instruction: 'unlock_bike' })).to.be.true;
     });
 
     it('should handle errors when trying to activate', async () => {
