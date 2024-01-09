@@ -19,6 +19,7 @@ build:
       env:
         MARIADB_ROOT_PASSWORD: "root"
         MARIADB_DATABASE: "test"
+        MYSQLD_LOCAL_INFILE: "1"
 
   nodes:
     analysis:
