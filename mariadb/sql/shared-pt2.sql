@@ -1,6 +1,3 @@
-source ./sql/ddl.sql;
-source ./sql/insert-test-and-bikes.sql;
-source ./sql/insert-bikes.sql;
 source ./sql/view.sql;
 source ./sql/functions.sql;
 source ./sql/sp_payment.sql;
