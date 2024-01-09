@@ -99,7 +99,6 @@ IGNORE 1 LINES
 
 SHOW WARNINGS;
 
-
 LOAD DATA LOCAL INFILE './csv/speed_limit.csv'
 INTO TABLE `speed_limit`
 CHARSET utf8
