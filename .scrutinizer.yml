@@ -14,9 +14,9 @@ build:
   services:
     mariadb:
       image: mariadb:10.11.6
-      environment:
-        MYSQL_ROOT_PASSWORD: "root"
-        MYSQL_DATABASE: "test"
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "test"
 
   nodes:
     analysis:
