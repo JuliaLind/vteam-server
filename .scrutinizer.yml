@@ -40,5 +40,5 @@ build:
 
               npm run test
             coverage:
-              file: 'coverage/clover.xml'
+              file: 'server/coverage/clover.xml'
               format: 'clover'
