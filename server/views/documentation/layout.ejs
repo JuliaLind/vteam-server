@@ -69,6 +69,8 @@
                         All requests to our API require an API key.
                     </p>
                     <a class="btn btn-primary mb-4" href="/v1/docs/api_key" role="button">Get your API key</a>
+                    <p>Every request to admin endpoints must include an admin JWT Token in the headers.</p>
+                    <p>User endpoints require a user JWT Token.</p>
                     <h2 id="endpoints" class="mt-2 pt-2">Endpoints</h2>
                     <% for (const category in routesInfo) { %>
                     <section id="<%= category %>">
