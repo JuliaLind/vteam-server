@@ -3,10 +3,9 @@
 import chai from 'chai';
 chai.should();
 const expect = chai.expect;
+
 import { db } from "../src/models/db.js";
 import tripModel from "../src/models/trip.js";
-
-
 import { insertData } from './helper.js';
 let trips;
 let dataAdj;

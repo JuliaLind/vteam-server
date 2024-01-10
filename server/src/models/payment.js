@@ -42,8 +42,8 @@ const payment = {
         });
     },
     /**
-     * Returnes payments for single
-     * user in an interval, latest on first
+     * Returns payments for single
+     * user in an interval, latest one first
      * @param {Number} userId 
      * @param {Number} offset 
      * @param {Number} limit 
