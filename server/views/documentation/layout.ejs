@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html id="top" lang="en">
 <head>
     <title>API Documentation</title>
     <link rel="icon" type="image/x-icon" href="/scooter.ico">
@@ -22,16 +22,26 @@
                 <ul class="nav flex-column">
                     <% let counter = 0; %>
                     <% let counter2 = 0; %>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#api-key">
+                            <span class="text-white" style="font-size:larger">API key</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#endpoints">
+                            <span class="text-white" style="font-size:larger">Endpoints</span>
+                        </a>
+                    </li>
                     <% for (const category in routesInfo) { %>
                     <li class="nav-item">
                         <a class="nav-link" data-toggle="collapse" href="#collapse<%= counter %>" role="button" aria-expanded="false" aria-controls="collapse<%= counter %>">
-                            <span style="font-size:larger"><%= category.charAt(0).toUpperCase() + category.slice(1) %></span>
+                            <span class="ml-1" style="font-size:large"><%= category.charAt(0).toUpperCase() + category.slice(1) %></span>
                         </a>
                         <div class="collapse" id="collapse<%= counter %>">
                             <ul class="nav flex-column mb-2">
                                 <% routesInfo[category].forEach(function(endpoint) { %>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#<%= endpoint.description.toLowerCase().replace(/'/g, '').replace(/\s+/g, '-') %>">
+                                    <a class="nav-link ml-3" style="font-size:medium" href="#<%= endpoint.description.toLowerCase().replace(/'/g, '').replace(/\s+/g, '-') %>">
                                         <%= endpoint.description %>
                                     </a>
                                 </li>
@@ -49,17 +59,17 @@
             <div class="content">
                 <!-- Main content -->
                 <main class="pt-3 px-4">
-                    <h1 id="top">API Documentation</h1>
+                    <h1>API Documentation</h1>
                     <p class="mb-4">
                         Here you can find information about all available
                         endpoints and how to use them.
                     </p>
-                    <h2>API key</h2>
+                    <h2 id="api-key">API Key</h2>
                     <p>
                         All requests to our API require an API key.
                     </p>
                     <a class="btn btn-primary mb-4" href="/v1/docs/api_key" role="button">Get your API key</a>
-                    <h2 class="mt-2 pt-2">Endpoints</h2>
+                    <h2 id="endpoints" class="mt-2 pt-2">Endpoints</h2>
                     <% for (const category in routesInfo) { %>
                     <section id="<%= category %>">
                         <h4><%= category.charAt(0).toUpperCase() + category.slice(1) %></h4>
@@ -153,10 +163,10 @@
                                 <% } else { %>
                                     <p class="text-danger">No response body.</p>
                                 <% } %>
-                                <p><a class="btn btn-success" href="#top">Back to top</a></p>
                             </div>
 
                         </article>
+                        <a class="btn btn-warning back-to-top" href="#top">Back to top</a>
                         <% }); %>
                     </section>
                     <% } %>
@@ -165,6 +175,12 @@
         </div>
     </div>
 
+    <script>
+        document.querySelector('.back-to-top').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
