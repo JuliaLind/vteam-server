@@ -132,7 +132,6 @@ describe('user model', () => {
     it('tests login method, email is not in db, ok', async () => {
         const req = { body: { token: 'validToken' } };
         const res = { json: sinon.stub() };
-        // const next = sinon.spy();
         const expectedEmail = 'existing@user.com';
         const expectedPayload = {};
         const extractEmailStub = sinon.stub(userModel, 'extractEmail').returns(expectedEmail);
@@ -354,6 +353,7 @@ describe('user model', () => {
 
     it('update user status', async () => {
         let updated = await userModel.updStatus(5, true);
+
         expect(updated).to.deep.equal({
             id: 5,
             email: "bcroft7@qq.com",
@@ -469,7 +469,4 @@ describe('user model', () => {
     // Add test for:
 
     //1. get token from github
-
-
-
 });

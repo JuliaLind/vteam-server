@@ -32,22 +32,24 @@ describe('trip model part 2', () => {
         }
     })
     it('get all trips', async () => {
-        let res = await tripModel.allTrips();
+        const res = await tripModel.allTrips();
         expect(res.length).to.equal(15);
         expect(res).to.deep.equal(dataAdj);
     });
 
     it('get all trips paginated', async () => {
-        let res = await tripModel.allTripsPag(2, 5);
+        const res = await tripModel.allTripsPag(2, 5);
         expect(res.length).to.equal(5);
         expect(res).to.deep.equal(dataAdj.slice(2, 2 + 5));
-
-        res = await tripModel.allTripsPag(1, 8);
+    });
+    it('get all trips paginated another range', async () => {
+        const res = await tripModel.allTripsPag(1, 8);
         expect(res.length).to.equal(8);
         expect(res).to.deep.equal(dataAdj.slice(1, 1 + 8));
-
+    });
+    it('get all trips paginated out of range ok', async () => {
         // out of range, 15 elements total
-        res = await tripModel.allTripsPag(12, 20);
+        const res = await tripModel.allTripsPag(12, 20);
         expect(res.length).to.equal(3);
         expect(res).to.deep.equal(dataAdj.slice(12, 20));
     });
