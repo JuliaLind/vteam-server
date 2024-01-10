@@ -11,8 +11,8 @@
         <h2>Request an API key</h2>
         <p>Enter your e-mail in the form below to request an API-key.</p>
 
-        <% if (error) { %>
-            <p class="text-danger"><%= error %></p>
+        <% if (message) { %>
+            <p class="text-danger"><%= message %></p>
         <% } %>
 
         <form method="post" action="<%= api_key_url %>" class="mt-3">

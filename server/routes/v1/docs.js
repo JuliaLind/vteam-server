@@ -36,7 +36,7 @@ router.get('/api_key', (req, res, next) => {
         title: "Request API Key",
         api_key_url: "/v1/docs/api_key/confirmation",
         email: req.query.email,
-        error: req.query.error
+        message: req.query.message
     });
 });
 
@@ -55,7 +55,7 @@ router.post('/api_key/confirmation', async (req, res, next) => {
 
     if (req.body.gdpr === undefined || req.body.gdpr !== "gdpr") {
         res.redirect(
-            `/v1/docs/api_key?error=${encodeURIComponent('You must approve terms and conditions.')}&email=${email}`
+            `/v1/docs/api_key?message=${encodeURIComponent('You must approve terms and conditions.')}&email=${email}`
         );
     }
 
@@ -68,7 +68,7 @@ router.post('/api_key/confirmation', async (req, res, next) => {
         });
     } catch (error) {
         res.redirect(error.sqlMessage.includes("already registered")
-            ? `/v1/docs/api_key?error=${encodeURIComponent('Can not register email. Try another one.')}`
+            ? `/v1/docs/api_key?message=${encodeURIComponent('Can not register email. Try another one.')}`
             : "back"
         );
     }

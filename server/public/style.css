@@ -29,3 +29,10 @@ body {
     border: solid 1px #dee2e6;
     padding-left: 1rem;
 }
+
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100; /* Ensure it stays on top of other content */
+}
