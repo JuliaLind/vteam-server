@@ -8,7 +8,7 @@
 This repository is a subsystem and contains an Express.js and Node.js server, serving data from a MariaDB database with mock data and a REST API for accessing the data. It is also a submodule of the VTEAM root repository [found here](https://github.com/p0ntan/vteam-root), which is a representation of the entire system. The system holds several subsystems including the bike brain, the server and API, a frontend GUI for administrators, a frontend GUI for users and a progressive webapp for users.
 
 ## Getting started
-To be able to start the system successfully, you need to create two .env files. The .env.example files in the root of the repository and in the server directory reveal which env variables you should add to your own .env files.
+To be able to start the system successfully, you need to create a .env file. The .env.example file in the root of the repository reveals which env variables you should add to your own .env file. You can use the values too.
 
 Now you're all set.
 
