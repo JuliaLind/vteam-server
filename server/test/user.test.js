@@ -16,7 +16,6 @@ const jwtSecret = process.env.JWT_SECRET;
 
 
 describe('user model', () => {
-
     // ok token
     const payload = {
         id: users[0].id,
@@ -33,8 +32,7 @@ describe('user model', () => {
     const expiredToken = jwt.sign(expiredPayload, jwtSecret);
     beforeEach(async () => {
         const conn = await db.pool.getConnection();
-
-        let sql = `DELETE FROM user;
+        const sql = `DELETE FROM user;
         INSERT INTO user VALUES(?, ?, ?, ?),
             (?, ?, ?, ?),
             (?, ?, ?, ?),
@@ -212,22 +210,26 @@ describe('user model', () => {
             active: true,
         });
     });
-    it('user search partial email one ok', async () => {
-        let users = await userModel.search("%so4@alibaba.com");
+    it('user search partial email one wildcard at start', async () => {
+        const users = await userModel.search("%so4@alibaba.com");
         expect(users[0]).to.deep.equal({
             id: 4,
             email: "jdoniso4@alibaba.com",
             balance: 261.93,
             active: true,
         });
-        users = await userModel.search("bcroft7@qq.c%");
+    });
+    it('user search partial email one wildcard at end', async () => {
+        const users = await userModel.search("bcroft7@qq.c%");
         expect(users[0]).to.deep.equal({
             id: 5,
             email: "bcroft7@qq.com",
             balance: -372.87,
             active: false,
         });
-        users = await userModel.search("%nind@statcounter.%");
+    });
+    it('user search partial email one wildcard at end both ends', async () => {
+        const users = await userModel.search("%nind@statcounter.%");
         expect(users[0]).to.deep.equal({
             id: 6,
             email: "afolonind@statcounter.com",
@@ -236,7 +238,7 @@ describe('user model', () => {
         });
     });
     it('user search partial email many ok', async () => {
-        let users = await userModel.search("%ni%");
+        const users = await userModel.search("%ni%");
 
         expect(users).to.deep.equal([
             {
@@ -254,7 +256,8 @@ describe('user model', () => {
         ]);
     });
     it('get all users pag offset 1, limit 2', async () => {
-        const users = await userModel.allPag(1, 2)
+        const users = await userModel.allPag(1, 2);
+
         expect(users).to.deep.equal([
             {
                 id: 5,
@@ -271,7 +274,8 @@ describe('user model', () => {
         ]);
     });
     it('get all users pag offset 1, limit 5 (db contains only 4 users)', async () => {
-        const users = await userModel.allPag(1, 5)
+        const users = await userModel.allPag(1, 5);
+
         expect(users).to.deep.equal([
             {
                 id: 5,
@@ -294,7 +298,8 @@ describe('user model', () => {
         ]);
     });
     it('get all users pag offset 1, limit 3', async () => {
-        const users = await userModel.allPag(1, 3)
+        const users = await userModel.allPag(1, 3);
+
         expect(users).to.deep.equal([
             {
                 id: 5,
@@ -317,7 +322,8 @@ describe('user model', () => {
         ]);
     });
     it('get all users pag offset 2, limit 3', async () => {
-        const users = await userModel.allPag(2, 3)
+        const users = await userModel.allPag(2, 3);
+
         expect(users).to.deep.equal([
             {
                 id: 6,
@@ -334,7 +340,8 @@ describe('user model', () => {
         ]);
     });
     it('get all users pag offset 0, limit 2', async () => {
-        const users = await userModel.allPag(0, 2)
+        const users = await userModel.allPag(0, 2);
+
         expect(users).to.deep.equal([
             {
                 id: 4,
@@ -352,6 +359,7 @@ describe('user model', () => {
     });
 
     it('update user status', async () => {
+        // update to true
         let updated = await userModel.updStatus(5, true);
 
         expect(updated).to.deep.equal({
@@ -360,6 +368,8 @@ describe('user model', () => {
             balance: -372.87,
             active: true,
         });
+
+        // update same user to false 
         updated = await userModel.updStatus(5, false);
         expect(updated).to.deep.equal({
             id: 5,
@@ -371,6 +381,7 @@ describe('user model', () => {
 
     it('update user email', async () => {
         const updated = await userModel.updEmail(5, "new@email.com");
+
         expect(updated).to.deep.equal({
             id: 5,
             email: "new@email.com",
@@ -380,6 +391,7 @@ describe('user model', () => {
     });
     it('tests db method (used in login), email ok)', async () => {
         const user = await userModel.db("afolonind@statcounter.com");
+
         expect(user).to.deep.equal({
             id: 6,
             email: "afolonind@statcounter.com",
@@ -388,6 +400,7 @@ describe('user model', () => {
 
     it('tests db method (used in login), email ok but inactive)', async () => {
         let user;
+
         try {
             user = await userModel.db("bcroft7@qq.com");
             throw new Error("Expected Error (User is deactivated)");
@@ -430,6 +443,7 @@ describe('user model', () => {
         expect(updated).to.be.an.undefined;
 
         const notUpdated = await userModel.search(5);
+
         expect(notUpdated).to.deep.equal([{
             id: 5,
             email: "bcroft7@qq.com",
