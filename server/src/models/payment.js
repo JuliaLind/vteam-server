@@ -20,7 +20,6 @@ const payment = {
         const result = await db.queryNoArgs(`CALL invoice();`);
         const data = {
             ...result[0][0],
-            ...result[1][0]
         };
         data.invoiced_users = parseInt(data.invoiced_users);
         data.invoiced_amount = parseFloat(data.invoiced_amount);

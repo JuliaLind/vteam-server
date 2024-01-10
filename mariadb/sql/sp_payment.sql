@@ -165,7 +165,8 @@ BEGIN
         );
 
         -- if a payment could not be done the user's balance
-        -- should not be updated, moves on to next user
+        -- should not be updated, reset the error_occured flag
+        -- and moves on to next user
         IF error_occurred THEN
             SET error_occurred = FALSE;
             ITERATE read_loop;
@@ -187,9 +188,8 @@ BEGIN
     END LOOP;
     CLOSE cursor_i;
 
-
-    SELECT @count AS invoiced_users;
-    SELECT @amount AS invoiced_amount;
+    SELECT @count AS invoiced_users, 
+    @amount AS invoiced_amount;
 END
 ;;
 
