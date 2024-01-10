@@ -4,7 +4,9 @@ import hat from "hat";
 
 const apiKey = {
     /**
-     * An array with all active API keys
+     * Associative array with all active API
+     * keys and their respective type, for
+     * example: bike, admin, other etc
      * @type {Array<String,String>}
      */
     keys: {},
@@ -52,7 +54,13 @@ const apiKey = {
             throw new Error(`API key '${apiKey}' does not belong to a bike client. Method not allowed`)
         }
     },
-
+    /**
+     * Registers the email of third party
+     * to database with a unique api key. The
+     * key will have the client type "other"
+     * @param {String} email 
+     * @returns {Object} associative array with api key and the email
+     */
     newThirdParty: async function(email) {
         let result = await db.queryNoArgs(`CALL all_keys();`);
         const allKeys = result[0].map(elem => elem.key);
