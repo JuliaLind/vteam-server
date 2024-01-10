@@ -5,25 +5,23 @@
 [![Build Status](https://scrutinizer-ci.com/g/JuliaLind/vteam-server/badges/build.png?b=main)](https://scrutinizer-ci.com/g/JuliaLind/vteam-server/build-status/main)
 
 ## Introduction
-This repository is a subsystem and contains an Express.js and Node.js server, serving data from a MariaDB database with mock data and a REST API for accessing the data. It is also a submodule of the VTEAM root repository [found here](https://github.com/p0ntan/vteam-root), which is a representation of the entire system. The system holds several subsystems including the bike brain, the server and API, a frontend GUI for administrators, a frontend GUI for users and a progressive webapp for users.
+Welcome to our repository! This subsystem includes an Express.js and Node.js server that delivers data from a MariaDB database, enriched with mock data, and features a REST API for data access. It serves as a submodule of the VTEAM root repository, [available here](https://github.com/p0ntan/vteam-root), representing the larger ecosystem of our project. This comprehensive system encompasses various components, such as the bike brain, server and API, an administrative frontend GUI, a user-oriented frontend GUI, and a progressive web app for users.
 
 ## Prerequisites
-You need Docker and Docker Compose to be able to run the server. If you do not have Docker and Docker Compose installed, do so by visiting https://www.docker.com/products/docker-desktop/. Docker Desktop includes Docker Compose along with Docker Engine and Docker CLI which are Compose prerequisites.
+To run the server, Docker and Docker Compose are essential. If you haven't installed Docker and Docker Compose, you can obtain them from [Docker's official website](https://www.docker.com/products/docker-desktop/). Docker Desktop conveniently bundles Docker Compose, Docker Engine, and Docker CLI – all essential tools for Docker Compose.
 
-Docker is handling the dependencies like Node.js and MariaDB. The benefit of using Docker is that it eliminates the need to install these dependencies on the your local machine, as they are encapsulated within the Docker environment.
+One of Docker's key advantages is its handling of dependencies, such as Node.js and MariaDB. By using Docker, you avoid the need to install these dependencies on your machine, as they are seamlessly integrated within the Docker environment.
 
 ## Getting started
-To be able to start the system successfully, you need to create a .env file. The .env.example file in the root of the repository reveals which env variables you should add to your own .env file. You can use the values too.
+To kickstart the system, you'll need to create a .env file. Refer to the .env.example file located in the repository's root for guidance on the necessary environment variables. Feel free to use the provided example values.
 
-Now you're all set.
-
-Start the Docker daemon on your computer, navigate to the root of the repository and run the following command:
+Once you're ready, initiate the Docker daemon on your computer, then head to the repository's root directory and execute:
 
 ```./init.bash```
 
-This command starts three containers. Two mariadb containers (one of which holds a test database) and a server container. When all containers are started and the mariadb containers are marked as healthy, you will enter the server container. To test the server and the same time see the API documentation, visit ```localhost:1337/v1/docs```.
+This command launches three Docker containers: two MariaDB containers (one housing a test database) and one server container. After all containers are up and running, with the MariaDB containers marked as 'healthy,' you'll enter the server container. To evaluate the server and browse the API documentation, visit localhost:1337/v1/docs.
 
-To exit the system, just type ```exit``` whilst in the server container. This will shut down the containers and remove them from your computer.
+Exiting the system is straightforward. Simply type exit while in the server container to halt the containers and remove them from your system.
 
 ## GitHub Secrets
-If you want GitHub Actions to work properly, you need to add some variables to your GitHub secrets. Use the same variable names (and values) as in the .env file in the root of the repository.
+For optimal GitHub Actions performance, you'll need to configure some variables in your GitHub secrets. Ensure these variables mirror the names and values found in the .env file at the repository's root.
