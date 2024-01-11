@@ -10,10 +10,11 @@ import usersRouter from "./users.js";
 
 const router = express.Router();
 
+router.use("/feed", feedRouter);
+
 router.use("/", empModel.checkAdminAcc);
 
 router.use("/bikes", bikesRouter);
-router.use("/feed", feedRouter);
 router.use("/simulate", simulationRouter);
 router.use("/transactions", transactionsRouter);
 router.use("/trips", tripsRouter)
