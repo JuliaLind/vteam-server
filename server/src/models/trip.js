@@ -124,8 +124,6 @@ const trip = {
 
         return trips;
     },
-
-
 };
 
 export default trip;

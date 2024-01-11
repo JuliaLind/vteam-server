@@ -111,7 +111,7 @@ const city = {
             const extZone = {
                 ...zone,
                 bikes: bikes.filter(bike => geoPointInPolygon(bike.coords, zonePolyg))
-            }
+            };
             extZone.bikeCount = extZone.bikes.length;
             return extZone;
         });
