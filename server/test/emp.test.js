@@ -1,8 +1,5 @@
 /* global it describe before afterEach */
 
-import dotenv from "dotenv";
-dotenv.config();
-
 import chai from 'chai';
 import sinon from 'sinon';
 chai.should();

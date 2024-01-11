@@ -116,14 +116,7 @@ describe('city model part 2', () => {
         expect(bikeZones).to.deep.equal(krlstBikeData);
     });
     it("Should return all parking and charging zones", async () => {
-        let exp = zones.filter(zone => [1, 2].includes(zone.zone_id));
-        // let exp = gbgZones.map((zone) => {
-        //     return {
-        //         zone_id : zone.zone_id,
-        //         geometry: zone.geometry,
-        //         speed_limit: zone.speed_limit
-        //     }
-        // });
+        const exp = zones.filter(zone => [1, 2].includes(zone.zone_id));
 
         // actual from DB
         const res = await cityModel._chargeParkZones();
@@ -133,7 +126,7 @@ describe('city model part 2', () => {
     });
     it("Should return all active zones in the bike's city + city data", async () => {
         // limited zones in GBG
-        let gbgZones = zones.filter(zone => zone.city_id === "GBG" && zone.speed_limit !== undefined)
+        const gbgZones = zones.filter(zone => zone.city_id === "GBG" && zone.speed_limit !== undefined)
         let expZones = gbgZones.map((zone) => {
             return {
                 zone_id : zone.zone_id,
@@ -198,7 +191,7 @@ describe('city model part 2', () => {
     it("Should return city data incl empty zones array if no limited zones in the city", async () => {
 
         // bikeZones when there are no limited zones in a city
-        let bikeZones= await cityModel.bikeZones(bikes[1].id);
+        const bikeZones= await cityModel.bikeZones(bikes[1].id);
         expect(bikeZones).to.deep.equal({
             city_id: 'KRLST',
             speed_limit: 20,

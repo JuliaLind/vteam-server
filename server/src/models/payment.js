@@ -20,7 +20,6 @@ const payment = {
         const result = await db.queryNoArgs(`CALL invoice();`);
         const data = {
             ...result[0][0],
-            ...result[1][0]
         };
         data.invoiced_users = parseInt(data.invoiced_users);
         data.invoiced_amount = parseFloat(data.invoiced_amount);
@@ -43,8 +42,8 @@ const payment = {
         });
     },
     /**
-     * Returnes payments for single
-     * user in an interval, latest on first
+     * Returns payments for single
+     * user in an interval, latest one first
      * @param {Number} userId 
      * @param {Number} offset 
      * @param {Number} limit 

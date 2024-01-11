@@ -83,10 +83,11 @@ describe('api key model', () => {
         });
         // reset
         apiKeyModel.keys = {}
-        let sql = `DELETE FROM third_party WHERE email = ?;
+        const sql = `DELETE FROM third_party WHERE email = ?;
         DELETE FROM api_key WHERE \`key\` = ?;`;
         const conn = await db.pool.getConnection();
         const args = [email, res.key];
+
         await conn.query(sql, args);
         if (conn) conn.end();
     });
@@ -122,7 +123,7 @@ describe('api key model', () => {
 
     it('check if api key belongs to a bike not ok', async () => {
         const userApiKey = '5ec80c034a778b80c91c0fc02f020fa2';
-        const res = await apiKeyModel.checkOne(userApiKey)
+        const res = await apiKeyModel.checkOne(userApiKey);
 
         // check that the key itself is active
         expect(res).to.be.true;

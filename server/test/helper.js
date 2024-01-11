@@ -1,6 +1,5 @@
 import { db } from "../src/models/db.js";
 import { trips } from './dummy-data/trips.js'
-// import { payments } from './dummy-data/payments.js'
 import { zones } from './dummy-data/zones.js'
 import { usersExt } from './dummy-data/users_ext.js'
 import { bikes } from './dummy-data/bikes.js'
@@ -125,7 +124,7 @@ export const insertData = async function () {
             await conn.end();
         }
     }
-    // return [users, cards, allPaym, allBikes, allTrips];
+
     return {
         users: users,
         cards: cards,

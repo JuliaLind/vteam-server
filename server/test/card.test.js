@@ -40,21 +40,25 @@ describe('card model', () => {
         ]);
     });
     it('Get card details for a user', async () => {
-        let cardDetails = await cardModel.userDetails(users[3].id);
+        const cardDetails = await cardModel.userDetails(users[3].id);
 
         expect(cardDetails).to.deep.equal(
             cards[3]
         );
 
-        cardDetails = await cardModel.userDetails(users[2].id);
+    });
+    it('Get card details for another user', async () => {
+        const cardDetails = await cardModel.userDetails(users[2].id);
 
         expect(cardDetails).to.deep.equal(cards[2]);
-
-        cardDetails = await cardModel.userDetails(users[1].id);
+    });
+    it('Get card details for one more user', async () => {
+        const cardDetails = await cardModel.userDetails(users[1].id);
 
         expect(cardDetails).to.deep.equal(cards[1]);
-
-        cardDetails = await cardModel.userDetails(0);
+    });
+    it('Get card details for non-existing user, not ok', async () => {
+        const cardDetails = await cardModel.userDetails(0);
 
         expect(cardDetails).to.be.an('undefined');
     });

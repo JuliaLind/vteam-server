@@ -1,6 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 import mariadb from 'mariadb';
 
 let host = process.env.DB_HOST;

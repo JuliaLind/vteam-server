@@ -2,9 +2,6 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { db } from "./db.js"
 
-import dotenv from "dotenv";
-dotenv.config();
-
 // eslint-disable-next-line no-unused-vars
 import express from "express";
 
