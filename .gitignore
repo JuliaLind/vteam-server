@@ -4,3 +4,4 @@ server/coverage/
 server/.nyc_output/
 /server/.nyc_output/
 /server/coverage/
+.DS_Store
