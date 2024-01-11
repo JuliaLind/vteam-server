@@ -1,0 +1,33 @@
+version: "3"
+services:
+  mariadb-bikes:
+    image: "mariadb:10.11.6"
+    container_name: "mariadb-bikes"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: bikes
+    volumes:
+      - "./mariadb/csv/:/csv/"
+      - "./mariadb/sql/:/sql/"
+      - "./mariadb/setup-bikes.sql:/docker-entrypoint-initdb.d/setup-bikes.sql"
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${DB_USER}", "-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: "always"
+
+  server:
+    build:
+      context: .
+      dockerfile: ./server/Dockerfile-prod
+    container_name: "server"
+    ports:
+      - "1337:1337"
+    depends_on:
+      mariadb-bikes:
+        condition: service_healthy
+    restart: "always"
+
