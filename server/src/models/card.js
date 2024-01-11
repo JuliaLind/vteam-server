@@ -32,11 +32,15 @@ const card = {
      * @returns {Promise<Object>}
      */
     updUserDetails: async function(userId, cardnr, cardType) {
+        // cardnr needs to contain 13-19 digits
         const check = cardnr ? cardnr.toString().replace(/\D/g, '') : "";
+
         if (!/^\d{13,19}$/.test(check)) {
             throw new Error('invalid cardnr');
         }
+
         const result = await db.queryWithArgs(`CALL upd_user_card(?, ?, ?);`, [userId, cardnr, cardType]);
+
         return result[0][0];
     },
     
