@@ -23,11 +23,11 @@ describe('bike model', () => {
 
         sql = `INSERT INTO bike VALUES(?, ?, ?, ?, ?, ?),
             (?, ?, ?, ?, ?, ?),
-            (?, ?, ?, ?, ?, ?);`
+            (?, ?, ?, ?, ?, ?);`;
 
         let args = [];
         for (const bike of bikes) {
-            args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active])
+            args = args.concat([bike.id, bike.city_id, bike.status_id, bike.charge_perc, bike.coords, bike.active]);
         }
 
         await conn.query(sql, args);
@@ -41,7 +41,7 @@ describe('bike model', () => {
             [18.999,59.999],
             "ee54283c18caea5a49abd8328258d2dd"
         );
-        let bike = await bikeModel.getOne(5)
+        const bike = await bikeModel.getOne(5);
 
         expect(bike).to.deep.equal({
             id: 5,
@@ -52,13 +52,12 @@ describe('bike model', () => {
             coords: [18.999,59.999],
             active: false,
         });
-
     });
 
     it("bike cannot update charge perc to outside range", async () => {
         await bikeModel.updateBike(5, 1, 0.6, [18.999,59.999],
             "ee54283c18caea5a49abd8328258d2dd");
-        let bike = await bikeModel.getOne(5)
+        let bike = await bikeModel.getOne(5);
 
         expect(bike).to.deep.equal({
             id: 5,
@@ -79,7 +78,7 @@ describe('bike model', () => {
             expect(error.sqlState).to.equal('45000');
             expect(error.message).to.include('The charge percentage should be a value between 0.00 - 1.00');
         }
-        await bikeModel.getOne(5)
+        bike = await bikeModel.getOne(5)
 
         expect(bike).to.deep.equal({
             id: 5,
@@ -100,7 +99,7 @@ describe('bike model', () => {
             expect(error.sqlState).to.equal('45000');
             expect(error.message).to.include('The charge percentage should be a value between 0.00 - 1.00');
         }
-        await bikeModel.getOne(5)
+        bike = await bikeModel.getOne(5);
 
         expect(bike).to.deep.equal({
             id: 5,
@@ -372,8 +371,3 @@ describe('bike model', () => {
         ]);
     });
 });
-
-// 1. add test that updStatus method 
-// can only use method to update statuses to 1, 3 and 4
-// 2. add test that updateBike status can only update from
-// 1 -> 4 and 2 -> 5

@@ -102,8 +102,7 @@ describe('payment model', () => {
         expect(user[0].balance).to.equal(-372.87);
     });
     it('all_payments', async () => {
-
-        let res = await paymentModel.allPayments();
+        const res = await paymentModel.allPayments();
 
 
         expect(res).to.deep.equal(payments);
@@ -147,21 +146,18 @@ describe('payment model', () => {
 
     it('user_payments_pag within and outside range', async () => {
         const exp6 = payments.filter(elem => elem.user_id === users[2].id);
-    
+
         let data = await paymentModel.userPaymentsPag(users[2].id, 2, 2);
         expect(data.length).to.equal(2);
-    
+
         expect(data).to.deep.equal(exp6.slice(2, 2 + 2));
         data = await paymentModel.userPaymentsPag(users[2].id, 1, 3);
         expect(data.length).to.equal(3);
-    
         expect(data).to.deep.equal(exp6.slice(1, 1 + 3));
-    
+
         data = await paymentModel.userPaymentsPag(users[2].id, 2, 6);
         expect(data.length).to.equal(3);
-    
         expect(data).to.deep.equal(exp6.slice(2, 2 + 6));
-    
     });
     
 });
