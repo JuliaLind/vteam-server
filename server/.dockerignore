@@ -1,0 +1,15 @@
+node_modules
+.nyc_output
+coverage
+
+.eslint*
+.prettier*
+
+.git*
+
+Dockerfile-prod
+Dockerfile
+docker-compose.dev.yml
+docker-compose.prod.yml
+
+.env.example

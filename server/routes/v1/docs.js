@@ -57,6 +57,7 @@ router.post('/api_key/confirmation', async (req, res, next) => {
         res.redirect(
             `/v1/docs/api_key?message=${encodeURIComponent('You must approve terms and conditions.')}&email=${email}`
         );
+        return;
     }
 
     try {
