@@ -134,10 +134,7 @@ const routesInfo = {
             method: "GET",
             description: "Connect admin client to feed",
             request: {
-                headers: {
-                    "x-access-token": "Admin JWT Token",
-                    "x-api-key": "API Key",
-                },
+                headers: {},
                 params: {},
                 body: {}
             },
