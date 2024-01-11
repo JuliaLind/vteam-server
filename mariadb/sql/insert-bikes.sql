@@ -48,12 +48,11 @@ LOAD DATA LOCAL INFILE './csv/bike.csv'
 INTO TABLE `bike`
 CHARSET utf8
 FIELDS
-    TERMINATED BY ','
-    ENCLOSED BY '"'
+    TERMINATED BY ';'
 LINES
     TERMINATED BY '\r\n'
 IGNORE 1 LINES
-(id, city_id, coords)
+(id, city_id, status_id, coords)
 ;
 
 SHOW WARNINGS;
