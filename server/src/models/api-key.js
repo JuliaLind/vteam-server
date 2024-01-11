@@ -16,7 +16,7 @@ const apiKey = {
      * DB and stores in the keys array
      */
     getActiveFromDB: async function() {
-        this.keys = {}
+        this.keys = {};
         const result = await db.queryNoArgs(`CALL active_api_keys();`);
 
         /**
@@ -51,7 +51,7 @@ const apiKey = {
      */
     isBikeKey: function(apiKey) {
         if (this.keys[apiKey] !== "bike") {
-            throw new Error(`API key '${apiKey}' does not belong to a bike client. Method not allowed`)
+            throw new Error(`API key '${apiKey}' does not belong to a bike client. Method not allowed`);
         }
     },
     /**
