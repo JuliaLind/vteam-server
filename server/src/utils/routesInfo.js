@@ -165,7 +165,7 @@ const routesInfo = {
         {
             endpoint: "/transactions",
             method: "POST",
-            description: "Get one user's transactions",
+            description: "Admin get one user's transactions",
             request: {
                 headers: {
                     "x-access-token": "Admin JWT Token",
@@ -193,7 +193,7 @@ const routesInfo = {
         {
             endpoint: "/transactions/limit/:limit/offset/:offset",
             method: "POST",
-            description: "Get one user's transactions paginated",
+            description: "Admin get one user's transactions paginated",
             request: {
                 headers: {
                     "x-access-token": "Admin JWT Token",
@@ -224,7 +224,7 @@ const routesInfo = {
         {
             endpoint: "/transactions/all",
             method: "GET",
-            description: "Get all user transactions",
+            description: "Admin get all user transactions",
             request: {
                 headers: {
                     "x-access-token": "Admin JWT Token",
@@ -250,7 +250,7 @@ const routesInfo = {
         {
             endpoint: "/transactions/all/limit/:limit/offset/:offset",
             method: "GET",
-            description: "Get all user transactions paginated",
+            description: "Admin get all user transactions paginated",
             request: {
                 headers: {
                     "x-access-token": "Admin JWT Token",
@@ -279,7 +279,7 @@ const routesInfo = {
         {
             endpoint: "/trips",
             method: "POST",
-            description: "Get one user's trips",
+            description: "Admin get one user's trips",
             request: {
                 headers: {
                     "x-access-token": "Admin JWT Token",
@@ -319,7 +319,7 @@ const routesInfo = {
         {
             endpoint: "/trips/limit/:limit/offset/:offset",
             method: "POST",
-            description: "Get one user's trips paginated",
+            description: "Admin get one user's trips paginated",
             request: {
                 headers: {
                     "x-access-token": "Admin JWT Token",
@@ -362,7 +362,7 @@ const routesInfo = {
         {
             endpoint: "/trips/all",
             method: "GET",
-            description: "Get all user trips",
+            description: "Admin get all user trips",
             request: {
                 headers: {
                     "x-access-token": "Admin JWT Token",
@@ -400,7 +400,7 @@ const routesInfo = {
         {
             endpoint: "/trips/all/limit/:limit/offset/:offset",
             method: "GET",
-            description: "Get all user trips paginated",
+            description: "Admin get all user trips paginated",
             request: {
                 headers: {
                     "x-access-token": "Admin JWT Token",
@@ -1952,6 +1952,46 @@ const routesInfo = {
                         token: "User JWT token"
                     }
                 }
+            }
+        },
+    ],
+    pricelist: [
+        {
+            endpoint: "",
+            method: "GET",
+            description: "Get price list",
+            request: {
+                headers: {
+                    "x-api-key": "API Key",
+                },
+                params: {},
+                body: {}
+            },
+            response: {
+                status: null,
+                description: "Array with price objects.",
+                body: [
+                    {
+                        "id": "PARK_HIGH",
+                        "amount": 100
+                    },
+                    {
+                        "id": "PARK_LOW",
+                        "amount": 5
+                    },
+                    {
+                        "id": "START_HIGH",
+                        "amount": 10
+                    },
+                    {
+                        "id": "START_LOW",
+                        "amount": 5
+                    },
+                    {
+                        "id": "VAR",
+                        "amount": 3
+                    }
+                ]
             }
         },
     ],
