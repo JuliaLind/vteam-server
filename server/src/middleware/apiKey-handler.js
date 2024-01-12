@@ -9,6 +9,9 @@ import apiKeyModel from "../models/api-key.js";
  * @param {express.NextFunction} next
  */
 async function apiKeyHandler(req, res, next) {
+    if (req.path === "/admin/feed") {
+        return next();
+    }
 
     const apiKey = req.headers['x-api-key'];
 
