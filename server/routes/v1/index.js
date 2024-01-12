@@ -6,6 +6,7 @@ import bikesRouter from "./bikes.js";
 import cardRouter from "./card.js";
 import citiesRouter from "./cities.js";
 import loginRouter from "./login.js";
+import pricelistRouter from "./pricelist.js";
 import zonesRouter from "./zones.js";
 import docsRouter from "./docs.js";
 import apiKeyHandler from "../../src/middleware/apiKey-handler.js";
@@ -22,6 +23,7 @@ router.use("/bikes", bikesRouter);
 router.use("/card", cardRouter);
 router.use("/cities", citiesRouter);
 router.use("/login", loginRouter);
+router.use("/pricelist", pricelistRouter);
 router.use("/zones", zonesRouter);
 
 export default router;

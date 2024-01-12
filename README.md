@@ -15,13 +15,19 @@ One of Docker's key advantages is its handling of dependencies, such as Node.js 
 ## Getting started
 To kickstart the system, you'll need to create a .env file. Refer to the .env.example file located in the repository's root for guidance on the necessary environment variables. Feel free to use the provided example values.
 
-Once you're ready, initiate the Docker daemon on your computer, then head to the repository's root directory and execute:
+Once you're ready, initiate the Docker daemon on your computer, then head to the repository's root directory and execute the following command to enter docker development environment:
 
-```./init.bash```
+```./init.bash dev```
 
 This command launches three Docker containers: two MariaDB containers (one housing a test database) and one server container. After all containers are up and running, with the MariaDB containers marked as 'healthy,' you'll enter the server container. To evaluate the server and browse the API documentation, visit localhost:1337/v1/docs.
 
 Exiting the system is straightforward. Simply type exit while in the server container to halt the containers and remove them from your system.
+
+The docker production environment of this repo, which is mainly used with the rest of the system, can be started with:
+
+```./init.bash prod```
+
+To shut down and remove the production environment services, use ```./init.bash down```.
 
 ## GitHub Secrets
 For optimal GitHub Actions performance, you'll need to configure some variables in your GitHub secrets. Ensure these variables mirror the names and values found in the .env file at the repository's root.
