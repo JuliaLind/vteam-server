@@ -111,5 +111,31 @@ describe('trip model part 2', () => {
         expect(res.length).to.equal(0);
         expect(res).to.deep.equal([]);
     });
+    it('get current pricelist', async () => {
+        const res = await tripModel.pricelist();
+        expect(res.length).to.equal(5);
+        expect(res).to.deep.equal([
+            {
+                id: "PARK_HIGH",
+                amount: 100
+            },
+            {
+                id: "PARK_LOW",
+                amount: 5,
+            },
+            {
+                id: "START_HIGH",
+                amount: 10
+            },
+            {
+                id: "START_LOW",
+                amount: 5
+            },
+            {
+                id: "VAR",
+                amount: 3
+            },
+        ]);
+    });
 });
 

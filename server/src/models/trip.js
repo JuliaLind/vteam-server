@@ -89,6 +89,21 @@ const trip = {
         return trips;
     },
     /**
+     * Returns the current pricelist
+     * @returns {Promise<Array>}
+     */
+    pricelist: async function() {
+        const result = await db.queryNoArgs(`CALL pricelist();`);
+        const prices = result[0].map((price) => {
+            return {
+                ...price,
+                amount: parseFloat(price.amount)
+            };
+        });
+
+        return prices;
+    },
+    /**
      * Returns a user's
      * trips in an interval
      * created with offset and limit
