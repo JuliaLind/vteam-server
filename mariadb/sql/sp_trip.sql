@@ -1,3 +1,4 @@
+DROP PROCEDURE IF EXISTS pricelist;
 DROP PROCEDURE IF EXISTS user_trips;
 DROP PROCEDURE IF EXISTS user_trips_pag;
 DROP PROCEDURE IF EXISTS all_trips;
@@ -310,5 +311,19 @@ BEGIN
     ;
 END
 ;;
+
+--
+-- Returns the current pricelist
+--
+CREATE PROCEDURE pricelist()
+BEGIN
+    SELECT
+        *
+    FROM
+        `price`
+    ;
+END
+;;
+
 
 DELIMITER ;
