@@ -23,11 +23,11 @@ This command launches three Docker containers: two MariaDB containers (one housi
 
 Exiting the system is straightforward. Simply type exit while in the server container to halt the containers and remove them from your system.
 
-There is also a docker production environment, which is is mainly used in the context of the complete system. If you want to assess the production environment, you can enter it with:
+The docker production environment of this repo, which is mainly used with the rest of the system, can be started with:
 
 ```./init.bash prod```
 
-To shut down the production environment, use ```./init.bash down```.
+To shut down and remove the production environment services, use ```./init.bash down```.
 
 ## GitHub Secrets
 For optimal GitHub Actions performance, you'll need to configure some variables in your GitHub secrets. Ensure these variables mirror the names and values found in the .env file at the repository's root.
