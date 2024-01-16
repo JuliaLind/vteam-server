@@ -14,12 +14,25 @@ DROP TABLE IF EXISTS `user`;
 DROP TABLE IF EXISTS `card`;
 DROP TABLE IF EXISTS `third_party`;
 DROP TABLE IF EXISTS `api_key`;
+DROP TABLE IF EXISTS `error_log`;
 
 --
 -- typer av klienter som nycklar kan tillhöra
 --
 CREATE TABLE `client_type` (
     `id` VARCHAR(15),
+
+    PRIMARY KEY (`id`)
+);
+
+--
+-- For logging errors.
+-- Currently, only logging errors related to invoicing
+--
+CREATE TABLE `error_log`(
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `date` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `message` VARCHAR(200),
 
     PRIMARY KEY (`id`)
 );
