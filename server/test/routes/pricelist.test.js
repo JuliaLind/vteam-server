@@ -23,17 +23,24 @@ describe('/v1/pricelist route', () => {
     });
 
     it('should get price list', async () => {
-        const fakeBikeData = [{
-            zones: []
-        }];
-        pricelistStub.withArgs().resolves(fakeBikeData);
+        const fakePriceData = [
+            {
+                "id": "PARK_HIGH",
+                "amount": 100
+            },
+            {
+                "id": "PARK_LOW",
+                "amount": 5
+            }
+        ];
+        pricelistStub.withArgs().resolves(fakePriceData);
 
         const res = await chai.request(app)
             .get('/v1/pricelist')
             .set('x-api-key', apiKey);
 
         expect(res).to.have.status(200);
-        expect(res.body).to.deep.equal(fakeBikeData);
+        expect(res.body).to.deep.equal(fakePriceData);
         expect(pricelistStub.calledOnce).to.be.true;
     });
 
