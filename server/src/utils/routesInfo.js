@@ -656,9 +656,16 @@ const routesInfo = {
             },
             response: {
                 status: 200,
-                description: "Trip ID",
+                description: "Trip object",
                 body: {
-                    trip_id: 1
+                    "id": "Trip ID",
+                    "user_id": "User ID",
+                    "bike_id": "Bike ID",
+                    "start_time": "2024-01-16T13:16:41.000Z",
+                    "start_pos": [
+                        18.02549,
+                        59.34452
+                    ]
                 }
             }
         },
@@ -678,9 +685,25 @@ const routesInfo = {
             },
             response: {
                 status: 200,
-                description: "Trip ID",
+                description: "Trip object",
                 body: {
-                    trip_id: 1
+                    "id": "Trip ID",
+                    "user_id": "User ID",
+                    "bike_id": "Bike ID",
+                    "start_time": "2024-01-16T13:16:41.000Z",
+                    "end_time": "2024-01-16T13:18:58.000Z",
+                    "start_pos": [
+                        18.02549,
+                        59.34452
+                    ],
+                    "end_pos": [
+                        18.04212,
+                        59.35322
+                    ],
+                    "start_cost": 10,
+                    "var_cost": 6.85,
+                    "park_cost": 5,
+                    "total_cost": 21.85
                 }
             }
         },
