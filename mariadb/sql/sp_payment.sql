@@ -133,7 +133,7 @@ BEGIN
     BEGIN
         -- an error could be thrown from extract_ref
         -- function if the user has not registered a card
-        INSERT INTO error_log(message) VALUES(CONCAT('Payment could not be processed for user: ', cursor_id, ', card number missing - ', SQLERRM()));
+        INSERT INTO error_log(message) VALUES(CONCAT('Payment could not be processed for user: ', cursor_id, ', card number missing'));
         SET error_occurred = TRUE;
     END;
 
