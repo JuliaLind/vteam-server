@@ -79,8 +79,6 @@ BEGIN
     AND
         bike_id = b_id
     AND end_time IS NULL
-    -- ORDER BY id DESC
-    -- LIMIT 1
     ;
 END
 ;;

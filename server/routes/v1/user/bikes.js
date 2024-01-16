@@ -18,8 +18,7 @@ router.post("/rent/:bikeId", async (req, res, next) => {
         const bikeId = parseInt(req.params.bikeId);
         const userId = req.body.user_id;
 
-        const trip = await tripModel.start(userId, bikeId);
-        const tripId = trip.id;
+        const tripData = await tripModel.start(userId, bikeId);
 
         const data = {
             bike_id: bikeId,
@@ -29,9 +28,7 @@ router.post("/rent/:bikeId", async (req, res, next) => {
 
         clientManager.broadcastToBikes(bikeId, data)
 
-        res.status(200).json({
-            trip_id: tripId
-        });
+        res.status(200).json(tripData);
     } catch (error) {
         next(error);
     }
@@ -51,8 +48,8 @@ router.put("/return/:tripId", async (req, res, next) => {
         const tripId = parseInt(req.params.tripId);
         const userId = req.body.user_id;
 
-        const trip = await tripModel.end(userId, tripId);
-        const bikeId = trip.bike_id;
+        const tripData = await tripModel.end(userId, tripId);
+        const bikeId = tripData.bike_id
 
         const data = {
             bike_id: bikeId,
@@ -62,9 +59,7 @@ router.put("/return/:tripId", async (req, res, next) => {
 
         clientManager.broadcastToBikes(bikeId, data);
 
-        res.status(200).json({
-            trip_id: tripId
-        });
+        res.status(200).json(tripData);
     } catch (error) {
         next(error);
     }
