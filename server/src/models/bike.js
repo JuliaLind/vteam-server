@@ -14,7 +14,7 @@ const bike = {
      * @returns the bike object with type-corrected
      * attributes
      */
-    adjTypes(bikeObj) {
+    adjTypes: function(bikeObj) {
         return {
             id: bikeObj.id,
             city_id: bikeObj.city_id,
@@ -112,9 +112,30 @@ const bike = {
      */
     getAll: async function() {
         const result = await db.queryNoArgs(`CALL all_bikes();`);
-        return result[0].map((bikeObj) => {
-            return this.adjTypes(bikeObj);
-        });
+        const bikesWithAddr = [];
+
+        // experimental
+        for (const bikeObj of result[0]) {
+            const bikeUpd = this.adjTypes(bikeObj);
+            let addr = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${bikeUpd.coords[1]}&lon=${bikeUpd.coords[0]}&format=json`);
+
+            addr = await addr.json();
+
+            if ("house_number" in addr.address) {
+                addr = addr.address;
+                addr = `${addr.road} ${addr.house_number}`;
+            } else {
+                (addr.display_name.split(', '))[0];
+            }
+
+            // bikeUpd.addr = addr.display_name.split(', ').slice(0, 2).join(', ');
+            bikesWithAddr.push(bikeUpd);
+        }
+
+        return bikesWithAddr;
+        // return result[0].map((bikeObj) => {
+        //     return this.adjTypes(bikeObj);
+        // });
     },
 
     /**
