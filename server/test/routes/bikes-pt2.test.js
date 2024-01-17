@@ -1,4 +1,4 @@
-/* global it describe after before afterEach beforeEach done */
+/* global it describe afterEach */
 
 import chai from 'chai';
 import chaiHttp from 'chai-http';
