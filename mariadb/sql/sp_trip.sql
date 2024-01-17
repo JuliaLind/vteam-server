@@ -199,7 +199,9 @@ BEGIN
 
     -- return all data for the trip + calculated total cost
     -- if multiple requests this procedure will not update values but return same ones
-    SELECT *, (start_cost + var_cost + park_cost) AS total_cost
+    SELECT
+        *,
+        (start_cost + var_cost + park_cost) AS total_cost
     FROM
         `trip`
     WHERE id = t_id;
