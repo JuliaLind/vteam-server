@@ -197,9 +197,12 @@ BEGIN
     SET status_id = @new_status
     WHERE id = bikeid;
 
-    -- return all data for the trip + calculated total cost
-    -- if multiple requests this procedure will not update values but return same ones
-    SELECT *, (start_cost + var_cost + park_cost) AS total_cost
+    -- Return all data for the trip + calculated total cost.
+    -- In case of repeated requests,
+    -- this procedure will not update values but return same ones
+    SELECT
+        *,
+        (start_cost + var_cost + park_cost) AS total_cost
     FROM
         `trip`
     WHERE id = t_id;

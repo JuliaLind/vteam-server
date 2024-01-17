@@ -75,6 +75,39 @@ describe('payment model', () => {
         expect(payments3[0].amount).to.equal(1200.31);
 
     });
+    it('invoice, one error because card nr missing', async () => {
+        let conn = await db.pool.getConnection()
+        let sql = `
+        DELETE FROM user_card
+        WHERE user_id = ?;`;
+
+        await conn.query(sql, [users[2].id]);
+        if (conn) {
+            conn.end();
+        }
+        const data = await paymentModel.invoice();
+
+        expect(data).to.deep.equal({
+            invoiced_users: 2,
+            invoiced_amount: parseFloat((372.87 + 1200.31).toFixed(2))
+        });
+        const usersFromDb = await userModel.all();
+        const balances = usersFromDb.map(user => user.balance);
+
+        expect(balances).to.deep.equal([261.93, 0, -128.53, 0]);
+        conn = await db.pool.getConnection()
+        sql = `
+        SELECT message FROM error_log
+        ORDER BY id DESC
+        LIMIT 1;`;
+
+        const message = await conn.query(sql);
+        if (conn) {
+            conn.end();
+        }
+        expect(message[0].message).to.equal(`Payment could not be processed for user: ${users[2].id}, card number missing`);
+
+    });
     it('prepay, number is ok', async () => {
         const receipt = await paymentModel.prepay(users[1].id, 2000);
 
