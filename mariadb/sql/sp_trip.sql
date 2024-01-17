@@ -180,22 +180,31 @@ BEGIN
             park_cost = @parkcost
         WHERE id = t_id
         ;
+
+        -- Deduct total cost for the trip for user's balance
+        SET @total_cost := @startcost + @varcost + @parkcost;
+
+        UPDATE user
+        SET balance = balance - @total_cost
+        WHERE id = u_id;
+
+        SET @current_status := (SELECT status_id
+        FROM bike WHERE id = bikeid);
+
+        -- if status is rented default is to update to available
+        SET @new_status := 1;
+        -- if status is 'rented maintenance required' update
+        -- to 'maintenance required'
+        IF @current_status = 5 THEN
+            SET @new_status := 4;
+        END IF;
+
+        UPDATE bike
+        SET status_id = @new_status
+        WHERE id = bikeid;
+
     END IF;
 
-    SET @current_status := (SELECT status_id
-    FROM bike WHERE id = bikeid);
-
-    -- if status is rented default is to update to available
-    SET @new_status := 1;
-    -- if status is 'rented maintenance required' update
-    -- to 'maintenance required'
-    IF @current_status = 5 THEN
-        SET @new_status := 4;
-    END IF;
-
-    UPDATE bike
-    SET status_id = @new_status
-    WHERE id = bikeid;
 
     -- Return all data for the trip + calculated total cost.
     -- In case of repeated requests,

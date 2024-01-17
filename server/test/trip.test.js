@@ -7,6 +7,7 @@ const expect = chai.expect;
 import { db } from "../src/models/db.js";
 import bikeModel from "../src/models/bike.js";
 import tripModel from "../src/models/trip.js";
+import userModel from "../src/models/user.js";
 import { zones, points } from './dummy-data/zones.js';
 import { insertData } from './helper.js';
 
@@ -90,6 +91,26 @@ describe('trip model', () => {
             park_cost: null,
             total_cost: null
         });
+    });
+
+    it("start and end trip, user's balance should decrease with total trip cost", async () => {
+        const bikeid = bikes[2].id;
+        const userid = users[0].id;
+
+        let myTrip = await tripModel.start(userid, bikeid);
+
+        myTrip = await tripModel.end(userid, myTrip.id);
+        
+        const totCost = myTrip.total_cost;
+        const oldBalance = users[0].balance;
+
+        const userSearch = await userModel.search(users[0].id);
+        const userData = userSearch[0];
+        const newBalance = userData.balance;
+
+        expect(newBalance).to.be.lessThan(oldBalance);
+        expect(totCost).to.be.greaterThan(0);
+        expect(newBalance).to.equal(oldBalance - totCost);
     });
 
     it('cannot start a trip because bike inactive', async () => {
