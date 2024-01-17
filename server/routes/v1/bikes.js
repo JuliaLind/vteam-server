@@ -112,13 +112,22 @@ router.put("/:id", async (req, res, next) => {
         const bikeId = parseInt(req.params.id);
         const bikeData = req.body;
 
-        await bikeModel.updateBike(
+        const check = await bikeModel.updateBike(
             bikeId,
             bikeData.status_id,
             bikeData.charge_perc,
             bikeData.coords,
             req.headers['x-api-key']
         );
+
+        if (check !== undefined) {
+            const data = {
+                bike_id: bikeId,
+                instruction: "lock_bike"
+            };
+    
+            clientManager.broadcastToBikes(bikeId, data);
+        }
 
         clientManager.broadcastToClients(bikeData);
 
