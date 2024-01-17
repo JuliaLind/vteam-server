@@ -57,7 +57,13 @@ router.put("/return/:tripId", async (req, res, next) => {
             args: [1]
         };
 
+        const data_2 = {
+            bike_id: bikeId,
+            instruction: "update_bike_data"
+        }
+
         clientManager.broadcastToBikes(bikeId, data);
+        clientManager.broadcastToBikes(bikeId, data_2);
 
         res.status(200).json(tripData);
     } catch (error) {
