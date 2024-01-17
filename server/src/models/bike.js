@@ -14,7 +14,7 @@ const bike = {
      * @returns the bike object with type-corrected
      * attributes
      */
-    adjTypes(bikeObj) {
+    adjTypes: function(bikeObj) {
         return {
             id: bikeObj.id,
             city_id: bikeObj.city_id,
