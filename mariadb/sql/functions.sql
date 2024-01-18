@@ -4,7 +4,7 @@ DROP FUNCTION IF EXISTS within_zone;
 DELIMITER ;;
 
 --
--- Takes the full cardnumber as parameter
+-- Takes user id as parameter
 -- and returns the referense for a prepay
 -- user payment. The reference consists of
 -- three * plus the last four digits of the
