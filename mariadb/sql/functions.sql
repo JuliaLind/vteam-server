@@ -33,11 +33,10 @@ END
 ;;
 
 --
--- The passed coord paramtere is a json stringified
--- array with lng and lat coordinates. Returns 1 if
--- the coordinate is within a parking or a charging
--- zone, otherwise returns 0. Used to determine the
--- start-cost and the parking cost for a trip
+-- The passed coord parameter is a json stringified array with lon and
+-- lat coordinates. Returns 1 if the coordinate is within a parking or a
+-- charging zone, otherwise returns 0. Used to determine the start-cost
+-- and the parking cost for a trip
 --
 CREATE FUNCTION within_zone(
     coord VARCHAR(100)
