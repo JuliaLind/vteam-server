@@ -76,8 +76,7 @@ const user = {
     /**
      * Logs in user. If user does not have
      * an account, registers the user
-     * Body should contain Github Token,
-     * Card nr as string and card type as int
+     * Body should contain Github Token
      * @param {express.Request} req
      * @param {express.Response} res
      * @param {express.NextFunction} next
