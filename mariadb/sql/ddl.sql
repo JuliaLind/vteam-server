@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS `price`;
 DROP TABLE IF EXISTS `employee`;
 DROP TABLE IF EXISTS `payment`;
 DROP TABLE IF EXISTS `user_card`;
+DROP TABLE IF EXISTS `user_hash`;
 DROP TABLE IF EXISTS `user`;
 DROP TABLE IF EXISTS `card`;
 DROP TABLE IF EXISTS `third_party`;
@@ -91,6 +92,17 @@ CREATE TABLE `user`(
 
     PRIMARY KEY (`id`),
     UNIQUE KEY `email` (`email`)
+);
+
+--
+-- for employees who do not use 0auth
+--
+CREATE TABLE `user_hash`(
+    `user_id` INT NOT NULL,
+    `hash` VARCHAR(100) NOT NULL,
+
+    PRIMARY KEY (`user_id`),
+    FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 );
 
 --

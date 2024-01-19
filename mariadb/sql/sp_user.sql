@@ -1,3 +1,5 @@
+DROP PROCEDURE IF EXISTS user_login_pass;
+DROP PROCEDURE IF EXISTS user_register;
 DROP PROCEDURE IF EXISTS user_search;
 DROP PROCEDURE IF EXISTS all_users;
 DROP PROCEDURE IF EXISTS all_users_pag;
@@ -35,6 +37,59 @@ BEGIN
     END IF;
 
     SELECT user_id AS id, u_email AS email;
+END
+;;
+
+--
+-- Inserts new user into the database if
+-- email is not already registered
+-- 
+-- "Returns" the id and the email of the user
+-- if the user has not been deactivated,
+-- otherwise throws error
+--
+CREATE PROCEDURE user_register(
+    u_email VARCHAR(100),
+    u_hash VARCHAR(100)
+)
+BEGIN
+    -- will throw error if user exists
+    INSERT INTO `user` (email)
+    VALUES(u_email);
+
+    SET @user_id := (SELECT id FROM user WHERE email = u_email);
+
+    INSERT INTO `user_hash`
+    VALUES(@user_id, u_hash);
+
+    SELECT @user_id AS id, u_email AS email;
+END
+;;
+
+--
+-- 
+-- "Returns" the id, hash and the email of the user
+-- if the user has not been deactivated,
+-- otherwise throws error
+--
+CREATE PROCEDURE user_login_pass(
+    u_email VARCHAR(100)
+)
+BEGIN
+    DECLARE u_id INT;
+    DECLARE is_active BOOLEAN;
+
+    SELECT id, active INTO u_id, is_active FROM user WHERE email = u_email;
+
+    -- throw an error if user is deactivated
+    IF is_active = FALSE THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'User is deactivated';
+    END IF;
+
+    SET @hash := (SELECT `hash` FROM user_hash WHERE user_id = u_id);
+
+    SELECT u_id AS id, u_email AS email, @hash AS `hash`;
 END
 ;;
 

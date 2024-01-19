@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { db } from "./db.js";
+import bcrypt from "bcryptjs";
 // eslint-disable-next-line no-unused-vars
 import express from "express";
 
@@ -76,8 +77,7 @@ const user = {
     /**
      * Logs in user. If user does not have
      * an account, registers the user
-     * Body should contain Github Token,
-     * Card nr as string and card type as int
+     * Body should contain Github Token
      * @param {express.Request} req
      * @param {express.Response} res
      * @param {express.NextFunction} next
@@ -100,6 +100,89 @@ const user = {
                 token: jwtToken
             }
         });
+    },
+    /**
+     * Registers the user
+     * Body should contain username and password
+     * @param {express.Request} req
+     * @param {express.Response} res
+     * @param {express.NextFunction} next
+     */
+    register_pass: async function(req, res, next) {
+        const saltRounds = 10;
+        const email = req.body.email;
+        const password = req.body.password;
+
+        bcrypt.hash(password, saltRounds, async function(err, hash) {
+            console.log(hash);
+            if (err) {
+                return next(err);
+            }
+
+            try {
+                const result = await db.queryWithArgs(`CALL user_register(?,?);`, [email, hash]);
+
+                const payload = result[0][0];  
+                const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: "24h" });
+                return res.json({
+                    data: {
+                        type: "success",
+                        message: "User successfully registered",
+                        user: payload,
+                        token: jwtToken
+                    }
+                });
+            } catch (e) {
+                return next(err);
+            }
+        });
+    },
+    /**
+     * Logs in user with password. If user does not have
+     * an account, registers the user
+     * Body should contain Github Token
+     * @param {express.Request} req
+     * @param {express.Response} res
+     * @param {express.NextFunction} next
+     */
+    login_pass: async function(req, res, next) {
+        const email = req.body.email;
+        const password = req.body.password;
+        const result = await db.queryWithArgs(`CALL user_login_pass(?);`, [email]);
+
+        const user = result[0][0];
+        console.log(password);
+        console.log(user.hash);
+        try {
+            const passCheck = await bcrypt.compare(password, user.hash);
+
+            if (passCheck) {
+                const payload = {
+                    id: user.id,
+                    email: user.email
+                }
+                const jwtToken = jwt.sign(payload, jwtSecret, { expiresIn: "24h" });
+                return res.json({
+                    data: {
+                        type: "success",
+                        message: "User logged in",
+                        user: payload,
+                        token: jwtToken
+                    }
+                });
+            }
+            return res.status(401).json({
+                errors: {
+                    status: 401,
+                    source: "/login",
+                    title: "Wrong password",
+                    detail: "Password is incorrect."
+                }
+            });
+        } catch(err) {
+            console.log(err);
+            return next(err);
+        }
     },
     /**
      * 
